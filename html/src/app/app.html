@@ -1,0 +1,12 @@
+<header>
+    <ul>
+        <li><a class="active" href="#manual">Manual</a></li>
+        <li><a href="#race">Race</a></li>
+        <li><span>Refresh image: <input type="range" min="1" max="20" [(ngModel)]="interval"> {{ interval }} seconds.</span></li>
+    </ul>
+    <lifeline></lifeline>
+</header>
+<main>
+    <router-outlet></router-outlet>
+    <webcam></webcam>
+</main>

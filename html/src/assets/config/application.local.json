@@ -1,0 +1,9 @@
+{
+  "observer" : {
+    "get" : "http://carmageddon.dev/observer/:type"
+  },
+  "lifeline": {
+    "ws": "ws://192.168.88.120:1884/lifeline"
+  }
+
+}
