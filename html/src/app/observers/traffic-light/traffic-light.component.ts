@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CarObserver, ObserverService, Roi } from '../observer.service';
 import { StreamComponent } from '../../webcam/stream/stream.component';
+import {EventService, ROI_SET} from "../../event.service";
 
 const MAX_WIDTH = 640;
 const MAX_HEIGHT = 480;
@@ -10,12 +11,11 @@ const MAX_HEIGHT = 480;
     styles: [require('./traffic-light.scss')]
 })
 export class TrafficLightObserverComponent {
-    @ViewChild(StreamComponent)
-    private stream: StreamComponent;
     private observer: CarObserver;
     private interval = 1;
 
-    constructor(private observerService: ObserverService) {}
+    constructor(private observerService: ObserverService,
+                private eventService: EventService) {}
 
     ngAfterViewInit() {
         this.observerService.getObserver('traffic_light').subscribe(data => {
@@ -39,7 +39,7 @@ export class TrafficLightObserverComponent {
                 this.observer.roi.height = MAX_HEIGHT - this.observer.roi.y;
             }
         }
-        this.stream.theRoi = this.observer.roi;
+        this.eventService.emit(ROI_SET, this.observer.roi);
     }
 
     private updateRoi(event: any) {

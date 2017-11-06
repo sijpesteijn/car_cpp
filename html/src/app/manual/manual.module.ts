@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ManualComponent } from './manual.component';
 import { RouterModule } from '@angular/router';
 import { manual_routes } from './manual.routes';
-import { NgxVirtualJoystickModule } from 'ngx-virtual-joystick/esm/src';
+import {NgxVirtualJoystickModule} from "ngx-virtual-joystick";
 
 @NgModule({
     imports: [

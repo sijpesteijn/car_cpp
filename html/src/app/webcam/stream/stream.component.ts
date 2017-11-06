@@ -2,6 +2,8 @@ import {
     AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild
 } from '@angular/core';
 import { Roi } from '../../observers/observer.service';
+import {CameraService, CameraSettings} from "../../camera.service";
+import {EventService, ROI_SET} from "../../event.service";
 
 interface Point {
     x: number;
@@ -17,6 +19,8 @@ export class StreamComponent {
     private reloadInterval: any;
     private last_update: Date;
     private status: string = 'loading';
+    private cameraSettings: CameraSettings;
+    private interval: number = 5 * 1000;
     @Input('roi')
     set theRoi(roi: Roi) {
         // console.log(roi);
@@ -25,15 +29,6 @@ export class StreamComponent {
             this.setRoi();
         }
     }
-    @Input('interval')
-    set interval(interval: number) {
-        this._interval = interval;
-        clearInterval(this.reloadInterval);
-        this.reloadInterval = undefined;
-        this.startReload();
-        // setTimeout(() => this.startReload(), 500);
-    }
-    private _interval = 5;
     private roi: Roi;
     @ViewChild('roi') roiElem;
     @Output('onChange') changeEmitter = new EventEmitter();
@@ -75,6 +70,29 @@ export class StreamComponent {
         return false;
     }
 
+    constructor(private cameraService: CameraService,
+                private eventService: EventService) {
+        this.cameraService.getCameraInfo().subscribe(cameraSettings => {
+            if (cameraSettings) {
+                this.cameraSettings = cameraSettings;
+                this.interval = cameraSettings.previewDelay;
+                if (this.reloadInterval) {
+                    setTimeout(() => {
+                        clearInterval(this.reloadInterval);
+                        this.getWebcamImage();
+                        this.startReload();
+                    }, 300);
+                }
+            }
+        });
+        this.eventService.subscribe(event => {
+            if (event.name === ROI_SET) {
+                this.roi = event.data;
+                this.setRoi();
+            }
+        })
+    }
+
     ngAfterViewInit() {
         this.getWebcamImage();
         this.startReload();
@@ -103,10 +121,9 @@ export class StreamComponent {
     }
 
     private startReload() {
-        console.log('Interval: ', this._interval * 1000);
         this.reloadInterval = setInterval(() => {
             this.getWebcamImage();
-        }, (this._interval * 1000));
+        }, (this.interval));
     }
 
     private getWebcamImage() {

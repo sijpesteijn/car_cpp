@@ -1,5 +1,5 @@
-<div class="stream">
+<div class="stream" [style.width.px]="cameraSettings?.dimension.width" [style.height.px]="cameraSettings?.dimension.height">
     <img class="webcam" [src]="streamUrl">
-    <div class="mask"></div>
+    <div class="mask" [style.width.px]="cameraSettings?.dimension.width" [style.height.px]="cameraSettings?.dimension.height"></div>
     <div #roi class="roi" *ngIf="roi"></div>
 </div>

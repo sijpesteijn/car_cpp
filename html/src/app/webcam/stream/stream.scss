@@ -8,8 +8,8 @@
   position: relative;
   margin-right: 13px;
   background-color: rebeccapurple;
-  width: 640px;
-  height: 480px;
+  //width: 640px;
+  //height: 480px;
 
   .roi {
     position: absolute;
@@ -33,6 +33,9 @@
     z-index: 0;
     position: absolute;
     border: 1px solid crimson;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
 }

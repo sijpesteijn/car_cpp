@@ -2,30 +2,26 @@
  * Angular 2 decorators and services
  */
 import {
-  Component,
-  OnInit,
-  ViewEncapsulation
+    Component,
+    OnInit,
+    ViewEncapsulation
 } from '@angular/core';
-import { AppState } from './app.service';
-import { Config } from './app.config';
+import {AppState} from './app.service';
+import {Config} from './app.config';
+import {Car, CarService} from "./car.service";
+import {Router} from "@angular/router";
 
 /**
  * App Component
  * Top Level Component
  */
 @Component({
-  selector: 'app',
-  encapsulation: ViewEncapsulation.None,
-  styles: [require('./app.component.css')],
-  template: require('./app.html')
+    selector: 'app',
+    encapsulation: ViewEncapsulation.None,
+    styles: [require('./app.component.css')],
+    template: require('./app.html')
 })
 export class AppComponent {
-  public angularclassLogo = 'assets/img/angularclass-avatar.png';
-  public name = 'Angular 2 Webpack Starter';
-  public url = 'https://twitter.com/AngularClass';
-
-  constructor() {}
-
 }
 
 /**

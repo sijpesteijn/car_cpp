@@ -1,7 +1,9 @@
 @import '../../styles/variables';
 
-virtual-joystick {
-  position: absolute;
+
+.manual {
+  float: left;
+  position: relative;
   width: 400px;
   height: 400px;
 }

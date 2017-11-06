@@ -12,11 +12,8 @@
 
     li {
       padding: $gutter * 0.5;
-
-      a {
-        text-decoration: none;
-        color: $nav-button-color;
-      }
+      cursor: pointer;
+      color: $nav-button-color;
     }
   }
 

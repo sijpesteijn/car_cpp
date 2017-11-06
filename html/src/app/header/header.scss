@@ -1,0 +1,78 @@
+@import '../../styles/variables';
+
+header {
+  position: relative;
+  //overflow: hidden;
+  height: 45px;
+  float: left;
+  background-color: #333;
+  width: 100%;
+  color: white;
+
+  .camera {
+    margin-top: 14px;
+    margin-left: 30px;
+    display: inline-block;
+    position: relative;
+
+    .settings-btn {
+      color: white;
+      cursor: pointer;
+    }
+
+    .camera-settings {
+      position: absolute;
+      display: none;
+      visibility: hidden;
+      color: black;
+      background-color: white;
+      z-index: 1;
+      padding: 5px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    }
+
+    .settings-btn:hover {
+      color: $nav-button-color;
+    }
+
+  }
+
+  .camera:hover .camera-settings {
+    display: block;
+    visibility: visible;
+  }
+
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    float: left;
+  }
+
+  li {
+    float: left;
+  }
+
+  li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  li a:hover:not(.active) {
+    background-color: #111;
+  }
+
+  .active {
+    background-color: #4CAF50;
+  }
+
+  lifeline {
+    float: right;
+  }
+}
+

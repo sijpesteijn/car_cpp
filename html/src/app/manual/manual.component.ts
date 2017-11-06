@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {CarService} from "../car.service";
 @Component({
     selector: 'manual',
     template: require('./manual.html'),
@@ -6,7 +7,10 @@ import { Component } from '@angular/core';
 })
 export class ManualComponent {
 
+    constructor(private carService: CarService) {}
+
     onChange(event: any) {
-        console.log(event);
+        this.carService.setEngine(event.deltaY).subscribe();
+        this.carService.setSteer(event.deltaX).subscribe();
     }
 }

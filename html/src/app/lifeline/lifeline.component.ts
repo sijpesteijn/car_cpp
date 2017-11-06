@@ -5,6 +5,8 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Observer } from 'rxjs/Observer';
 import { Router } from '@angular/router';
+import {CarService} from "../car.service";
+import {CameraService} from "../camera.service";
 
 @Component({
     selector: 'lifeline',
@@ -17,12 +19,14 @@ export class LifeLineComponent {
     private retry: any;
 
     constructor(private config: Config,
-                private router: Router) {
+                private router: Router,
+                private carService: CarService,
+                private cameraService: CameraService) {
         // this.create(config.get('lifeline.ws')).subscribe(msg => console.log(msg), error => console.log(error), ()=>
         // console.log('complete'));
     }
 
-    ngAfterViewInit() {
+    ngOnInit() {
         this.startReconnect();
     }
 
@@ -32,10 +36,12 @@ export class LifeLineComponent {
                 this.lifeline = new WebSocket(this.config.get('lifeline.ws'));
                 clearInterval(this.retry);
                 this.lifeline.onopen    = (evt) => {
-                    this.router.navigate(['./observers']);
+                    this.cameraService.loadCameraDimensions();
+                    this.cameraService.loadCameraSettings();
+                    this.router.navigate(['./off']);
                 };
                 this.lifeline.onmessage = (msg) => {
-                    console.log('msg ', msg);
+                    this.carService.updateCar(JSON.parse(msg.data));
                     this.heartbeat = !this.heartbeat;
                     setTimeout(() => this.lifeline.send('moe'), 500);
                 };

@@ -1,11 +1,7 @@
 <div class="observer-tabs">
     <ul class="tabs">
-        <li class="tablink" [class.active]="selectedTab === 'traffic_light'">
-            <a href="#" (click)="selectedTab = 'traffic_light'">Traffic light</a>
-        </li>
-        <li class="tablink" [class.active]="selectedTab === 'lane_detection'">
-            <a href="#" (click)="selectedTab = 'lane_detection'">Lane detection</a>
-        </li>
+        <li class="tablink" (click)="selectedTab = 'traffic_light'" [class.active]="selectedTab === 'traffic_light'">Traffic light</li>
+        <li class="tablink" (click)="selectedTab = 'lane_detection'" [class.active]="selectedTab === 'lane_detection'">Lane detection</li>
     </ul>
 
     <div class="tab">

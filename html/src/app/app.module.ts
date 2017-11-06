@@ -35,7 +35,14 @@ import { ObserverTabsModule } from './observer-tabs/observer-tabs.module';
 import { StreamModule } from './webcam/stream.module';
 import { LifeLineModule } from './lifeline/lifeline.module';
 import { WebcamModule } from './webcam/webcam.module';
-import { NgxVirtualJoystickModule } from 'ngx-virtual-joystick/esm/src';
+import {CarService} from "./car.service";
+import {OffComponent} from "./off/off.component";
+import {HeaderComponent} from "./header/header.component";
+import {CarStatusComponent} from "./car-status/car-status.component";
+import {NgxVirtualJoystickModule} from "ngx-virtual-joystick";
+import {CameraStatusComponent} from "./camera-status/camera-status.component";
+import {CameraService} from "./camera.service";
+import {EventService} from "./event.service";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -71,7 +78,11 @@ if ('local' === process.env.CONTEXT) {
     bootstrap   : [AppComponent],
     declarations: [
         AppComponent,
-        NoContentComponent
+        NoContentComponent,
+        OffComponent,
+        HeaderComponent,
+        CarStatusComponent,
+        CameraStatusComponent
     ],
     /**
      * Import Angular's modules.
@@ -94,6 +105,9 @@ if ('local' === process.env.CONTEXT) {
         ENV_PROVIDERS,
         APP_PROVIDERS,
         ...PROVIDERS,
+        CarService,
+        CameraService,
+        EventService,
         Config
     ]
 })
