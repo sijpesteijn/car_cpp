@@ -2,3 +2,5 @@
 /html/.awcache/
 /html/node_modules/
 /cmake-build-debug/
+.idea
+**/.DS_Store
