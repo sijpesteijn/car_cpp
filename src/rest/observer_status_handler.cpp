@@ -4,7 +4,6 @@
 
 #include "observer_status_handler.h"
 #include <syslog.h>
-#include <iostream>
 #include "../util/util.h"
 
 using namespace restbed;
