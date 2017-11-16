@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { SettingsService } from '../settings.service';
 import { Config } from '../app.config';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { Observer } from 'rxjs/Observer';
 import { Router } from '@angular/router';
 import {CarService} from "../car.service";
 import {CameraService} from "../camera.service";
@@ -22,8 +19,6 @@ export class LifeLineComponent {
                 private router: Router,
                 private carService: CarService,
                 private cameraService: CameraService) {
-        // this.create(config.get('lifeline.ws')).subscribe(msg => console.log(msg), error => console.log(error), ()=>
-        // console.log('complete'));
     }
 
     ngOnInit() {

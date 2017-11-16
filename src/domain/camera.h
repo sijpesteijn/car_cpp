@@ -9,17 +9,15 @@
 #include <pthread.h>
 #include <vector>
 
-using namespace cv;
-using namespace std;
 
 class Camera {
 public:
     Camera();
-    Mat getFrame();
-    Size getDimensions();
+    cv::Mat getFrame();
+    cv::Size getDimensions();
     void setDimension(int width, int height);
-    VideoCapture cap;
-    Mat frame;
+    cv::VideoCapture cap;
+    cv::Mat frame;
     pthread_cond_t frame_not_empty = PTHREAD_COND_INITIALIZER;
 
     int capture_delay = 400;
@@ -28,8 +26,10 @@ public:
     double whitebalance_alpha = 1.1;
     int whitebalance_beta = 0;
 
+    void close();
+
 private:
-    vector<Vec2f> detectLines(Mat src);
+    std::vector<cv::Vec2f> detectLines(cv::Mat src);
 };
 
 

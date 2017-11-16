@@ -1,0 +1,12 @@
+<div class="log-messages">
+    <ul>
+        <li *ngFor="let observersStateMessage of observersStateMessages.reverse()">
+            <ul>
+                <li *ngFor="let observerStateMessage of observersStateMessage">
+                    <traffic-light-state [state]="observerStateMessage" *ngIf="observerStateMessage.type === 'traffic_light'"></traffic-light-state>
+                    <lane-detection-state [state]="observerStateMessage" *ngIf="observerStateMessage.type === 'lane_detection'"></lane-detection-state>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

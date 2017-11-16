@@ -18,5 +18,9 @@ export class LaneDetectionComponent {
         });
     }
 
+    private updateObserver() {
+        this.observer.active =  (Number(this.observer.active));
+        this.observerService.saveObserver('lane_detection', this.observer).subscribe(observer => this.observer = observer);
+    }
 
 }

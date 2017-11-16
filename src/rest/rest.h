@@ -11,14 +11,11 @@
 #include <list>
 #include "carmageddon_resource.h"
 
-using namespace restbed;
-using namespace std;
-
 class Rest {
 public:
-    Rest(list<carmageddon_resource*> resources);
+    Rest(std::list<carmageddon_resource*> resources);
 private:
-    Service service;
+    restbed::Service service;
 };
 
 #endif //CARMAGEDDON_REST_H

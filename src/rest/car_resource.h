@@ -10,19 +10,16 @@
 #include <list>
 #include "carmageddon_resource.h"
 
-using namespace restbed;
-using namespace std;
-
 class car_resource: public carmageddon_resource {
 public:
     car_resource(Car *car);
-    list<shared_ptr<Resource>> getResources();
+    std::list<std::shared_ptr<restbed::Resource>> getResources();
 private:
-    shared_ptr<Resource> carGetModeResource = make_shared< Resource >( );
-    shared_ptr<Resource> carPostModeResource = make_shared< Resource >( );
-    shared_ptr<Resource> steerResource = make_shared< Resource >( );
-    shared_ptr<Resource> engineResource = make_shared< Resource >( );
-    shared_ptr<Settings> settings = make_shared< Settings >( );
+    std::shared_ptr<restbed::Resource> carGetModeResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> carPostModeResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> steerResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> engineResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Settings> settings = std::make_shared< restbed::Settings >( );
 };
 
 #endif //CARMAGEDDON_CAR_RESOURCE_H

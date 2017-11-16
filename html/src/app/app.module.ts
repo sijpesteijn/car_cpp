@@ -43,6 +43,8 @@ import {NgxVirtualJoystickModule} from "ngx-virtual-joystick";
 import {CameraStatusComponent} from "./camera-status/camera-status.component";
 import {CameraService} from "./camera.service";
 import {EventService} from "./event.service";
+import {ObserversStateMessagesService} from "./observers_state_messages.service";
+import {ObserversStateMessagesComponent} from "./observers-state-messages/observers-state-messages.component";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -108,6 +110,7 @@ if ('local' === process.env.CONTEXT) {
         CarService,
         CameraService,
         EventService,
+        ObserversStateMessagesService,
         Config
     ]
 })

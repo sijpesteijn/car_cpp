@@ -7,6 +7,7 @@
 #include <jansson.h>
 using namespace cv;
 using namespace std;
+using namespace restbed;
 
 #define CAMERA_SETTINGS "/camera/settings"
 #define CAMERA_DIMENSIONS "/camera/dimensions"

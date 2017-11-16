@@ -10,14 +10,13 @@
 #include "camera.h"
 
 using namespace std;
-using namespace cv;
 
 class observer {
 public:
     virtual ~observer() {};
     virtual string getJson(void) =0;
     virtual int updateWithJson(json_t* root) =0;
-    virtual observer* processSnapshot(Mat snapshot) =0;
+    virtual observer* processSnapshot(cv::Mat snapshot) =0;
 
     const char* getType(void) {
         return this->type;
@@ -36,8 +35,8 @@ protected:
     int condition_achieved = 0;
     int order = 0;
     const char *type;
-    Rect roi;
-    Mat last_snapshot;
+    cv::Rect roi;
+    cv::Mat last_snapshot;
 };
 
 #endif //CARMAGEDDON_OBSERVER_H

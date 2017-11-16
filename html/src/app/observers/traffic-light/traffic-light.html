@@ -1,5 +1,6 @@
 <ul *ngIf="observer" class="traffic_light_observer">
     <li>Active: <input type="checkbox" [(ngModel)]="observer.active" (ngModelChange)="updateObserver()"></li>
+    <li><span class="condition_achieved" [class.achieved]="observer.condition_achieved"></span></li>
     <li><button [disabled]="observer.condition_achieved === 0" (click)="resetObserver()">Reset</button></li>
     <li>Roi x: <input type="range" [min]="1" [max]="640" [(ngModel)]="observer?.roi.x" (ngModelChange)="setRoi()"> {{ observer?.roi.x }}</li>
     <li>Roi y: <input type="range" [min]="1" [max]="480" [(ngModel)]="observer?.roi.y" (ngModelChange)="setRoi()"> {{ observer?.roi.y }}</li>

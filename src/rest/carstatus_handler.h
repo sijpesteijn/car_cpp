@@ -9,15 +9,12 @@
 #include <restbed>
 #include "../domain/car.h"
 
-using namespace restbed;
-using namespace std;
-
 class carstatus_handler {
 public:
     carstatus_handler(Car *car);
-    shared_ptr<Resource> getResource();
+    std::shared_ptr<restbed::Resource> getResource();
 private:
-    shared_ptr<Resource> resource;
+    std::shared_ptr<restbed::Resource> resource;
 };
 
 #endif //CARMAGEDDON_CARSTATUS_HANDLER_H

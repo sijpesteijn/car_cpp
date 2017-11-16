@@ -8,11 +8,10 @@
 #include "./domain/observer.h"
 #include "./domain/camera.h"
 #include "./domain/car.h"
-#include "rest/lifeline_handler.h"
+#include "rest/observer_status_handler.h"
 #include <map>
 #include <list>
 #include <string>
-using namespace std;
 
 class cpu {
 private:
@@ -20,8 +19,8 @@ private:
 public:
     Camera *camera;
     Car *car;
-    lifeline_handler *ll_handler;
-    cpu(Camera *camera, Car *car, lifeline_handler *ll_handler);
+    observer_status_handler *os_handler;
+    cpu(Camera *camera, Car *car, observer_status_handler *os_handler);
     list<observer*> getObservers();
     observer* getObserver(string name);
 };

@@ -28,3 +28,16 @@
     padding: $gutter * 0.5;
   }
 }
+
+.condition_achieved {
+  width: 13px;
+  height: 13px;
+  border-radius: 20px;
+  background-color: green;
+  //position: absolute;
+  opacity: 0.3;
+}
+
+.achieved {
+  opacity: 1;
+}

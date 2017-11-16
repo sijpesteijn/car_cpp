@@ -11,17 +11,14 @@
 #include <restbed>
 #include <list>
 
-using namespace std;
-using namespace restbed;
-
 class camera_resource: public carmageddon_resource {
 public:
     camera_resource(Camera *camera);
-    list<shared_ptr<Resource>> getResources();
+    std::list<std::shared_ptr<restbed::Resource>> getResources();
 private:
-    shared_ptr<Resource> cameraSettingsResource = make_shared< Resource >( );
-    shared_ptr<Resource> cameraGetDimensionsResource = make_shared< Resource >( );
-    shared_ptr<Resource> cameraSnapshotResource = make_shared< Resource >( );
+    std::shared_ptr<restbed::Resource> cameraSettingsResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> cameraGetDimensionsResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> cameraSnapshotResource = std::make_shared< restbed::Resource >( );
 
 };
 

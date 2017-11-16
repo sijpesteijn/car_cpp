@@ -4,10 +4,9 @@
         <li class="tablink" (click)="selectedTab = 'lane_detection'" [class.active]="selectedTab === 'lane_detection'">Lane detection</li>
     </ul>
 
-    <div class="tab">
-    <ng-container [ngSwitch]="selectedTab">
-            <traffic-light *ngSwitchCase="'traffic_light'"></traffic-light>
-            <lane-detection *ngSwitchCase="'lane_detection'"></lane-detection>
-    </ng-container>
+    <div class="tab" [ngSwitch]="selectedTab">
+        <traffic-light *ngSwitchCase="'traffic_light'"></traffic-light>
+        <lane-detection *ngSwitchCase="'lane_detection'"></lane-detection>
     </div>
+    <observers-state-messages></observers-state-messages>
 </div>

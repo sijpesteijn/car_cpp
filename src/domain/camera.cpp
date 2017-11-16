@@ -5,6 +5,9 @@
 #include <syslog.h>
 #include <thread>
 
+using namespace cv;
+using namespace std;
+
 pthread_mutex_t frame_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void *frameGrabber(void *params) {
@@ -38,8 +41,8 @@ void *frameGrabber(void *params) {
 Camera::Camera() : cap(0) {
     this->cap.release();
     this->cap.open(1);
-//    this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 352);
-//    this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 288);
+    this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+    this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     pthread_t grabber;
     pthread_create(&grabber, NULL, frameGrabber, this);
 }
@@ -61,4 +64,8 @@ Size Camera::getDimensions() {
 void Camera::setDimension(int width, int height) {
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
+}
+
+void Camera::close() {
+    this->cap.release();
 }

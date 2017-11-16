@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 using namespace cv;
 using namespace std;
+using namespace restbed;
 
 Rest::Rest(list<carmageddon_resource*> resources) {
     auto settings = make_shared< Settings >( );

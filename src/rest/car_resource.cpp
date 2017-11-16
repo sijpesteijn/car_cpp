@@ -5,6 +5,7 @@
 #include "car_resource.h"
 #include <syslog.h>
 using namespace std;
+using namespace restbed;
 
 #define CAR_MODE "/car/mode"
 #define CAR_ANGLE_POST "/car/steer/{angle: .*}"

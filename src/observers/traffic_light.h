@@ -14,8 +14,8 @@ public:
     traffic_light(Camera* camera);
     string getJson(void);
     int updateWithJson(json_t* root);
-    observer* processSnapshot(Mat snapshot);
-    Rect verifyRoi();
+    observer* processSnapshot(cv::Mat snapshot);
+    cv::Rect verifyRoi();
 private:
     Camera* camera;
     int count = 0;

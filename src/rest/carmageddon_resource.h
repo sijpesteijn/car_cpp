@@ -12,22 +12,18 @@
 #include <string>
 #include <list>
 #include <memory>
-//#include "../domain/observer.h"
-
-using namespace std;
-using namespace restbed;
 
 class carmageddon_resource {
 public:
 	virtual ~carmageddon_resource() {}
-	void sendError(const shared_ptr<Session> session, string msg) {
-		const string body = "{\"error\": \"" + msg + "\"}";
+	void sendError(const std::shared_ptr<restbed::Session> session, std::string msg) {
+		const std::string body = "{\"error\": \"" + msg + "\"}";
 		session->close(500, body, {
 				{ "Content-Type", "application/json" },
-				{ "Content-Length", ::to_string(body.size()) }
+				{ "Content-Length", std::to_string(body.size()) }
 		});
 	}
-	virtual list<shared_ptr<Resource>> getResources() = 0;
+	virtual std::list<std::shared_ptr<restbed::Resource>> getResources() = 0;
 };
 
 #endif /* SRC_REST_CARMAGEDDON_RESOURCE_H_ */

@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import { Config } from '../app.config';
 
 export interface CarObserver {
-    condition_achieved: number;
+    condition_achieved: boolean;
     type: string;
     active: number;
     order: number;

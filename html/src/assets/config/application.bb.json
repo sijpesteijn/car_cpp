@@ -5,7 +5,8 @@
     "steer": "http://carmageddon.dev/car/steer/:angle"
   },
   "observer" : {
-    "get" : "http://carmageddon.dev/observer/:type"
+    "get" : "http://carmageddon.dev/observer/:type",
+    "ws": "ws://carmageddon.dev/status"
   },
   "lifeline": {
     "ws": "ws://carmageddon.dev/lifeline"

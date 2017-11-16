@@ -18,16 +18,18 @@ void* checkObservers(void* params) {
                 observers.push_back(i->processSnapshot(snapshot));
             }
         }
-        carmageddon->ll_handler->notifyClients();
+        if (carmageddon->car->getMode() == car_mode::autonomous) {
+            carmageddon->os_handler->notifyClients(carmageddon->getObservers());
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(carmageddon->camera->observers_delay));
     }
     return NULL;
 }
 
-cpu::cpu(Camera *camera, Car *car, lifeline_handler *ll_handler) {
+cpu::cpu(Camera *camera, Car *car, observer_status_handler *os_handler) {
     this->camera = camera;
     this->car = car;
-    this->ll_handler = ll_handler;
+    this->os_handler = os_handler;
     traffic_light *tl = new traffic_light(this->camera);
     this->observers.insert(pair<string, observer*>(tl->getType(), tl));
     lane_detection *ld = new lane_detection(this->camera);

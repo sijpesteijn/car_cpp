@@ -1,26 +1,22 @@
 //
-// Created by Gijs Sijpesteijn on 06/10/2017.
+// Created by Gijs Sijpesteijn on 09/11/2017.
 //
 
-#include "lifeline_handler.h"
-#include <iostream>
+#include "observer_status_handler.h"
 #include <syslog.h>
+#include <iostream>
 #include "../util/util.h"
 
-using namespace std;
 using namespace restbed;
-using namespace std::chrono;
+using namespace std;
 
-#define LIFELINE "/lifeline"
-
-static Car *car;
-static pthread_mutex_t checker_lock = PTHREAD_MUTEX_INITIALIZER;
-static shared_ptr< Service > service = nullptr;
+#define OBSERVER_STATUS "/status"
 static map< string, shared_ptr< WebSocket > > sockets = { };
+static pthread_mutex_t checker_lock = PTHREAD_MUTEX_INITIALIZER;
 
-void lifeline_close_handler( const shared_ptr< WebSocket > socket )
+void observer_status_close_handler( const shared_ptr< WebSocket > socket )
 {
-    syslog(LOG_DEBUG, "Lifeline close handler");
+    syslog(LOG_DEBUG, "Observer status close handler");
     if ( socket->is_open( ) )
     {
         auto response = make_shared< WebSocketMessage >( WebSocketMessage::CONNECTION_CLOSE_FRAME, Bytes( { 10, 00 } ) );
@@ -29,22 +25,16 @@ void lifeline_close_handler( const shared_ptr< WebSocket > socket )
 
     const auto key = socket->get_key( );
     sockets.erase( key );
-    syslog(LOG_DEBUG, "%lu", sockets.size());
-    if (car->getEnabled() != 0 && sockets.size() == 0) {
-        syslog(LOG_ERR, "No connections car stopped");
-        car->setEnabled(0);
-    }
-
-    syslog(LOG_DEBUG, "Closed connection to %s.\n", key.data( ));
+    syslog(LOG_DEBUG, "Connection closed with %s.\n", key.data( ));
 }
 
-void lifeline_error_handler( const shared_ptr< WebSocket > socket, const error_code error )
+void observer_status_error_handler( const shared_ptr< WebSocket > socket, const error_code error )
 {
     const auto key = socket->get_key( );
     syslog(LOG_ERR, "WebSocket Errored '%s' for %s.\n", error.message( ).data( ), key.data( ) );
 }
 
-void lifeline_message_handler( const shared_ptr< WebSocket > source, const shared_ptr< WebSocketMessage > message )
+void observer_status_message_handler( const shared_ptr< WebSocket > source, const shared_ptr< WebSocketMessage > message )
 {
     const auto opcode = message->get_opcode( );
 
@@ -78,10 +68,10 @@ void lifeline_message_handler( const shared_ptr< WebSocket > source, const share
     }
     else if ( opcode == WebSocketMessage::TEXT_FRAME )
     {
-        const string body = "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + ","
-                            + "\"angle\": " + to_string(car->getAngle()) + ","
-                            + "\"enabled\": " + to_string(car->getEnabled()) + ","
-                            + "\"throttle\": " + to_string(car->getThrottle()) + "}";
+        const string body = ""; // "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + ","
+//                            + "\"angle\": " + to_string(car->getAngle()) + ","
+//                            + "\"enabled\": " + to_string(car->getEnabled()) + ","
+//                            + "\"throttle\": " + to_string(car->getThrottle()) + "}";
         auto response = make_shared< WebSocketMessage >(WebSocketMessage::TEXT_FRAME, body );
         source->send(response);
 //        response->set_mask( 0 );
@@ -97,7 +87,7 @@ void lifeline_message_handler( const shared_ptr< WebSocket > source, const share
     }
 }
 
-void get_lifeline_method_handler( const shared_ptr< Session > session )
+void get_observer_status_handler( const shared_ptr< Session > session )
 {
     const auto request = session->get_request( );
     const auto connection_header = request->get_header( "connection", String::lowercase );
@@ -115,19 +105,19 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
                     if (pthread_mutex_lock(&checker_lock) != 0) {
                         syslog(LOG_ERR, "Sockethandler: Could not get a lock on the queue");
                     }
-                    socket->set_close_handler( lifeline_close_handler );
-                    socket->set_error_handler( lifeline_error_handler );
-                    socket->set_message_handler( lifeline_message_handler );
+                    socket->set_close_handler( observer_status_close_handler );
+                    socket->set_error_handler( observer_status_error_handler );
+                    socket->set_message_handler( observer_status_message_handler );
 
-                    const string body = "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + ","
-                                        + "\"angle\": " + to_string(car->getAngle()) + ","
-                                        + "\"throttle\": " + to_string(car->getThrottle()) + "}";
+                    const string body = ""; // "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + ","
+//                                        + "\"angle\": " + to_string(car->getAngle()) + ","
+//                                        + "\"throttle\": " + to_string(car->getThrottle()) + "}";
                     socket->send( body, [ ]( const shared_ptr< WebSocket > socket )
                     {
                         const auto key = socket->get_key( );
                         sockets.insert( make_pair( key, socket ) );
                         syslog(LOG_DEBUG, "%lu", sockets.size());
-                        car->setEnabled(1);
+//                        car->setEnabled(1);
 
                         fprintf( stderr, "Sent welcome message to %s.\n", key.data( ) );
                     } );
@@ -148,37 +138,38 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
     session->close( BAD_REQUEST );
 }
 
-//void* connectionChecker(void* params) {
-//	Car *car = (Car*) params;
-//	while(1) {
-//		if (pthread_mutex_lock(&checker_lock) != 0) {
-//			syslog(LOG_ERR, "Sockethandler: Could not get a lock on the queue");
-//		}
-//		if (car->getEnabled() != 0 && sockets.size() == 0) {
-//			syslog(LOG_ERR, "No connections car stopped");
-//			car->setEnabled(0);
-//		}
-//		if (car->getEnabled() == 0 && sockets.size() > 0) {
-//			syslog(LOG_ERR, "Enabling car since we have websocket connections.");
-//			car->setEnabled(1);
-//		}
-//		if (pthread_mutex_unlock(&checker_lock) != 0) {
-//			syslog(LOG_ERR, "Sockethandler: Could not unlock the queue");
-//		}
-//	}
-//	return NULL;
-//}
+observer_status_handler::observer_status_handler() {
+    this->observerStatusResource->set_path(OBSERVER_STATUS);
+    this->observerStatusResource->set_method_handler("GET", get_observer_status_handler);
+    syslog(LOG_DEBUG, "Restbed: %s",  OBSERVER_STATUS);
+};
 
-lifeline_handler::lifeline_handler(Car *carP) {
-    car = carP;
-    this->resource = make_shared< Resource >( );
-    this->resource->set_path( LIFELINE );
-    this->resource->set_method_handler( "GET", get_lifeline_method_handler );
-    syslog(LOG_DEBUG, "Restbed websocket: %s", LIFELINE );
-//	pthread_t checker;
-//	pthread_create(&checker, NULL, connectionChecker, carP);
+list<shared_ptr<Resource>> observer_status_handler::getResources() {
+    list<shared_ptr<Resource>> l = {
+            this->observerStatusResource
+    };
+    return l;
 }
 
-list<shared_ptr<Resource>> lifeline_handler::getResources() {
-    return { this->resource };
+string getStates(list<observer *> observers) {
+    string body = "[";
+    for (auto const& i : observers) {
+        if (i->isActive()) {
+            body += i->getJson() + ",";
+        }
+    }
+    if (body.length() > 1) {
+        body = body.substr(0, body.length() - 1);
+    }
+    return body + "]";
+}
+
+void observer_status_handler::notifyClients(std::list<observer *> observers) {
+    for(map<string, shared_ptr< WebSocket>>::iterator it = sockets.begin(); it != sockets.end(); ++it) {
+        cout << it->first << endl;
+        shared_ptr<WebSocket> socket = it->second;
+        const string body = getStates(observers);
+        auto response = make_shared< WebSocketMessage >(WebSocketMessage::TEXT_FRAME, body );
+        socket->send(response);
+    }
 }

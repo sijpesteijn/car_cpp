@@ -2,20 +2,17 @@
 // Created by Gijs Sijpesteijn on 06/10/2017.
 //
 
-#include "observer_resource.h"
+#include "observer_handler.h"
 #include <syslog.h>
-#include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <iostream>
-#include <jansson.h>
+#include "../util/util.h"
 
 using namespace std;
+using namespace restbed;
 
 #define OBSERVER_SETTINGS_POST "/observer"
 #define OBSERVER_SETTINGS_GET  "/observer/{type: .*}"
-static observer_resource *resource;
+
+static observer_handler *resource;
 
 void post_observer_settings_handler(const shared_ptr<Session> session) {
     const auto request = session->get_request();
@@ -72,7 +69,7 @@ void get_observer_settings_handler(const shared_ptr<Session> session) {
     }
 }
 
-observer_resource::observer_resource(cpu *carmageddon) {
+observer_handler::observer_handler(cpu *carmageddon) {
     this->carmageddon = carmageddon;
     this->observerPostResource->set_path(OBSERVER_SETTINGS_POST);
     this->observerPostResource->set_method_handler("POST", post_observer_settings_handler);
@@ -81,10 +78,11 @@ observer_resource::observer_resource(cpu *carmageddon) {
     this->observerGetResource->set_path(OBSERVER_SETTINGS_GET);
     this->observerGetResource->set_method_handler("GET", get_observer_settings_handler);
     syslog(LOG_DEBUG, "Restbed: %s",  OBSERVER_SETTINGS_GET);
+
     resource = this;
 }
 
-list<shared_ptr<Resource>> observer_resource::getResources() {
+list<shared_ptr<Resource>> observer_handler::getResources() {
     list<shared_ptr<Resource>> l = {
             this->observerPostResource,
             this->observerGetResource
