@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { Roi } from '../../observers/observer.service';
 import {CameraService, CameraSettings} from "../../camera.service";
-import {EventService, ROI_SET} from "../../event.service";
+import {EventService, ROI_CLEAR, ROI_LOADED, ROI_SET} from "../../event.service";
 
 interface Point {
     x: number;
@@ -36,6 +36,7 @@ export class StreamComponent {
     private streamUrl = this.streamDefault;
     private mouseDown = false;
 
+    private rois: any[] = [];
     @HostListener('mousedown', ['$event'])
     onMouseDown(event: any) {
         this.mouseDown = true;
@@ -87,8 +88,13 @@ export class StreamComponent {
         });
         this.eventService.subscribe(event => {
             if (event.name === ROI_SET) {
-                this.roi = event.data;
-                this.setRoi();
+                const newRoi = event.data;
+                this.rois = this.rois.filter(roi => roi.type !== newRoi.type);
+                this.rois.push(newRoi);
+            } else if (event.name === ROI_LOADED) {
+                this.rois.push(event.data);
+            } else if (event.name === ROI_CLEAR) {
+                this.rois = [];
             }
         })
     }

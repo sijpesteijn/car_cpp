@@ -9,12 +9,10 @@
 #include "opencv2/core/utility.hpp"
 #include "camera.h"
 
-using namespace std;
-
 class observer {
 public:
     virtual ~observer() {};
-    virtual string getJson(void) =0;
+    virtual std::string getJson(void) =0;
     virtual int updateWithJson(json_t* root) =0;
     virtual observer* processSnapshot(cv::Mat snapshot) =0;
 

@@ -5,8 +5,11 @@
 #include "cpu.h"
 #include "./observers/traffic_light.h"
 #include "./observers/lane_detection.h"
+#include "observers/finish_detection.h"
 #include <syslog.h>
 #include <unistd.h>
+
+using namespace cv;
 
 void* checkObservers(void* params) {
     cpu *carmageddon = (cpu*) params;
@@ -34,6 +37,8 @@ cpu::cpu(Camera *camera, Car *car, observer_status_handler *os_handler) {
     this->observers.insert(pair<string, observer*>(tl->getType(), tl));
     lane_detection *ld = new lane_detection(this->camera);
     this->observers.insert(pair<string, observer*>(ld->getType(), ld));
+    finish_detection *fd = new finish_detection(this->camera);
+    this->observers.insert(pair<string, observer*>(fd->getType(), fd));
     pthread_t observer_runner;
     pthread_create(&observer_runner, NULL, checkObservers, this);
 }

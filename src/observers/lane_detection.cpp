@@ -4,6 +4,8 @@
 
 #include "lane_detection.h"
 
+using namespace cv;
+using namespace std;
 
 lane_detection::lane_detection(Camera* camera) {
     this->camera = camera;

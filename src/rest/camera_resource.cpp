@@ -87,7 +87,7 @@ void get_camera_snapshot_handler( const shared_ptr< Session > session)
         }
     }
     // TODO iets beters dan dit. Mat moet een ifstream worden. Maar hoe?
-    imwrite("bla.jpg", new_image);
+    imwrite("snapshot.jpg", new_image);
 //	Mat snapshot = imread("bla.png");
 //    Canny(snapshot, snapshot, 50, 200, 3);
 //    cvtColor(snapshot, snapshot, CV_GRAY2BGR);
@@ -99,7 +99,7 @@ void get_camera_snapshot_handler( const shared_ptr< Session > session)
 //        line( snapshot, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 3, CV_AA);
 //      }
 //      imwrite("output.png", snapshot);
-    ifstream stream("bla.jpg", ios::in | ios::binary);
+    ifstream stream("snapshot.jpg", ios::in | ios::binary);
     const string body = string( istreambuf_iterator< char >( stream ), istreambuf_iterator< char >( ) );
     const multimap< string, string > headers
             {

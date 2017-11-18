@@ -26,3 +26,23 @@ ul {
 footer {
   float: left;
 }
+
+.race_step {
+  color: #cccccc;
+
+  .active {
+    color: #00BCD4 !important;
+  }
+
+  .achieved {
+    color: #4CAF50 !important;
+  }
+
+}
+
+.roi_color {
+  width: 13px;
+  height: 13px;
+  border-radius: 20px;
+  position: absolute;
+}

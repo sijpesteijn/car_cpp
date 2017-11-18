@@ -6,6 +6,7 @@ import { TrafficLightObserverComponent } from './traffic-light/traffic-light.com
 import { HttpModule } from '@angular/http';
 import { StreamModule } from '../webcam/stream.module';
 import { LaneDetectionComponent } from './lane-detection/lane-detection.component';
+import {FinishDetectionComponent} from "./finish-detection/finish-detection.component";
 
 @NgModule({
     imports: [
@@ -15,10 +16,12 @@ import { LaneDetectionComponent } from './lane-detection/lane-detection.componen
     ],
     exports: [
         LaneDetectionComponent,
+        FinishDetectionComponent,
         TrafficLightObserverComponent
     ],
     declarations: [
         LaneDetectionComponent,
+        FinishDetectionComponent,
         TrafficLightObserverComponent
     ],
     providers: [

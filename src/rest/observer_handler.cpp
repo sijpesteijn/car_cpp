@@ -23,7 +23,7 @@ void post_observer_settings_handler(const shared_ptr<Session> session) {
         const auto request = session->get_request( );
         const auto body = request->get_body( );
 
-        fprintf( stdout, "Complete body content: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
+//        fprintf( stdout, "Complete body content: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
         string data = string(body.begin(), body.end());
         json_t* root;
         json_error_t error;

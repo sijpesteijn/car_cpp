@@ -8,12 +8,10 @@
   position: relative;
   margin-right: 13px;
   background-color: rebeccapurple;
-  //width: 640px;
-  //height: 480px;
 
   .roi {
     position: absolute;
-    border: 1px solid orange;
+    border: 1px dashed black;
     top: 0;
     left: 0;
     width: 0;
@@ -32,7 +30,6 @@
   .webcam {
     z-index: 0;
     position: absolute;
-    border: 1px solid crimson;
     width: 100%;
     height: 100%;
     object-fit: contain;

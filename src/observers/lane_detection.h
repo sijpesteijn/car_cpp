@@ -8,16 +8,14 @@
 #include "../domain/observer.h"
 #include "../domain/camera.h"
 #include <jansson.h>
-using namespace cv;
-using namespace std;
 
 class lane_detection:public observer {
 public:
     lane_detection(Camera* camera);
-    string getJson(void);
+    std::string getJson(void);
     int updateWithJson(json_t* root);
-    observer* processSnapshot(Mat snapshot);
-    Rect verifyRoi();
+    observer* processSnapshot(cv::Mat snapshot);
+    cv::Rect verifyRoi();
 private:
     Camera* camera;
 };

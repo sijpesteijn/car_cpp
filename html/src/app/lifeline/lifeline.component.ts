@@ -4,6 +4,7 @@ import { Config } from '../app.config';
 import { Router } from '@angular/router';
 import {CarService} from "../car.service";
 import {CameraService} from "../camera.service";
+import {EventService, ROI_CLEAR} from "../event.service";
 
 @Component({
     selector: 'lifeline',
@@ -18,6 +19,7 @@ export class LifeLineComponent {
     constructor(private config: Config,
                 private router: Router,
                 private carService: CarService,
+                private eventService: EventService,
                 private cameraService: CameraService) {
     }
 
@@ -33,6 +35,7 @@ export class LifeLineComponent {
                 this.lifeline.onopen    = (evt) => {
                     this.cameraService.loadCameraDimensions();
                     this.cameraService.loadCameraSettings();
+                    this.eventService.emit(ROI_CLEAR);
                     this.router.navigate(['./off']);
                 };
                 this.lifeline.onmessage = (msg) => {
@@ -41,9 +44,11 @@ export class LifeLineComponent {
                     setTimeout(() => this.lifeline.send('moe'), 500);
                 };
                 this.lifeline.onerror   = (error) => {
+                    this.eventService.emit(ROI_CLEAR);
                     this.router.navigate(['./error/no-lifeline']);
                 };
                 this.lifeline.onclose   = (event) => {
+                    this.eventService.emit(ROI_CLEAR);
                     this.router.navigate(['./error/no-lifeline']);
                     this.startReconnect();
                 };

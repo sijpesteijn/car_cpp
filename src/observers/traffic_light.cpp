@@ -58,16 +58,21 @@ int traffic_light::updateWithJson(json_t* root) {
 }
 
 observer* traffic_light::processSnapshot(Mat snapshot) {
-    if (this->condition_achieved == 0 && !this->last_snapshot.empty() && this->last_snapshot.size() == snapshot.size()) {
+    this->roi = this->verifyRoi();
+    Mat roiSnapshot = snapshot(this->roi);
+
+//    cout << "ss: " << roiSnapshot.size() << endl;
+//    cout << "ls: " << this->last_snapshot.size() << endl;
+    if (this->condition_achieved == 0 && !this->last_snapshot.empty()
+        && this->last_snapshot.size().width == roiSnapshot.size().width
+        && this->last_snapshot.size().height == roiSnapshot.size().height) {
         if (pthread_mutex_lock(&snapshot_lock) != 0) {
-            syslog(LOG_ERR, "%s", "Sockethandler: Could not get a lock on the queue");
+            syslog(LOG_ERR, "%s", "Could not get a lock on the snapshot lock");
         }
-        this->roi = this->verifyRoi();
-        Mat roi_latest = this->last_snapshot(this->roi);
-		Mat roi = snapshot(this->roi);
+        cout << "x: " << this->roi.x << " w: " << this->roi.width << " y: " << this->roi.y << " h: " << this->roi.height << endl;
         Mat result;
-        absdiff(roi, roi_latest, result);
-        imwrite("moe.jpg", result);
+        absdiff(roiSnapshot, this->last_snapshot, result);
+        imwrite("moe.jpg", this->last_snapshot);
         cvtColor(result, result, CV_BGR2GRAY);
         float threshold = 30;
         Mat mask = result < threshold;
@@ -82,10 +87,11 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
         }
         cout << "Difference: " << to_string(percentage) << "%" << endl;
         if (pthread_mutex_unlock(&snapshot_lock) != 0) {
-            syslog(LOG_ERR, "%s", "Sockethandler: Could not get a lock on the queue");
+            syslog(LOG_ERR, "%s", "Could not unlock on the snapshot lock");
         }
+    } else {
+        this->last_snapshot = roiSnapshot;
     }
-    this->last_snapshot = snapshot;
     return this;
 }
 

@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import { Config } from '../app.config';
 
 export interface CarObserver {
-    condition_achieved: boolean;
+    condition_achieved: number;
     type: string;
     active: number;
     order: number;
@@ -31,7 +31,6 @@ export class ObserverService {
         return (this.http.get(this.config.get('observer.get').replace(':type', type), {} as any)
             .map(response => {
                 const data = response.json();
-                console.log('Ser: ', data);
                 const observer: CarObserver = data;
                 return observer;
             }));

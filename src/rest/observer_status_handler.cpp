@@ -165,7 +165,7 @@ string getStates(list<observer *> observers) {
 
 void observer_status_handler::notifyClients(std::list<observer *> observers) {
     for(map<string, shared_ptr< WebSocket>>::iterator it = sockets.begin(); it != sockets.end(); ++it) {
-        cout << it->first << endl;
+//        cout << it->first << endl;
         shared_ptr<WebSocket> socket = it->second;
         const string body = getStates(observers);
         auto response = make_shared< WebSocketMessage >(WebSocketMessage::TEXT_FRAME, body );

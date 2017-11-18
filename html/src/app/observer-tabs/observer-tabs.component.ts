@@ -5,5 +5,14 @@ import { Component } from '@angular/core';
     styles: [require('./observer-tabs.scss')]
 })
 export class ObserverTabsComponent {
-    private selectedTab = 'traffic_light';
+    private selectedTab = 'dragRace';
+    private started = false;
+
+    startRace() {
+        this.started = true;
+    }
+
+    stopRace() {
+        this.started = false;
+    }
 }
