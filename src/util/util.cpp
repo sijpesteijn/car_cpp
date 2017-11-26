@@ -3,6 +3,7 @@
 //
 
 #include "util.h"
+#include "../races/race.h"
 
 static const std::string base64_chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -69,4 +70,26 @@ multimap< string, string > build_websocket_handshake_response_headers( const sha
     headers.insert( make_pair( "Sec-WebSocket-Accept", encoded) );
 
     return headers;
+}
+
+void* checkObservers(void* params) {
+    race *r = (race*) params;
+    while(1) {
+        cv::Mat snapshot = r->camera->getFrame();
+        for (auto const& i : r->getObservers()) {
+            if (i->isActive()) {
+                i->processSnapshot(snapshot);
+                if (i->condition_achieved == 1) {
+                    i->setActive(0);
+                    if (i->nextObserver != NULL) {
+                        i->nextObserver->setActive(1);
+                    } else {
+                        r->running = 0;
+                    }
+                }
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
+    }
+    return NULL;
 }

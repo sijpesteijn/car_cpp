@@ -9,7 +9,7 @@
 using namespace restbed;
 using namespace std;
 
-#define OBSERVER_STATUS "/status"
+#define OBSERVER_STATUS "/statuss"
 static map< string, shared_ptr< WebSocket > > sockets = { };
 static pthread_mutex_t checker_lock = PTHREAD_MUTEX_INITIALIZER;
 

@@ -28,7 +28,7 @@ export class TrafficLightObserverComponent extends AbstractObserverComponent {
     }
 
     ngAfterViewInit() {
-        this.loadObserver();
+        // this.loadObserver();
         this.observersStateMessagesService.getLog().subscribe(states => {
             if (this.observer && states && states.length > 0) {
                 const state = states.filter(state => state.type === this.type)

@@ -7,8 +7,9 @@
 using namespace cv;
 using namespace std;
 
-lane_detection::lane_detection(Camera* camera) {
+lane_detection::lane_detection(Camera* camera, observer* next_observer) {
     this->camera = camera;
+    this->nextObserver = next_observer;
     this->type = "lane_detection";
     this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
 }

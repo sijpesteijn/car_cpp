@@ -1,12 +1,12 @@
 <div class="race_step">
 <fieldset *ngIf="observer" [class.active]="observer.active === 1"  [class.achieved]="observer.condition_achieved === 1">
-    <legend>Light detection</legend>
+    <legend>Trafficlight detection</legend>
     <ul class="traffic_light_observer">
         <li>Roi color: <span class="roi_color" [style.background-color]="roiColor"></span></li>
-        <li>Roi x: <input type="range" [min]="1" [max]="max_width" [(ngModel)]="observer?.roi.x" (ngModelChange)="setRoi()"> {{ observer?.roi.x }}</li>
-        <li>Roi y: <input type="range" [min]="1" [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="setRoi()"> {{ observer?.roi.y }}</li>
-        <li>Roi width: <input type="range" [min]="1" [max]="max_width" [(ngModel)]="observer?.roi.width" (ngModelChange)="setRoi()"> {{ observer?.roi.width }}</li>
-        <li>Roi height: <input type="range" [min]="1" [max]="max_height" [(ngModel)]="observer?.roi.height" (ngModelChange)="setRoi()"> {{ observer?.roi.height }}</li>
+        <li>Roi x: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="observer?.roi.x" (ngModelChange)="setRoi()"> {{ observer?.roi.x }}</li>
+        <li>Roi y: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="setRoi()"> {{ observer?.roi.y }}</li>
+        <li>Roi width: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="observer?.roi.width" (ngModelChange)="setRoi()"> {{ observer?.roi.width }}</li>
+        <li>Roi height: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.height" (ngModelChange)="setRoi()"> {{ observer?.roi.height }}</li>
         <li>Pixel difference: <input type="number" min="0" max="100" [(ngModel)]="observer.pixel_difference" (ngModelChange)="updateObserver()"></li>
         <li>Current pixel difference: {{ observer.current_pixel_difference}}</li>
     </ul>

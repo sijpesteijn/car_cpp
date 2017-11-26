@@ -1,15 +1,18 @@
 <div class="observer-tabs">
     <ul class="tabs">
-        <li class="tablink" (click)="selectedTab = 'dragRace'" [class.active]="selectedTab === 'dragRace'">Drag race</li>
-        <li class="tablink" (click)="selectedTab = 'trackRace'" [class.active]="selectedTab === 'trackRace'">Track race</li>
+        <li class="tablink" *ngFor="let race of races" (click)="loadRace(race)" [class.active]="selectedRace?.name === race.name" [innerHTML]="race.name"></li>
     </ul>
 
-    <div class="tab" [ngSwitch]="selectedTab">
+    <div class="tab" *ngIf="selectedRace">
         <div class="start_race">
             <button *ngIf="!started" (click)="startRace()" class="start">Start</button>
             <button *ngIf="started" (click)="stopRace()" class="stop">Stop</button>
         </div>
-        <drag-race *ngSwitchCase="'dragRace'" [toggle]="started"></drag-race>
+        <ng-container *ngFor="let observer of selectedRace.observers">
+            <traffic-light *ngIf="observer.type === 'traffic_light'" [observer]="observer" (onChange)="updateObserver($event)"></traffic-light>
+            <lane-detection *ngIf="observer.type === 'lane_detection'" [observer]="observer" (onChange)="updateObserver($event)"></lane-detection>
+            <finish-detection *ngIf="observer.type === 'finish_detection'" [observer]="observer" (onChange)="updateObserver($event)"></finish-detection>
+        </ng-container>
     </div>
     <observers-state-messages></observers-state-messages>
 </div>

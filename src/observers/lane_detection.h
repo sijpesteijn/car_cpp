@@ -11,7 +11,7 @@
 
 class lane_detection:public observer {
 public:
-    lane_detection(Camera* camera);
+    lane_detection(Camera* camera, observer* next_observer);
     std::string getJson(void);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);

@@ -17,7 +17,7 @@ export class FinishDetectionComponent extends AbstractObserverComponent {
         super(observerService, eventService, cameraService, 'finish_detection')
     }
 
-    ngAfterViewInit() {
-        this.loadObserver();
-    }
+    // ngAfterViewInit() {
+    //     this.loadObserver();
+    // }
 }

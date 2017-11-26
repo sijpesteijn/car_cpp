@@ -45,6 +45,7 @@ import {CameraService} from "./camera.service";
 import {EventService} from "./event.service";
 import {ObserversStateMessagesService} from "./observers_state_messages.service";
 import {ObserversStateMessagesComponent} from "./observers-state-messages/observers-state-messages.component";
+import {RaceService} from "./race.service";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -109,6 +110,7 @@ if ('local' === process.env.CONTEXT) {
         ...PROVIDERS,
         CarService,
         CameraService,
+        RaceService,
         EventService,
         ObserversStateMessagesService,
         Config

@@ -27,6 +27,6 @@ using namespace std;
 
 multimap< string, string > build_websocket_handshake_response_headers( const shared_ptr< const Request >& request, string secret_key );
 void close_handler( const shared_ptr< WebSocket > socket );
-
+void* checkObservers(void* params);
 
 #endif //CARMAGEDDON_UTIL_H

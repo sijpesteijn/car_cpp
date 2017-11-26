@@ -1,14 +1,15 @@
 
-import {Input} from "@angular/core";
+import {EventEmitter, Input, Output} from "@angular/core";
 import {CarObserver, ObserverService} from "./observer.service";
 import {EventService, ROI_LOADED, ROI_SET} from "../event.service";
 import {CameraService} from "../camera.service";
 
 export abstract class AbstractObserverComponent {
     @Input() protected roiColor: string;
-    protected observer: CarObserver;
+    @Input() observer: CarObserver;
     protected max_width = 640;
     protected max_height = 480;
+    @Output() onChange = new EventEmitter();
 
     constructor(public observerService: ObserverService,
                 public eventService: EventService,
@@ -20,20 +21,21 @@ export abstract class AbstractObserverComponent {
         });
     }
 
-    protected loadObserver() {
-        this.observerService.getObserver(this.type).subscribe(data => {
-            this.observer = data;
-            this.deactivate();
-            const roi: any = this.observer.roi;
-            roi.color = this.roiColor;
-            roi.type = this.type;
-            this.eventService.emit(ROI_LOADED, roi);
-        });
-    }
+    // protected loadObserver() {
+    //     this.observerService.getObserver(this.type).subscribe(data => {
+    //         this.observer = data;
+    //         this.deactivate();
+    //         const roi: any = this.observer.roi;
+    //         roi.color = this.roiColor;
+    //         roi.type = this.type;
+    //         this.eventService.emit(ROI_LOADED, roi);
+    //     });
+    // }
 
     protected updateObserver() {
         this.observer.active =  (Number(this.observer.active));
-        this.observerService.saveObserver(this.type, this.observer).subscribe(observer => this.observer = observer);
+        this.onChange.emit(this.observer);
+        // this.observerService.saveObserver(this.type, this.observer).subscribe(observer => this.observer = observer);
     }
 
     activate() {

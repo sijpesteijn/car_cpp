@@ -16,8 +16,9 @@ using namespace std;
 
 pthread_mutex_t snapshot_lock = PTHREAD_MUTEX_INITIALIZER;
 
-traffic_light::traffic_light(Camera* camera) {
+traffic_light::traffic_light(Camera* camera, observer* next_observer) {
     this->camera = camera;
+    this->nextObserver = next_observer;
     this->type = "traffic_light";
     this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
 }

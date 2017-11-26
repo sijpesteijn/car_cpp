@@ -14,6 +14,11 @@
   "camera": {
     "settings": "http://carmageddon.dev/camera/settings",
     "dimensions": "http://carmageddon.dev/camera/dimensions"
+  },
+  "race": {
+    "all": "http://carmageddon.dev/race",
+    "get": "http://carmageddon.dev/race/:name",
+    "save": "http://carmageddon.dev/race/:name",
+    "status": "ws://carmageddon.dev/status"
   }
-
 }

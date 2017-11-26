@@ -40,7 +40,7 @@ void *frameGrabber(void *params) {
 
 Camera::Camera() : cap(0) {
     this->cap.release();
-    this->cap.open(0);
+    this->cap.open(1);
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     pthread_t grabber;
