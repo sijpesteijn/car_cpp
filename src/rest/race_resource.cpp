@@ -7,7 +7,6 @@
 #include "../races/drag_race.h"
 #include "../races/track_race.h"
 #include "../util/util.h"
-#include <string>
 
 using namespace std;
 using namespace restbed;
@@ -24,20 +23,16 @@ static race_resource *resource;
 void* checkRaceStatus(void* params) {
     race_resource *r = (race_resource*) params;
     while(1) {
-        if (sockets.size() > 0) {
-            for (map<string, race *>::iterator it = r->races.begin(); it != r->races.end(); ++it) {
-                if (it->second->running == 1) {
-                    for (map<string, shared_ptr<WebSocket>>::iterator iter = sockets.begin();
-                         iter != sockets.end(); ++iter) {
-                        shared_ptr<WebSocket> socket = iter->second;
-                        const string body = it->second->getJson();
-                        auto response = make_shared<WebSocketMessage>(WebSocketMessage::TEXT_FRAME, body);
-                        socket->send(response);
-                    }
-                }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        if (sockets.size() > 0 && r->selected_race) {
+            for (map<string, shared_ptr<WebSocket>>::iterator iter = sockets.begin();
+                 iter != sockets.end(); ++iter) {
+                shared_ptr<WebSocket> socket = iter->second;
+                const string body = r->selected_race->getJson();
+                auto response = make_shared<WebSocketMessage>(WebSocketMessage::TEXT_FRAME, body);
+                socket->send(response);
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     return NULL;
 }
@@ -187,12 +182,12 @@ void post_race_handler(const shared_ptr<Session> session) {
         } else {
             string name = "";
             name += json_string_value(value);
-            race *race = resource->getRace(name);
-            if (race == NULL) {
+            resource->selected_race = resource->getRace(name);
+            if (resource->selected_race == NULL) {
                 resource->sendError(session, "Could not find " + name + " race.");
             } else {
-                race->updateWithJson(root);
-                const string body = race->getJson();
+                resource->selected_race->updateWithJson(root);
+                const string body = resource->selected_race->getJson();
                 session->close(OK, body, {
                         {"Content-Type",   "application/json"},
                         {"Content-Length", ::to_string(body.size())}

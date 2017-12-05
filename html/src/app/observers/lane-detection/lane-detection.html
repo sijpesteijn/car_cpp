@@ -1,9 +1,9 @@
 <div class="race_step">
-    <fieldset *ngIf="observer" [class.active]="observer.active === 1">
+    <fieldset *ngIf="_observer" [class.active]="_observer.active === 1">
         <legend>Lane detection</legend>
         <ul class="lane_detection_observer">
             <li>Roi color: <span class="roi_color" [style.background-color]="roiColor"></span></li>
-            <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="updateRoi()"> {{ observer?.roi.y }}</li>
+            <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="_observer?.roi.y" (ngModelChange)="updateRoi()"> {{ _observer?.roi.y }}</li>
         </ul>
     </fieldset>
 </div>

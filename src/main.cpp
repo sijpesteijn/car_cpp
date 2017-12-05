@@ -18,9 +18,9 @@ void closeResources(void) {
 
 int main( const int, const char** )
 {
-    openlog ("Carmageddon", LOG_PID | LOG_CONS | LOG_NDELAY | LOG_NOWAIT, LOG_LOCAL0);
-    setlogmask(LOG_UPTO(LOG_INFO));
-    syslog (LOG_INFO, "%s", "Starting Carmageddon");
+    openlog ("Carmageddon", LOG_CONS,LOG_USER);
+//    setlogmask(LOG_UPTO(LOG_INFO));
+    syslog (LOG_NOTICE, "%s", "Starting Carmageddon");
     atexit (closeResources);
 
     Car car;

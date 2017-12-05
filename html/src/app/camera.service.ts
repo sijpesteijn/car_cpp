@@ -5,6 +5,7 @@ import {Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {HttpClient} from "@angular/common/http";
 
 export interface Dimension {
     name: string;
@@ -30,7 +31,7 @@ export class CameraService {
     private cameraSetting: Subject<CameraSettings>;
     private cameraDimensions: Subject<Dimension[]>;
 
-    constructor(private http: Http, private config: Config) {
+    constructor(private http: HttpClient, private config: Config) {
         this.cameraSetting = new BehaviorSubject(null);
         this.cameraDimensions = new BehaviorSubject(null);
         this.loadCameraSettings();
@@ -40,13 +41,13 @@ export class CameraService {
     loadCameraSettings() {
         this.http.get(this.config.get('camera.settings'))
             .subscribe(response => {
-                this.cameraSetting.next(response.json());
+                this.cameraSetting.next(response);
             });
     }
 
     loadCameraDimensions() {
         this.http.get(this.config.get('camera.dimensions')).subscribe(response => {
-            this.cameraDimensions.next(response.json());
+            this.cameraDimensions.next((response as Dimension[]));
         });
     }
 
@@ -57,7 +58,7 @@ export class CameraService {
     updateCameraInfo(cameraSettings: CameraSettings): Observable<CameraSettings> {
         const json = JSON.stringify(cameraSettings);
         return this.http.post(this.config.get('camera.settings'), json).map(response => {
-            const cameraSettings = response.json();
+            const cameraSettings = response;
             this.cameraSetting.next(cameraSettings);
             return cameraSettings;
         });

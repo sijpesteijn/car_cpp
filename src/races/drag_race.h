@@ -23,6 +23,7 @@ public:
     observer* findObserver(std::string type);
 //    std::map<std::string, observer*> observers;
 private:
+    void resetAllObservers();
 };
 
 

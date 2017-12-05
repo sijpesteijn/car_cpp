@@ -21,12 +21,20 @@ export class ObserverTabsComponent {
                 this.loadRace(this.races[0]);
             }
         });
-        this.raceService.getRace().subscribe(race => this.selectedRace = race);
+        this.raceService.getRace().subscribe(race => {
+            // console.log('New ', JSON.stringify(race));
+            // console.log('Org ', JSON.stringify(this.selectedRace));
+            if (JSON.stringify(race) !== JSON.stringify(this.selectedRace)) {
+                this.selectedRace = race;
+            }
+        });
     }
 
     loadRace(race: Race) {
         this.raceService.loadRace(race.name).subscribe(race => {
             this.selectedRace = race;
+            console.log('Race ', race);
+            this.stopRace();
         });
     }
 
@@ -39,6 +47,10 @@ export class ObserverTabsComponent {
 
     stopRace() {
         this.selectedRace.running = 0;
+        this.selectedRace.observers.forEach(observer => {
+            observer.active = 0;
+            observer.condition_achieved = 0;
+        });
         this.raceService.saveRace(this.selectedRace).subscribe(() => {
             this.started = false;
         });
@@ -48,6 +60,7 @@ export class ObserverTabsComponent {
         const updateObs = this.selectedRace.observers.filter(obs => obs.type === observer.type);
         if (updateObs.length > 0) {
             updateObs[0] = observer;
+            console.log('Observer ', observer);
             this.raceService.saveRace(this.selectedRace).subscribe(() => {});
         }
     }

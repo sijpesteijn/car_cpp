@@ -20,6 +20,7 @@ traffic_light::traffic_light(Camera* camera, observer* next_observer) {
     this->camera = camera;
     this->nextObserver = next_observer;
     this->type = "traffic_light";
+    this->pixel_difference = 70;
     this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
 }
 
@@ -70,7 +71,7 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
         if (pthread_mutex_lock(&snapshot_lock) != 0) {
             syslog(LOG_ERR, "%s", "Could not get a lock on the snapshot lock");
         }
-        cout << "x: " << this->roi.x << " w: " << this->roi.width << " y: " << this->roi.y << " h: " << this->roi.height << endl;
+//        cout << "x: " << this->roi.x << " w: " << this->roi.width << " y: " << this->roi.y << " h: " << this->roi.height << endl;
         Mat result;
         absdiff(roiSnapshot, this->last_snapshot, result);
         imwrite("moe.jpg", this->last_snapshot);

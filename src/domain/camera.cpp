@@ -4,6 +4,7 @@
 #include "camera.h"
 #include <syslog.h>
 #include <thread>
+#include <string>
 
 using namespace cv;
 using namespace std;
@@ -39,8 +40,10 @@ void *frameGrabber(void *params) {
 }
 
 Camera::Camera() : cap(0) {
+    this->sett = new settings("../src/camera.json");
+    this->fromJson(sett->getSettings());
     this->cap.release();
-    this->cap.open(1);
+    this->cap.open(0);
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     pthread_t grabber;
@@ -68,4 +71,40 @@ void Camera::setDimension(int width, int height) {
 
 void Camera::close() {
     this->cap.release();
+    this->sett->save(this->getJson());
+}
+
+void Camera::fromJson(json_t *pJson) {
+    json_t *resolutionJson = json_object_get(pJson,"dimension");
+    int width = json_number_value(json_object_get(resolutionJson, "width"));
+    int height = json_number_value(json_object_get(resolutionJson, "height"));
+    this->setDimension(width, height);
+    this->capture_delay = json_number_value(json_object_get(pJson, "captureDelay"));
+    this->observers_delay = json_number_value(json_object_get(pJson, "observersDelay"));
+    this->preview_delay = json_number_value(json_object_get(pJson, "previewDelay"));
+    json_t *whiteBalance = json_object_get(pJson, "whiteBalance");
+    this->whitebalance_alpha = json_real_value(json_object_get(whiteBalance, "alpha"));
+    this->whitebalance_beta = json_number_value(json_object_get(whiteBalance, "beta"));
+    this->sett->save(this->getJson());
+}
+
+json_t* Camera::getJson() {
+    json_t *root = json_object();
+    json_t* dimension = json_object();
+    json_object_set_new( dimension, "name", json_string( string(to_string(this->getDimensions().width) + "x" + to_string(this->getDimensions().height)).c_str() ) );
+    json_object_set_new( dimension, "width", json_integer( this->getDimensions().width ) );
+    json_object_set_new( dimension, "height", json_integer( this->getDimensions().height ) );
+    json_object_set_new( root, "dimension", dimension);
+
+    json_object_set_new( root, "captureDelay", json_integer( this->capture_delay ) );
+    json_object_set_new( root, "observersDelay", json_integer( this->observers_delay ) );
+    json_object_set_new( root, "previewDelay", json_integer( this->preview_delay ) );
+    json_t *whiteBalance = json_object();
+    json_object_set_new( whiteBalance, "alpha", json_integer( this->whitebalance_alpha ) );
+    json_object_set_new( whiteBalance, "beta", json_integer( this->whitebalance_beta) );
+    json_object_set_new( root, "whiteBalance", whiteBalance );
+
+//    string dump = json_dumps(root, 0);
+//    json_decref(root);
+    return root;
 }

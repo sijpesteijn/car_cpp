@@ -21,7 +21,6 @@ interface TrafficLightObserverState extends ObserverState {
 export class TrafficLightObserverComponent extends AbstractObserverComponent {
 
     constructor(public observerService: ObserverService,
-                public observersStateMessagesService: ObserversStateMessagesService,
                 public cameraService: CameraService,
                 public eventService: EventService) {
         super(observerService, eventService, cameraService, 'traffic_light');
@@ -29,14 +28,14 @@ export class TrafficLightObserverComponent extends AbstractObserverComponent {
 
     ngAfterViewInit() {
         // this.loadObserver();
-        this.observersStateMessagesService.getLog().subscribe(states => {
-            if (this.observer && states && states.length > 0) {
-                const state = states.filter(state => state.type === this.type)
-                if (state && state.length === 1) {
-                    this.observer.condition_achieved = (state[0] as TrafficLightObserverState).condition_achieved;
-                    (this.observer as TrafficLightObserver).current_pixel_difference = (state[0] as TrafficLightObserverState).current_pixel_difference;
-                }
-            }
-        });
+        // this.observersStateMessagesService.getLog().subscribe(states => {
+        //     if (this.observer && states && states.length > 0) {
+        //         const state = states.filter(state => state.type === this.type)
+        //         if (state && state.length === 1) {
+        //             this.observer.condition_achieved = (state[0] as TrafficLightObserverState).condition_achieved;
+        //             (this.observer as TrafficLightObserver).current_pixel_difference = (state[0] as TrafficLightObserverState).current_pixel_difference;
+        //         }
+        //     }
+        // });
     }
 }

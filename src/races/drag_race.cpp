@@ -20,6 +20,7 @@ drag_race::drag_race(Camera *camera) {
     lane_detection *ld = new lane_detection(this->camera, fd);
     traffic_light *tl = new traffic_light(this->camera, ld);
     this->obs = tl;
+    // HIER
     pthread_t observer_runner;
     pthread_create(&observer_runner, NULL, checkObservers, this);
 }
@@ -51,12 +52,13 @@ std::string drag_race::getJson() {
 observer* drag_race::findObserver(string type) {
     observer *curr = this->obs;
     while (curr) {
-        if (type.compare(string(curr->getType()))) {
+        if (type.compare(string(curr->getType())) == 0) {
             return curr;
+        } else {
+            curr = curr->nextObserver;
         }
-        curr = curr->nextObserver;
     }
-    return curr;
+    return NULL;
 }
 
 void drag_race::updateWithJson(json_t *json) {
@@ -75,10 +77,18 @@ void drag_race::updateWithJson(json_t *json) {
         }
     }
     if (wasRunning == 1 && this->running == 0) {
-        for (auto const& i : this->getObservers()) {
-            i->setActive(0);
-        }
+        cout << "Stop running" << endl;
+        resetAllObservers();
     } else if (wasRunning == 0 && this->running == 1) {
+        cout << "Start running" << endl;
+        resetAllObservers();
         this->obs->setActive(1);
+    }
+}
+
+void drag_race::resetAllObservers() {
+    for (auto const& i : this->getObservers()) {
+        i->setActive(0);
+        i->setConditionAchieved(0);
     }
 }

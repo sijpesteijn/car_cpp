@@ -22,7 +22,7 @@ export class LaneDetectionComponent extends AbstractObserverComponent {
     // }
     //
     updateRoi() {
-        this.observer.roi.height = this.max_height - this.observer.roi.y;
-        this.setRoi();
+        // this.observer.roi.height = this.max_height - this.observer.roi.y;
+        // this.setRoi();
     }
 }

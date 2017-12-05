@@ -16,16 +16,8 @@ Camera *camera;
 
 void get_camera_settings_handler(const shared_ptr<Session> session)
 {
-    const string body = "{\"dimension\":{\"name\": \"" + to_string(camera->getDimensions().width) + "x" + to_string(camera->getDimensions().height) + "\","
-                        + "\"width\":" + to_string(camera->getDimensions().width) + ","
-                        + "\"height\": " + to_string(camera->getDimensions().height) + "},"
-                        + "\"captureDelay\": " + to_string(camera->capture_delay) + ","
-                        + "\"observersDelay\": " + to_string(camera->observers_delay) + ","
-                        + "\"previewDelay\": " + to_string(camera->preview_delay) + ","
-                        + "\"whiteBalance\": {"
-                        + "\"alpha\": " + to_string(camera->whitebalance_alpha) + ","
-                        + "\"beta\": " + to_string(camera->whitebalance_beta) + "}}";
-    fprintf( stdout, "%.*s\n", ( int ) body.size( ), body.data( ) );
+    const string body = json_dumps(camera->getJson(), 0);
+//    fprintf( stdout, "%.*s\n", ( int ) body.size( ), body.data( ) );
     session->close( OK, body, { { "Content-Length", ::to_string( body.size( ) ) } } );
 }
 
@@ -37,7 +29,7 @@ void post_camera_settings_handler( const shared_ptr< Session > session )
 
     session->fetch( content_length, [ ]( const shared_ptr< Session > session, const Bytes & body )
     {
-//        fprintf( stdout, "%.*s\n", ( int ) body.size( ), body.data( ) );
+        fprintf( stdout, "%.*s\n", ( int ) body.size( ), body.data( ) );
         json_t* root;
         json_error_t error;
 
@@ -49,17 +41,7 @@ void post_camera_settings_handler( const shared_ptr< Session > session )
             fprintf(stderr, "error: commit data is not an object\n");
             json_decref(root);
         }
-        json_t *resolutionJson = json_object_get(root,"dimension");
-        int width = json_number_value(json_object_get(resolutionJson, "width"));
-        int height = json_number_value(json_object_get(resolutionJson, "height"));
-        camera->setDimension(width, height);
-        camera->capture_delay = json_number_value(json_object_get(root, "captureDelay"));
-        camera->observers_delay = json_number_value(json_object_get(root, "observersDelay"));
-        camera->preview_delay = json_number_value(json_object_get(root, "previewDelay"));
-        json_t *whiteBalance = json_object_get(root, "whiteBalance");
-        camera->whitebalance_alpha = json_real_value(json_object_get(whiteBalance, "alpha"));
-        camera->whitebalance_beta = json_number_value(json_object_get(whiteBalance, "beta"));
-
+        camera->fromJson(root);
         session->close( OK, body, { { "Content-Length", ::to_string( body.size( ) ) } } );
     } );
 }

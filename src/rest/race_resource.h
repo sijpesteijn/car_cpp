@@ -19,6 +19,7 @@ public:
     std::list<std::shared_ptr<restbed::Resource>> getResources();
     std::map<std::string, race*> races;
     race* getRace(std::string name);
+    race *selected_race;
 private:
     std::shared_ptr<restbed::Resource> allRaceResource = std::make_shared< restbed::Resource >( );
     std::shared_ptr<restbed::Resource> singleRaceResource = std::make_shared< restbed::Resource >( );

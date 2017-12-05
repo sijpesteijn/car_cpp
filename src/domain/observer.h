@@ -26,6 +26,9 @@ public:
     void setActive(int active) {
         this->active = active;
     }
+    void setConditionAchieved(int condition_achieved) {
+        this->condition_achieved = condition_achieved;
+    }
     int getOrder() {
         return this->order;
     }

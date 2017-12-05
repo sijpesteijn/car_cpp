@@ -1,11 +1,11 @@
 
 import {Injectable} from "@angular/core";
 import {Config} from "./app.config";
-import {Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {CarObserver} from "./observers/observer.service";
+import {HttpClient} from "@angular/common/http";
 
 export interface Race {
     name: string;
@@ -19,19 +19,19 @@ export class RaceService {
     private retry: any;
     private race: Subject<any> = new BehaviorSubject(null);
 
-    constructor(private http: Http, private config: Config) {
+    constructor(private http: HttpClient, private config: Config) {
         this.startReconnect();
     }
 
     getRaces(): Observable<Race[]> {
         return this.http.get(this.config.get('race.all')).map(response => {
-            return response.json();
+            return (response as Race[]);
         });
     }
 
     loadRace(name: string): Observable<Race> {
-        return this.http.get(this.config.get('race.get').replace(':name', name)).map(response => {
-            const result = response.json();
+        return this.http.get(this.config.get('race.get').replace(':name', name)).map((response: Race) => {
+            const result = response;
             this.race.next(result);
             return result;
         });
@@ -42,7 +42,8 @@ export class RaceService {
     }
 
     saveRace(race: Race): Observable<Race> {
-        return this.http.post(this.config.get('race.save').replace(':name', race.name), JSON.stringify(race)).map(response => response.json());
+        return this.http.post(this.config.get('race.save').replace(':name', race.name), JSON.stringify(race))
+            .map((response: Race) => response);
     }
 
     private startReconnect() {
@@ -55,6 +56,7 @@ export class RaceService {
                 this.raceWebsocket.onmessage = (msg) => {
                     if (msg.data) {
                         const race = JSON.parse(msg.data);
+                        // console.log('Race ', race);
                         this.race.next(race);
                     }
                 };

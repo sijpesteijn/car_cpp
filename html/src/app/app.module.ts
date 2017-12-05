@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import {
     NgModule,
     ApplicationRef, APP_INITIALIZER
@@ -46,6 +45,7 @@ import {EventService} from "./event.service";
 import {ObserversStateMessagesService} from "./observers_state_messages.service";
 import {ObserversStateMessagesComponent} from "./observers-state-messages/observers-state-messages.component";
 import {RaceService} from "./race.service";
+import {HttpClientModule} from "@angular/common/http";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -93,7 +93,7 @@ if ('local' === process.env.CONTEXT) {
     imports     : [
         BrowserModule,
         FormsModule,
-        HttpModule,
+        HttpClientModule,
         LifeLineModule,
         NgxVirtualJoystickModule.forRoot(),
         ObserverModule,

@@ -8,6 +8,8 @@
 #include <opencv2/opencv.hpp>
 #include <pthread.h>
 #include <vector>
+#include <jansson.h>
+#include "../util/settings.h"
 
 
 class Camera {
@@ -28,8 +30,13 @@ public:
 
     void close();
 
+    void fromJson(json_t *pJson);
+    json_t* getJson();
+
 private:
     std::vector<cv::Vec2f> detectLines(cv::Mat src);
+    settings *sett;
+
 };
 
 
