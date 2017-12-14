@@ -1,14 +1,14 @@
 {
      "dimension": {
-          "name": "352x288",
-          "width": 352,
-          "height": 288
+          "name": "640x480",
+          "width": 640,
+          "height": 480
      },
-     "captureDelay": 400,
+     "captureDelay": 200,
      "observersDelay": 2000,
      "previewDelay": 6000,
      "whiteBalance": {
-          "alpha": 1,
+          "alpha": 1.1000000000000001,
           "beta": 0
      }
 }

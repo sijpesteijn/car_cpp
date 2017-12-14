@@ -13,17 +13,18 @@
 #include <memory>
 #include <restbed>
 
-
 class drag_race: public race {
 public:
     drag_race(Camera *camera);
     std::list<observer*> getObservers();
-    std::string getJson(void);
-    void updateWithJson(json_t* json);
+    json_t*  getJson(void);
+    void updateWithJson(json_t *json, int start);
     observer* findObserver(std::string type);
+    void saveSettings();
 //    std::map<std::string, observer*> observers;
 private:
     void resetAllObservers();
+    settings *sett;
 };
 
 

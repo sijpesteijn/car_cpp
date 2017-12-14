@@ -12,7 +12,7 @@
 class traffic_light:public observer {
 public:
     traffic_light(Camera* camera, observer* next_observer);
-    std::string getJson(void);
+    json_t* getJson(void);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
     cv::Rect verifyRoi();

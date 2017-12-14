@@ -17,7 +17,8 @@ export class FinishDetectionComponent extends AbstractObserverComponent {
         super(observerService, eventService, cameraService, 'finish_detection')
     }
 
-    // ngAfterViewInit() {
-    //     this.loadObserver();
-    // }
+    updateRoi() {
+        this.observer.roi.height = this.max_height - this.observer.roi.y;
+        this.setRoi();
+    }
 }

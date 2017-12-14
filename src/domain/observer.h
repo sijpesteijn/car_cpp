@@ -12,7 +12,7 @@
 class observer {
 public:
     virtual ~observer() {};
-    virtual std::string getJson(void) =0;
+    virtual json_t* getJson(void) =0;
     virtual int updateWithJson(json_t* root) =0;
     virtual observer* processSnapshot(cv::Mat snapshot) =0;
     observer* nextObserver;

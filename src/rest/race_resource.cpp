@@ -28,7 +28,10 @@ void* checkRaceStatus(void* params) {
             for (map<string, shared_ptr<WebSocket>>::iterator iter = sockets.begin();
                  iter != sockets.end(); ++iter) {
                 shared_ptr<WebSocket> socket = iter->second;
-                const string body = r->selected_race->getJson();
+                json_t* json = r->selected_race->getJson();
+                string body = json_dumps(json, 0);
+                json_decref(json);
+
                 auto response = make_shared<WebSocketMessage>(WebSocketMessage::TEXT_FRAME, body);
                 socket->send(response);
             }
@@ -145,7 +148,10 @@ void get_race_handler(const shared_ptr<Session> session) {
     if (race == NULL) {
         resource->sendError(session, "Could not find " + name + " race.");
     } else {
-        string body = race->getJson();
+        json_t* json = race->getJson();
+        string body = json_dumps(json, 0);
+        json_decref(json);
+
         session->close(OK, body, {
                 { "Content-Type", "application/json" },
                 { "Content-Length", ::to_string(body.size()) }
@@ -186,8 +192,11 @@ void post_race_handler(const shared_ptr<Session> session) {
             if (resource->selected_race == NULL) {
                 resource->sendError(session, "Could not find " + name + " race.");
             } else {
-                resource->selected_race->updateWithJson(root);
-                const string body = resource->selected_race->getJson();
+                resource->selected_race->updateWithJson(root, 1);
+                resource->selected_race->saveSettings();
+                json_t* json = resource->selected_race->getJson();
+                string body = json_dumps(json, 0);
+                json_decref(json);
                 session->close(OK, body, {
                         {"Content-Type",   "application/json"},
                         {"Content-Length", ::to_string(body.size())}

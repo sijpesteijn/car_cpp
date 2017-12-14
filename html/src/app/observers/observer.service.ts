@@ -18,6 +18,8 @@ export interface Roi {
     y: number;
     width: number;
     height: number;
+    type?: string;
+    color?: string;
 }
 
 @Injectable()

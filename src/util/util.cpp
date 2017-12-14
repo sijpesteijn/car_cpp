@@ -77,16 +77,18 @@ void* checkObservers(void* params) {
     while(1) {
         cv::Mat snapshot = r->camera->getFrame();
         observer *obs = r->obs;
-        while(obs) {
-//            obs->processSnapshot(snapshot);
-//            if (obs->isActive() && obs->condition_achieved == 1) {
-//                obs->setActive(0);
-//                if (obs->nextObserver != NULL) {
-//                    obs->nextObserver->setActive(1);
-//                } else {
-//                    r->running = 0;
-//                }
-//            }
+        while(obs && r->running == 1) {
+            obs->processSnapshot(snapshot);
+            if (obs->isActive() && obs->condition_achieved == 1) {
+                obs->setActive(0);
+                if (obs->nextObserver != NULL) {
+                    obs = obs->nextObserver;
+                    obs->setActive(1);
+                } else {
+                    r->running = 0;
+                }
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
     }

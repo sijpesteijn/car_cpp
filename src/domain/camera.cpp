@@ -43,7 +43,7 @@ Camera::Camera() : cap(0) {
     this->sett = new settings("../src/camera.json");
     this->fromJson(sett->getSettings());
     this->cap.release();
-    this->cap.open(0);
+    this->cap.open(1);
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     pthread_t grabber;
@@ -100,11 +100,9 @@ json_t* Camera::getJson() {
     json_object_set_new( root, "observersDelay", json_integer( this->observers_delay ) );
     json_object_set_new( root, "previewDelay", json_integer( this->preview_delay ) );
     json_t *whiteBalance = json_object();
-    json_object_set_new( whiteBalance, "alpha", json_integer( this->whitebalance_alpha ) );
+    json_object_set_new( whiteBalance, "alpha", json_real(this->whitebalance_alpha ) );
     json_object_set_new( whiteBalance, "beta", json_integer( this->whitebalance_beta) );
     json_object_set_new( root, "whiteBalance", whiteBalance );
 
-//    string dump = json_dumps(root, 0);
-//    json_decref(root);
     return root;
 }

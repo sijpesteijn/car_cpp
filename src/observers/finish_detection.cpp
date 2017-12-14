@@ -14,7 +14,7 @@ finish_detection::finish_detection(Camera *camera, observer* next_observer) {
     this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
 }
 
-string finish_detection::getJson(void) {
+json_t* finish_detection::getJson(void) {
     json_t *root = json_object();
     json_object_set_new( root, "type", json_string( this->type ) );
     json_object_set_new( root, "active", json_integer( this->active ) );
@@ -24,9 +24,8 @@ string finish_detection::getJson(void) {
     json_object_set_new( roi, "height", json_integer( this->roi.height ) );
     json_object_set_new( roi, "width", json_integer( this->roi.width ) );
     json_object_set_new( root, "roi", roi);
-    string dump = json_dumps(root, 0);
-    json_decref(root);
-    return dump;
+
+    return root;
 }
 
 int finish_detection::updateWithJson(json_t* root) {

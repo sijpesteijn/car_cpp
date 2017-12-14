@@ -32,6 +32,7 @@ export class RaceService {
     loadRace(name: string): Observable<Race> {
         return this.http.get(this.config.get('race.get').replace(':name', name)).map((response: Race) => {
             const result = response;
+            console.log('LoadRace ', result);
             this.race.next(result);
             return result;
         });
@@ -55,9 +56,16 @@ export class RaceService {
                 };
                 this.raceWebsocket.onmessage = (msg) => {
                     if (msg.data) {
+                        // console.log('Race ', msg.data);
                         const race = JSON.parse(msg.data);
-                        // console.log('Race ', race);
-                        this.race.next(race);
+                        const org: Race = JSON.parse(JSON.stringify(this.race.value));
+                        org.observers.forEach(observer => {
+                           delete observer.roi.type;
+                           delete observer.roi.color;
+                        });
+                        if (JSON.stringify(org) !== JSON.stringify(race)) {
+                            this.race.next(race);
+                        }
                     }
                 };
                 this.raceWebsocket.onerror   = (error) => {

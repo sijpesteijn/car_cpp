@@ -11,7 +11,7 @@
 class finish_detection: public observer {
 public:
     finish_detection(Camera *camera, observer* next_observer);
-    std::string getJson(void);
+    json_t* getJson(void);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
 private:

@@ -12,12 +12,15 @@
 class lane_detection:public observer {
 public:
     lane_detection(Camera* camera, observer* next_observer);
-    std::string getJson(void);
+    json_t* getJson(void);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
     cv::Rect verifyRoi();
 private:
     Camera* camera;
+    double threshold1 = 50;
+    double threshold2 = 200;
+    int apertureSize = 3;
 };
 
 #endif //CARMAGEDDON_LANE_DETECTION_H

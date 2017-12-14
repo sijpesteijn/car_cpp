@@ -30,9 +30,7 @@ settings::~settings() {
 void settings::save(json_t *settings) {
     FILE *settingsFile = fopen(settings_file, "w+");
     root = settings;
-//    fseek(settingsFile, 0, SEEK_SET);
     json_dumpf(root, settingsFile, JSON_INDENT(5));
-//    fflush(settingsFile);
     fclose(settingsFile);
 }
 

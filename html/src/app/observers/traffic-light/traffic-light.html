@@ -1,14 +1,14 @@
 <div class="race_step">
-<fieldset *ngIf="_observer" [class.active]="_observer.active === 1"  [class.achieved]="_observer.condition_achieved === 1">
+<fieldset *ngIf="observer" [class.active]="observer.active === 1"  [class.achieved]="observer.condition_achieved === 1">
     <legend>Trafficlight detection</legend>
-    <ul class="traffic_light_observer">
+    <ul class="traffic_lightobserver">
         <li>Roi color: <span class="roi_color" [style.background-color]="roiColor"></span></li>
-        <li>Roi x: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="_observer?.roi.x" (ngModelChange)="setRoi()"> {{ _observer?.roi.x }}</li>
-        <li>Roi y: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="_observer?.roi.y" (ngModelChange)="setRoi()"> {{ _observer?.roi.y }}</li>
-        <li>Roi width: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="_observer?.roi.width" (ngModelChange)="setRoi()"> {{ _observer?.roi.width }}</li>
-        <li>Roi height: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="_observer?.roi.height" (ngModelChange)="setRoi()"> {{ _observer?.roi.height }}</li>
-        <li>Pixel difference: <input type="number" min="0" max="100" [(ngModel)]="_observer.pixel_difference" (ngModelChange)="updateObserver()"></li>
-        <li>Current pixel difference: {{ _observer.current_pixel_difference}}</li>
+        <li>Roi x: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="observer?.roi.x" (ngModelChange)="setRoi()"> {{ observer?.roi.x }}</li>
+        <li>Roi y: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="setRoi()"> {{ observer?.roi.y }}</li>
+        <li>Roi width: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="observer?.roi.width" (ngModelChange)="setRoi()"> {{ observer?.roi.width }}</li>
+        <li>Roi height: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.height" (ngModelChange)="setRoi()"> {{ observer?.roi.height }}</li>
+        <li>Pixel difference: <input type="number" min="0" max="100" [(ngModel)]="observer.pixel_difference" (ngModelChange)="updateObserver()"></li>
+        <li>Current pixel difference: {{ observer.current_pixel_difference}}</li>
     </ul>
 </fieldset>
 </div>

@@ -61,7 +61,10 @@ void get_observer_settings_handler(const shared_ptr<Session> session) {
     if (obs == NULL) {
         resource->sendError(session, "Could not find " + type + " observer.");
     } else {
-        string body = obs->getJson();
+        json_t* json = obs->getJson();
+        string body = json_dumps(json, 0);
+        json_decref(json);
+
         session->close(OK, body, {
                 { "Content-Type", "application/json" },
                 { "Content-Length", ::to_string(body.size()) }

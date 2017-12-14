@@ -17,12 +17,18 @@ export class LaneDetectionComponent extends AbstractObserverComponent {
         super(observerService, eventService, cameraService, 'lane_detection');
     }
 
-    // ngAfterViewInit() {
-    //     this.loadObserver();
-    // }
-    //
     updateRoi() {
-        // this.observer.roi.height = this.max_height - this.observer.roi.y;
-        // this.setRoi();
+        this.observer.roi.height = this.max_height - this.observer.roi.y;
+        this.setRoi();
+    }
+
+    updateThreshold1(event: any) {
+        (this.observer as any).threshold1 = parseFloat(event.target.value);
+        this.updateRoi();
+    }
+
+    updateThreshold2(event: any) {
+        (this.observer as any).threshold2 = parseFloat(event.target.value);
+        this.updateRoi();
     }
 }

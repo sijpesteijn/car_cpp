@@ -24,7 +24,7 @@ traffic_light::traffic_light(Camera* camera, observer* next_observer) {
     this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
 }
 
-string traffic_light::getJson(void) {
+json_t* traffic_light::getJson(void) {
     this->verifyRoi();
     json_t *root = json_object();
     json_object_set_new( root, "type", json_string( this->type ) );
@@ -40,9 +40,7 @@ string traffic_light::getJson(void) {
     json_object_set_new( root, "pixel_difference", json_integer( this->pixel_difference ) );
     json_object_set_new( root, "current_pixel_difference", json_integer( this->current_pixel_difference ) );
 
-    string dump = json_dumps(root, 0);
-    json_decref(root);
-    return dump;
+    return root;
 }
 
 int traffic_light::updateWithJson(json_t* root) {
@@ -66,15 +64,13 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
 //    cout << "ss: " << roiSnapshot.size() << endl;
 //    cout << "ls: " << this->last_snapshot.size() << endl;
     if (this->condition_achieved == 0 && !this->last_snapshot.empty()
-        && this->last_snapshot.size().width == roiSnapshot.size().width
-        && this->last_snapshot.size().height == roiSnapshot.size().height) {
+        && this->last_snapshot.size() == roiSnapshot.size()) {
         if (pthread_mutex_lock(&snapshot_lock) != 0) {
             syslog(LOG_ERR, "%s", "Could not get a lock on the snapshot lock");
         }
 //        cout << "x: " << this->roi.x << " w: " << this->roi.width << " y: " << this->roi.y << " h: " << this->roi.height << endl;
         Mat result;
         absdiff(roiSnapshot, this->last_snapshot, result);
-        imwrite("moe.jpg", this->last_snapshot);
         cvtColor(result, result, CV_BGR2GRAY);
         float threshold = 30;
         Mat mask = result < threshold;
@@ -87,12 +83,14 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
         if (percentage > this->pixel_difference) {
             this->condition_achieved = 1;
         }
-        cout << "Difference: " << to_string(percentage) << "%" << endl;
+        if (percentage > 0) {
+            cout << "Difference: " << to_string(percentage) << "%" << endl;
+        }
         if (pthread_mutex_unlock(&snapshot_lock) != 0) {
             syslog(LOG_ERR, "%s", "Could not unlock on the snapshot lock");
         }
     } else {
-        this->last_snapshot = roiSnapshot;
+        this->last_snapshot = roiSnapshot.clone();
     }
     return this;
 }

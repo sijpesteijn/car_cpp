@@ -13,14 +13,16 @@ list<observer*> track_race::getObservers() {
     return this->observers;
 }
 
-string track_race::getJson() {
+json_t* track_race::getJson() {
     json_t *root = json_object();
     json_object_set_new( root, "name", json_string( this->name ) );
-    string dump = json_dumps(root, 0);
-    json_decref(root);
-    return dump;
+    return root;
 }
 
-void track_race::updateWithJson(json_t *json) {
+void track_race::updateWithJson(json_t *json, int start) {
 
+}
+
+void track_race::saveSettings() {
+    this->sett->save(this->getJson());
 }

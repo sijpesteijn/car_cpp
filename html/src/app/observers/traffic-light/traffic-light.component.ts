@@ -5,14 +5,15 @@ import {ObserversStateMessagesService, ObserverState} from "../../observers_stat
 import {AbstractObserverComponent} from "../abstract-observer.component";
 import {CameraService} from "../../camera.service";
 
-interface TrafficLightObserver extends CarObserver {
-    current_pixel_difference: number;
-}
+// interface TrafficLightObserver extends CarObserver {
+//     current_pixel_difference: number;
+// }
+//
+// interface TrafficLightObserverState extends ObserverState {
+//     current_pixel_difference: number;
+//     condition_achieved: number;
+// }
 
-interface TrafficLightObserverState extends ObserverState {
-    current_pixel_difference: number;
-    condition_achieved: number;
-}
 @Component({
     selector: 'traffic-light',
     template: require('./traffic-light.html'),

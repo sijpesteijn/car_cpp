@@ -14,9 +14,13 @@ class track_race: public race {
 public:
     track_race();
     std::list<observer*> getObservers();
-    std::string getJson(void);
-    void updateWithJson(json_t* json);
+    json_t* getJson(void);
+    void updateWithJson(json_t* json, int start);
     std::list<observer*> observers;
+    void saveSettings();
+
+private:
+    settings *sett;
 };
 
 

@@ -150,24 +150,25 @@ list<shared_ptr<Resource>> observer_status_handler::getResources() {
     return l;
 }
 
-string getStates(list<observer *> observers) {
-    string body = "[";
+json_t* getStates(list<observer *> observers) {
+    json_t* states = json_array();
+
     for (auto const& i : observers) {
         if (i->isActive()) {
-            body += i->getJson() + ",";
+            json_array_append(states, i->getJson());
         }
     }
-    if (body.length() > 1) {
-        body = body.substr(0, body.length() - 1);
-    }
-    return body + "]";
+    return states;
 }
 
 void observer_status_handler::notifyClients(std::list<observer *> observers) {
     for(map<string, shared_ptr< WebSocket>>::iterator it = sockets.begin(); it != sockets.end(); ++it) {
 //        cout << it->first << endl;
         shared_ptr<WebSocket> socket = it->second;
-        const string body = getStates(observers);
+        json_t* json = getStates(observers);
+        string body = json_dumps(json, 0);
+        json_decref(json);
+
         auto response = make_shared< WebSocketMessage >(WebSocketMessage::TEXT_FRAME, body );
         socket->send(response);
     }

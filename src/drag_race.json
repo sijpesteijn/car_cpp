@@ -1,0 +1,45 @@
+{
+     "name": "drag",
+     "running": 0,
+     "observers": [
+          {
+               "type": "traffic_light",
+               "order": 0,
+               "condition_achieved": 0,
+               "active": 0,
+               "roi": {
+                    "x": 390,
+                    "y": 330,
+                    "height": 150,
+                    "width": 250
+               },
+               "pixel_difference": 64,
+               "current_pixel_difference": 91
+          },
+          {
+               "type": "lane_detection",
+               "order": 0,
+               "condition_achieved": 0,
+               "active": 0,
+               "threshold1": 0.0,
+               "threshold2": 0.0,
+               "apertureSize": 3,
+               "roi": {
+                    "x": 0,
+                    "y": 179,
+                    "height": 301,
+                    "width": 640
+               }
+          },
+          {
+               "type": "finish_detection",
+               "active": 0,
+               "roi": {
+                    "x": 0,
+                    "y": 263,
+                    "height": 217,
+                    "width": 640
+               }
+          }
+     ]
+}
