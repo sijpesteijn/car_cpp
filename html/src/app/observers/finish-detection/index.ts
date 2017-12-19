@@ -1,1 +1,0 @@
-import 'finish-detection.component';

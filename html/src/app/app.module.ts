@@ -27,25 +27,27 @@ import { NoContentComponent } from './no-content';
 
 import '../styles/styles.scss';
 import '../styles/headings.css';
-import { ObserverModule } from './observers/observer.module';
-import { LifeLineComponent } from './lifeline/lifeline.component';
+import { ObserverModule } from './race/observers/observer.module';
+import { LifeLineComponent } from './header/lifeline/lifeline.component';
 import { Config } from './app.config';
-import { ObserverTabsModule } from './observer-tabs/observer-tabs.module';
+import { ObserverTabsModule } from './race/observer-tabs/observer-tabs.module';
 import { StreamModule } from './webcam/stream.module';
-import { LifeLineModule } from './lifeline/lifeline.module';
-import { WebcamModule } from './webcam/webcam.module';
+import { LifeLineModule } from './header/lifeline/lifeline.module';
 import {CarService} from "./car.service";
 import {OffComponent} from "./off/off.component";
 import {HeaderComponent} from "./header/header.component";
-import {CarStatusComponent} from "./car-status/car-status.component";
+import {CarStatusComponent} from "./header/car-status/car-status.component";
 import {NgxVirtualJoystickModule} from "ngx-virtual-joystick";
-import {CameraStatusComponent} from "./camera-status/camera-status.component";
+import {CameraStatusComponent} from "./header/camera-status/camera-status.component";
 import {CameraService} from "./camera.service";
 import {EventService} from "./event.service";
 import {ObserversStateMessagesService} from "./observers_state_messages.service";
-import {ObserversStateMessagesComponent} from "./observers-state-messages/observers-state-messages.component";
-import {RaceService} from "./race.service";
+import {ObserversStateMessagesComponent} from "./race/observers-state-messages/observers-state-messages.component";
+import {RaceService} from "./race/race.service";
 import {HttpClientModule} from "@angular/common/http";
+import {CommonModule} from "@angular/common";
+import {RaceModule} from "./race/race.module";
+import {PreviewModule} from "./preview/preview.module";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -85,20 +87,20 @@ if ('local' === process.env.CONTEXT) {
         OffComponent,
         HeaderComponent,
         CarStatusComponent,
-        CameraStatusComponent
+        CameraStatusComponent,
+        LifeLineComponent,
     ],
     /**
      * Import Angular's modules.
      */
     imports     : [
         BrowserModule,
+        CommonModule,
         FormsModule,
         HttpClientModule,
-        LifeLineModule,
+        RaceModule,
+        PreviewModule,
         NgxVirtualJoystickModule.forRoot(),
-        ObserverModule,
-        ObserverTabsModule,
-        WebcamModule,
         RouterModule.forRoot(ROUTES, { useHash: true, preloadingStrategy: PreloadAllModules })
     ],
     /**
@@ -110,8 +112,8 @@ if ('local' === process.env.CONTEXT) {
         ...PROVIDERS,
         CarService,
         CameraService,
-        RaceService,
         EventService,
+        RaceService,
         ObserversStateMessagesService,
         Config
     ]

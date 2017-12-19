@@ -1,0 +1,55 @@
+@import '../../../styles/variables';
+
+.observer-tabs {
+  position: relative;
+  overflow: visible;
+
+  .tabs {
+    float: left;
+    list-style: none;
+    background-color: $background-color;
+    border: 1px solid $border-color;
+
+    li {
+      padding: $gutter * 0.5;
+      cursor: pointer;
+      color: $nav-button-color;
+    }
+  }
+
+  .active {
+    background-color: $active-tab;
+  }
+
+  .tab {
+    float: left;
+    border: 1px solid $border-color;
+    background-color: $background-color;
+    padding: $gutter * 0.5;
+  }
+
+  .start_race {
+    text-align: center;
+
+    .start {
+      background-color: #4CAF50; /* Green */
+    }
+
+    .stop {
+      background-color: #AF030A; /* red */
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      margin-bottom: 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+  }
+}
+

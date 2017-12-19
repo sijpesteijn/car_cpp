@@ -64,7 +64,7 @@ observer* drag_race::findObserver(string type) {
 
 void drag_race::updateWithJson(json_t *json, int start) {
     int wasRunning = this->running;
-    this->running = json_integer_value(json_object_get(json, "running"));
+    this->running = json_real_value(json_object_get(json, "running"));
     json_t *observers= json_object_get(json, "observers");
     for(int i = 0; i< json_array_size(observers); i++) {
         json_t *observer_json = json_array_get(observers, i);
@@ -96,8 +96,6 @@ void drag_race::updateWithJson(json_t *json, int start) {
 void drag_race::resetAllObservers() {
     observer *curr = this->obs;
     while(curr) {
-
-//        for (auto const& i : this->getObservers()) {
         curr->setActive(0);
         curr->setConditionAchieved(0);
         curr = curr->nextObserver;

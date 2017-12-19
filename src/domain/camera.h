@@ -34,7 +34,6 @@ public:
     json_t* getJson();
 
 private:
-    std::vector<cv::Vec2f> detectLines(cv::Mat src);
     settings *sett;
 
 };

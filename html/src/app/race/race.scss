@@ -1,0 +1,16 @@
+@import '../../styles/variables';
+
+.race {
+  position: relative;
+  top: $gutter*0.5;
+
+  observer-tabs {
+    float: left;
+    margin-left: $gutter;
+  }
+
+  preview-with-rois {
+    float: right;
+    margin-right: $gutter;
+  }
+}

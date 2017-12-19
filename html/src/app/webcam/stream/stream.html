@@ -1,7 +1,0 @@
-<div class="stream" [style.width.px]="cameraSettings?.dimension.width" [style.height.px]="cameraSettings?.dimension.height">
-    <img class="webcam" [src]="streamUrl">
-    <div class="mask" [style.width.px]="cameraSettings?.dimension.width" [style.height.px]="cameraSettings?.dimension.height"></div>
-    <div #roi_{{index}} class="roi" *ngFor="let roi of rois; let i = index"
-         [ngStyle]="{'border-color':roi.color, 'left.px':roi.x, 'top.px':roi.y, 'width.px':roi.width, 'height.px':roi.height}"
-    ></div>
-</div>

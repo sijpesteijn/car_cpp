@@ -43,6 +43,7 @@
 // Evergreen browsers require these.
 import 'core-js/es6/reflect';
 import 'core-js/es7/reflect';
+import 'rxjs/add/operator/map';
 
 /**
  * Required to support Web Animations `@angular/animation`.

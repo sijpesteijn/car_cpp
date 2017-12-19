@@ -28,36 +28,35 @@ json_t* traffic_light::getJson(void) {
     this->verifyRoi();
     json_t *root = json_object();
     json_object_set_new( root, "type", json_string( this->type ) );
-    json_object_set_new( root, "order", json_integer( this->order ) );
-    json_object_set_new( root, "condition_achieved", json_integer( this->condition_achieved ) );
-    json_object_set_new( root, "active", json_integer( this->active ) );
+    json_object_set_new( root, "condition_achieved", json_real( this->condition_achieved ) );
+    json_object_set_new( root, "active", json_real( this->active ) );
     json_t* roi = json_object();
-    json_object_set_new( roi, "x", json_integer( this->roi.x ) );
-    json_object_set_new( roi, "y", json_integer( this->roi.y ) );
-    json_object_set_new( roi, "height", json_integer( this->roi.height ) );
-    json_object_set_new( roi, "width", json_integer( this->roi.width ) );
+    json_object_set_new( roi, "x", json_real( this->roi.x ) );
+    json_object_set_new( roi, "y", json_real( this->roi.y ) );
+    json_object_set_new( roi, "height", json_real( this->roi.height ) );
+    json_object_set_new( roi, "width", json_real( this->roi.width ) );
     json_object_set_new( root, "roi", roi);
-    json_object_set_new( root, "pixel_difference", json_integer( this->pixel_difference ) );
-    json_object_set_new( root, "current_pixel_difference", json_integer( this->current_pixel_difference ) );
+    json_object_set_new( root, "pixel_difference", json_real( this->pixel_difference ) );
+    json_object_set_new( root, "current_pixel_difference", json_real( this->current_pixel_difference ) );
 
     return root;
 }
 
 int traffic_light::updateWithJson(json_t* root) {
-    this->condition_achieved = json_integer_value(json_object_get(root, "condition_achieved"));
-    this->pixel_difference = json_integer_value(json_object_get(root, "pixel_difference"));
-    this->current_pixel_difference = json_integer_value(json_object_get(root, "current_pixel_difference"));
-    this->active = json_integer_value(json_object_get(root, "active"));
-    this->order = json_integer_value(json_object_get(root, "order"));
+    this->condition_achieved = json_real_value(json_object_get(root, "condition_achieved"));
+    this->pixel_difference = json_real_value(json_object_get(root, "pixel_difference"));
+    this->current_pixel_difference = json_real_value(json_object_get(root, "current_pixel_difference"));
+    this->active = json_real_value(json_object_get(root, "active"));
     json_t* roi = json_object_get(root, "roi");
-    this->roi.x = json_integer_value(json_object_get(roi, "x"));
-    this->roi.y = json_integer_value(json_object_get(roi, "y"));
-    this->roi.width = json_integer_value(json_object_get(roi, "width"));
-    this->roi.height = json_integer_value(json_object_get(roi, "height"));
+    this->roi.x = json_real_value(json_object_get(roi, "x"));
+    this->roi.y = json_real_value(json_object_get(roi, "y"));
+    this->roi.width = json_real_value(json_object_get(roi, "width"));
+    this->roi.height = json_real_value(json_object_get(roi, "height"));
     return 0;
 }
 
 observer* traffic_light::processSnapshot(Mat snapshot) {
+//    cout << "Working" << endl;
     this->roi = this->verifyRoi();
     Mat roiSnapshot = snapshot(this->roi);
 
@@ -80,7 +79,7 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
             percentage = 100 - (int) (nonZero*100/mask.total());
         }
         this->current_pixel_difference = percentage;
-        if (percentage > this->pixel_difference) {
+        if (percentage >= this->pixel_difference) {
             this->condition_achieved = 1;
         }
         if (percentage > 0) {

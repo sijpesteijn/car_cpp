@@ -42,22 +42,28 @@ void *frameGrabber(void *params) {
 Camera::Camera() : cap(0) {
     this->sett = new settings("../src/camera.json");
     this->fromJson(sett->getSettings());
-    this->cap.release();
-    this->cap.open(1);
+//    if (this->cap.open(1) == false) {
+        this->cap.open(1);
+//    }
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+    cout << "Width " << this->cap.get(CV_CAP_PROP_FRAME_WIDTH) << endl;
+    cout << "Height " << this->cap.get(CV_CAP_PROP_FRAME_HEIGHT) << endl;
+    cout << "Brightness " << this->cap.get(CV_CAP_PROP_BRIGHTNESS) << endl;
+    cout << "Contrast " << this->cap.get(CV_CAP_PROP_CONTRAST) << endl;
+    cout << "Hue " << this->cap.get(CV_CAP_PROP_HUE) << endl;
+    cout << "FPS " << this->cap.get(CV_CAP_PROP_FPS) << endl;
+    cout << "Saturation " << this->cap.get(CV_CAP_PROP_SATURATION) << endl;
+    cout << "Gain " << this->cap.get(CV_CAP_PROP_GAIN) << endl;
+    cout << "Convert rgb " << this->cap.get(CAP_PROP_CONVERT_RGB) << endl;
+    cout << "White balance blue " << this->cap.get(CAP_PROP_WHITE_BALANCE_BLUE_U) << endl;
+    cout << "White balance red " << this->cap.get(CAP_PROP_WHITE_BALANCE_RED_V) << endl;
     pthread_t grabber;
     pthread_create(&grabber, NULL, frameGrabber, this);
 }
 
 Mat Camera::getFrame() {
     return this->frame;
-}
-
-vector<Vec2f> Camera::detectLines(Mat img) {
-    vector<Vec2f> lines;
-    HoughLinesP(img, lines, 1, CV_PI / 180, 50, 50, 10);
-    return lines;
 }
 
 Size Camera::getDimensions() {
@@ -79,6 +85,30 @@ void Camera::fromJson(json_t *pJson) {
     int width = json_number_value(json_object_get(resolutionJson, "width"));
     int height = json_number_value(json_object_get(resolutionJson, "height"));
     this->setDimension(width, height);
+    int brightness = json_number_value(json_object_get(pJson, "brightness"));
+    if (brightness > 0) {
+        this->cap.set(CV_CAP_PROP_BRIGHTNESS, brightness);
+    }
+    int contrast = json_number_value(json_object_get(pJson, "contrast"));
+    if (contrast > 0) {
+        this->cap.set(CV_CAP_PROP_CONTRAST, contrast);
+    }
+    int saturation = json_number_value(json_object_get(pJson, "saturation"));
+    if (saturation > 0) {
+        this->cap.set(CV_CAP_PROP_SATURATION, saturation);
+    }
+    int hue = json_number_value(json_object_get(pJson, "hue"));
+    if (hue > 0) {
+        this->cap.set(CV_CAP_PROP_HUE, hue);
+    }
+    int gain = json_number_value(json_object_get(pJson, "gain"));
+    if (gain > 0) {
+        this->cap.set(CV_CAP_PROP_GAIN, gain);
+    }
+    int fps = json_number_value(json_object_get(pJson, "fps"));
+    if (fps > 0) {
+        this->cap.set(CV_CAP_PROP_FPS, fps);
+    }
     this->capture_delay = json_number_value(json_object_get(pJson, "captureDelay"));
     this->observers_delay = json_number_value(json_object_get(pJson, "observersDelay"));
     this->preview_delay = json_number_value(json_object_get(pJson, "previewDelay"));
@@ -103,6 +133,12 @@ json_t* Camera::getJson() {
     json_object_set_new( whiteBalance, "alpha", json_real(this->whitebalance_alpha ) );
     json_object_set_new( whiteBalance, "beta", json_integer( this->whitebalance_beta) );
     json_object_set_new( root, "whiteBalance", whiteBalance );
+    json_object_set_new( root, "brightness", json_integer(this->cap.get(CV_CAP_PROP_BRIGHTNESS)));
+    json_object_set_new( root, "contrast", json_integer(this->cap.get(CV_CAP_PROP_CONTRAST)));
+    json_object_set_new( root, "saturation", json_integer(this->cap.get(CV_CAP_PROP_SATURATION)));
+    json_object_set_new( root, "hue", json_integer(this->cap.get(CV_CAP_PROP_HUE)));
+    json_object_set_new( root, "gain", json_integer(this->cap.get(CV_CAP_PROP_GAIN)));
+    json_object_set_new( root, "fps", json_integer(this->cap.get(CV_CAP_PROP_FPS)));
 
     return root;
 }

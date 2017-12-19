@@ -1,17 +1,16 @@
-
-import { Inject, Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Injectable } from '@angular/core';
+import {HttpClient} from "@angular/common/http";
 @Injectable()
 export class Config {
     private config: any;
 
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
 
     }
 
     public load(jsonFile: string) {
         return new Promise((resolve, reject) => {
-            this.http.get(jsonFile).map(res => res.json()).subscribe(data => {
+            this.http.get(jsonFile).subscribe(data => {
                 this.config = data;
                 resolve(true);
             });

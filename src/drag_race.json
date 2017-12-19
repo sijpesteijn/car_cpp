@@ -1,44 +1,42 @@
 {
      "name": "drag",
-     "running": 0,
+     "running": 1,
      "observers": [
           {
                "type": "traffic_light",
-               "order": 0,
-               "condition_achieved": 0,
-               "active": 0,
+               "condition_achieved": 1.0,
+               "active": 0.0,
                "roi": {
-                    "x": 390,
-                    "y": 330,
-                    "height": 150,
-                    "width": 250
+                    "x": 85.0,
+                    "y": 229.0,
+                    "height": 35.0,
+                    "width": 57.0
                },
-               "pixel_difference": 64,
-               "current_pixel_difference": 91
+               "pixel_difference": 80.0,
+               "current_pixel_difference": 92.0
           },
           {
                "type": "lane_detection",
-               "order": 0,
-               "condition_achieved": 0,
-               "active": 0,
-               "threshold1": 0.0,
-               "threshold2": 0.0,
-               "apertureSize": 3,
+               "condition_achieved": 0.0,
+               "active": 1.0,
+               "threshold1": 20.399999999999999,
+               "threshold2": 144.09999999999999,
+               "apertureSize": 3.0,
                "roi": {
-                    "x": 0,
-                    "y": 179,
-                    "height": 301,
-                    "width": 640
+                    "x": 0.0,
+                    "y": 276.0,
+                    "height": 204.0,
+                    "width": 640.0
                }
           },
           {
                "type": "finish_detection",
-               "active": 0,
+               "active": 0.0,
                "roi": {
-                    "x": 0,
-                    "y": 263,
-                    "height": 217,
-                    "width": 640
+                    "x": 0.0,
+                    "y": 200.0,
+                    "height": 280.0,
+                    "width": 640.0
                }
           }
      ]

@@ -1,9 +1,9 @@
 {
   "observer" : {
-    "get" : "http://carmageddon.dev/observer/:type"
+    "get" : "http://carmageddon.test/observer/:type"
   },
   "lifeline": {
-    "ws": "ws://carmageddon.dev/lifeline"
+    "ws": "ws://carmageddon.test/lifeline"
   }
 
 }

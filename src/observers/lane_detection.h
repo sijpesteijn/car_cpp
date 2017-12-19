@@ -7,6 +7,7 @@
 
 #include "../domain/observer.h"
 #include "../domain/camera.h"
+#include "Line.h"
 #include <jansson.h>
 
 class lane_detection:public observer {
@@ -21,6 +22,8 @@ private:
     double threshold1 = 50;
     double threshold2 = 200;
     int apertureSize = 3;
+
+    Line getAverageLine(std::list<Line> lines);
 };
 
 #endif //CARMAGEDDON_LANE_DETECTION_H

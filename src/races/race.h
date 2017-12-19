@@ -6,6 +6,7 @@
 #define CARMAGEDDON_RACE_H
 
 #include "../domain/observer.h"
+#include "../util/observer_group.h"
 #include <restbed>
 #include <jansson.h>
 
@@ -13,6 +14,7 @@ class race {
 public:
     virtual ~race() {};
     observer *obs;
+    observer_group *group;
     virtual std::list<observer*> getObservers() = 0;
     virtual json_t* getJson(void) =0;
     virtual void updateWithJson(json_t *json, int start) =0;

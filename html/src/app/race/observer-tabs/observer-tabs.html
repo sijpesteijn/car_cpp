@@ -1,0 +1,17 @@
+<div class="observer-tabs">
+    <ul class="tabs">
+        <li class="tablink" *ngFor="let race of races" (click)="loadRace(race)" [class.active]="selectedRace?.name === race.name" [innerHTML]="race.name"></li>
+    </ul>
+
+    <div class="tab" *ngIf="selectedRace">
+        <div class="start_race">
+            <button *ngIf="!selectedRace?.running" (click)="startRace()" class="start">Start</button>
+            <button *ngIf="selectedRace?.running" (click)="stopRace()" class="stop">Stop</button>
+        </div>
+        <ng-container *ngFor="let observer of selectedRace.observers">
+            <traffic-light *ngIf="observer.type === 'traffic_light'" [roiColor]="'#FFFA08'" [observer]="observer" (onChange)="updateObserver($event)"></traffic-light>
+            <lane-detection *ngIf="observer.type === 'lane_detection'" [roiColor]="'#2DFF07'" [observer]="observer" (onChange)="updateObserver($event)"></lane-detection>
+            <finish-detection *ngIf="observer.type === 'finish_detection'" [roiColor]="'#0D80FF'" [observer]="observer" (onChange)="updateObserver($event)"></finish-detection>
+        </ng-container>
+    </div>
+</div>

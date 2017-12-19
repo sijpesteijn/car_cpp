@@ -21,7 +21,6 @@ public:
     void updateWithJson(json_t *json, int start);
     observer* findObserver(std::string type);
     void saveSettings();
-//    std::map<std::string, observer*> observers;
 private:
     void resetAllObservers();
     settings *sett;

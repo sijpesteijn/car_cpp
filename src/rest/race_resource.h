@@ -24,6 +24,7 @@ private:
     std::shared_ptr<restbed::Resource> allRaceResource = std::make_shared< restbed::Resource >( );
     std::shared_ptr<restbed::Resource> singleRaceResource = std::make_shared< restbed::Resource >( );
     std::shared_ptr<restbed::Resource> statusRaceResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> observerPreviewResource = std::make_shared< restbed::Resource >( );
 };
 
 

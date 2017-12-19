@@ -1,0 +1,6 @@
+<div class="stream" [style.width.px]="cameraSettings?.dimension.width" [style.height.px]="cameraSettings?.dimension.height">
+    <preview></preview>
+    <div #roi_{{index}} class="roi" *ngFor="let observer of observers; let i = index"
+         [ngStyle]="{'border-color':observer.roi.color, 'left.px':observer.roi.x, 'top.px':observer.roi.y, 'width.px':observer.roi.width, 'height.px':observer.roi.height}"
+    ></div>
+</div>

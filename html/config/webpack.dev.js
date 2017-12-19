@@ -128,7 +128,7 @@ module.exports = function (options) {
                 debug: true,
                 options: { }
             }),
-            new OpenBrowserPlugin({ url: 'http://carmageddon.dev' })
+            new OpenBrowserPlugin({ url: 'http://carmageddon.test' })
 
             // TODO: HMR
         ],

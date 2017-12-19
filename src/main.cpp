@@ -1,9 +1,7 @@
 #include <syslog.h>
 #include <iostream>
 #include <list>
-#include "cpu.h"
 #include "rest/rest.h"
-#include "rest/observer_handler.h"
 #include "rest/camera_resource.h"
 #include "rest/car_resource.h"
 #include "rest/observer_status_handler.h"
@@ -24,14 +22,11 @@ int main( const int, const char** )
     atexit (closeResources);
 
     Car car;
-
     camera_resource camera_res(&camera);
     car_resource car_res(&car);
     lifeline_handler ll_handler(&car);
     observer_status_handler os_handler;
     race_resource r_resource(&camera);
-//    cpu *carmageddon = new cpu(&camera, &car, &os_handler);
-//    observer_handler obsvr_handler(carmageddon);
 
     Rest rest({&camera_res, &car_res, &os_handler, &ll_handler, &r_resource});
     return EXIT_SUCCESS;

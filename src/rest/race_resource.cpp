@@ -13,6 +13,7 @@ using namespace restbed;
 
 #define RACE_ALL "/race"
 #define RACE_SINGLE "/race/{name: .*}"
+#define RACE_OBSERVER_PREVIEW "/race/observer/{stage: .*}/{timestamp: .*}"
 #define RACE_STATUS "/status"
 
 static map< string, shared_ptr< WebSocket > > sockets = { };
@@ -159,6 +160,24 @@ void get_race_handler(const shared_ptr<Session> session) {
     }
 }
 
+void get_race_observer_preview(const shared_ptr<Session> session) {
+    const auto& request = session->get_request( );
+//    const string race = request->get_path_parameter("race");
+//    const string observer = request->get_path_parameter("observer");
+    const string stage = request->get_path_parameter("stage");
+
+
+    ifstream stream(stage + ".jpg", ios::in | ios::binary);
+    const string body = string( istreambuf_iterator< char >( stream ), istreambuf_iterator< char >( ) );
+    const multimap< string, string > headers
+            {
+                    { "Content-Type", "image/jpeg" },
+                    { "Content-Length", ::to_string( body.length() ) }
+            };
+
+    session->close( OK, body, headers );
+}
+
 void post_race_handler(const shared_ptr<Session> session) {
     const auto request = session->get_request();
     int length = request->get_header( "Content-Length", 0 );
@@ -168,12 +187,12 @@ void post_race_handler(const shared_ptr<Session> session) {
         const auto request = session->get_request( );
         const auto body = request->get_body( );
 
-//        fprintf( stdout, "Complete body content: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
+//        fprintf( stdout, "Race resource: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
         string data = string(body.begin(), body.end());
         json_t* root;
         json_error_t error;
 
-        root = json_loadb(data.c_str(), data.size(), 0, &error);
+        root = json_loadb(data.c_str(), data.size(), JSON_DECODE_INT_AS_REAL, &error);
         if (!root) {
             fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
         }
@@ -225,6 +244,10 @@ race_resource::race_resource(Camera *camera) {
     this->statusRaceResource->set_method_handler("GET", status_race_handler);
     syslog(LOG_DEBUG, "Restbed: %s", RACE_STATUS);
 
+    this->observerPreviewResource->set_path( RACE_OBSERVER_PREVIEW );
+    this->observerPreviewResource->set_method_handler("GET", get_race_observer_preview);
+    syslog(LOG_DEBUG, "Restbed: %s", RACE_OBSERVER_PREVIEW);
+
     pthread_t race_status_runner;
     pthread_create(&race_status_runner, NULL, checkRaceStatus, this);
 
@@ -246,7 +269,8 @@ list<shared_ptr<Resource>> race_resource::getResources() {
     list<shared_ptr<Resource>> l = {
             this->allRaceResource,
             this->singleRaceResource,
-            this->statusRaceResource
+            this->statusRaceResource,
+            this->observerPreviewResource
     };
     return l;
 }

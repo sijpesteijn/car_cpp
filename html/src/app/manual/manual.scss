@@ -1,9 +1,19 @@
 @import '../../styles/variables';
 
-
 .manual {
+  position: relative;
+  top: $gutter*0.5;
+}
+
+virtual-joystick {
   float: left;
   position: relative;
   width: 400px;
   height: 400px;
+  margin-left: $gutter;
+}
+
+preview {
+  float: right;
+  margin-right: $gutter;
 }

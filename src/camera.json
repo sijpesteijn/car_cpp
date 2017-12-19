@@ -4,11 +4,17 @@
           "width": 640,
           "height": 480
      },
-     "captureDelay": 200,
-     "observersDelay": 2000,
-     "previewDelay": 6000,
+     "captureDelay": 100,
+     "observersDelay": 100,
+     "previewDelay": 1001,
      "whiteBalance": {
           "alpha": 1.1000000000000001,
-          "beta": 0
-     }
+          "beta": 1
+     },
+     "brightness": 0,
+     "contrast": 0,
+     "saturation": 0,
+     "hue": 0,
+     "gain": 0,
+     "fps": 30
 }

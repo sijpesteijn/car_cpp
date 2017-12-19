@@ -1,0 +1,1 @@
+import 'app/race/observers/traffic-light/traffic-light.component';

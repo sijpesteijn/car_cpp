@@ -1,7 +1,6 @@
 
 import {Injectable} from "@angular/core";
 import {Config} from "./app.config";
-import {Http} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
@@ -24,6 +23,12 @@ export interface CameraSettings {
     observersDelay?: number;
     previewDelay?: number;
     whiteBalance?: WhiteBalance;
+    hue?: number;
+    contrast?: number;
+    brightness?: number;
+    gain?: number;
+    saturation?: number;
+    fps?: number;
 }
 
 @Injectable()

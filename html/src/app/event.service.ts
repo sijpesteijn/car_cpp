@@ -1,8 +1,8 @@
 import {EventEmitter, Injectable} from "@angular/core";
 
-export const ROI_SET = 'ROI_SET';
-export const ROI_LOADED = 'ROI_LOADED';
-export const ROI_CLEAR = 'ROI_CLEAR';
+export const OBSERVER_ROI_SET = 'OBSERVER_ROI_SET';
+export const OBSERVER_ROI_LOADED = 'OBSERVER_ROI_LOADED';
+export const OBSERVER_ROIS_CLEAR = 'OBSERVER_ROIS_CLEAR';
 
 @Injectable()
 export class EventService {

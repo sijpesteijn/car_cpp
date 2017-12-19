@@ -4,14 +4,20 @@
 
 #include "util.h"
 #include "../races/race.h"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <iostream>
 
-static const std::string base64_chars =
+using namespace std;
+using namespace cv;
+
+static const string base64_chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 "abcdefghijklmnopqrstuvwxyz"
                 "0123456789+/";
 
-std::string base64_encoder(unsigned char const* bytes_to_encode, unsigned int in_len) {
-    std::string ret;
+string base64_encoder(unsigned char const* bytes_to_encode, unsigned int in_len) {
+    string ret;
     int i = 0;
     int j = 0;
     unsigned char char_array_3[3];
@@ -75,8 +81,13 @@ multimap< string, string > build_websocket_handshake_response_headers( const sha
 void* checkObservers(void* params) {
     race *r = (race*) params;
     while(1) {
-        cv::Mat snapshot = r->camera->getFrame();
+        Mat snapshot = r->camera->getFrame();
         observer *obs = r->obs;
+        while(obs) {
+            obs->processSnapshot(snapshot);
+            obs = obs->nextObserver;
+        }
+        obs = r->obs;
         while(obs && r->running == 1) {
             obs->processSnapshot(snapshot);
             if (obs->isActive() && obs->condition_achieved == 1) {
@@ -88,9 +99,47 @@ void* checkObservers(void* params) {
                     r->running = 0;
                 }
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
+            this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
+        this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
     }
     return NULL;
+}
+
+void contrast_stretching(Mat src, Mat dst, int min, int max, int index) {
+    int norm[256];
+    if (max <= min) {
+        Mat_<Vec3b>::const_iterator it = src.begin<Vec3b>();
+        Mat_<Vec3b>::const_iterator itend = src.end<Vec3b>();
+        Mat_<Vec3b>::iterator itout = src.end<Vec3b>();
+
+        for ( ; it != itend; ++it, ++itout) {
+            Vec3b color1 = *it;
+            color1[index]= 255/2;
+            *itout = color1;
+        }
+    } else {
+        int i=0;
+        for (i=0; i< min; i++) {
+            norm[i] = 0;
+        }
+        for (i=min; i < max; i++) {
+            norm[i] = ((i -min) * 255/((max-min) + 0.5));
+        }
+
+        for (i = max; i< 255 + 1; i++) {
+            norm[i] = 255;
+        }
+
+        Mat_<Vec3b>::const_iterator it = src.begin<Vec3b>();
+        Mat_<Vec3b>::const_iterator itend = src.end<Vec3b>();
+        Mat_<Vec3b>::iterator itout = dst.begin<Vec3b>();
+
+        for(; it != itend; ++it, ++itout) {
+            Vec3b color = *it;
+            Vec3b color1 = *itout;
+            color1[index]=norm[color[index]];
+            *itout = color1;
+        }
+    }
 }
