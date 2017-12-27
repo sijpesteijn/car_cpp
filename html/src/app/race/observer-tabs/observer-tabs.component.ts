@@ -1,4 +1,4 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, Input, OnDestroy} from '@angular/core';
 import {Race, CarObserver, RaceService, ObserverGroup} from '../race.service';
 @Component({
     selector: 'observer-tabs',
@@ -9,6 +9,16 @@ export class ObserverTabsComponent implements OnDestroy {
     private started = false;
     private races: Race[];
     private selectedRace: Race;
+    @Input()
+    set race(race: Race) {
+        if (race) {
+            if (race.name !== this.selectedRace.name) {
+                this.selectedRace = race;
+            } else {
+                this.updateGroupIfChanged(this.selectedRace.group, race.group);
+            }
+        }
+    }
 
     constructor(private raceService: RaceService) {}
 
@@ -76,5 +86,26 @@ export class ObserverTabsComponent implements OnDestroy {
     updateObserver(observer: CarObserver) {
         this.replaceObserver(this.selectedRace.group, observer);
         this.raceService.saveRace(this.selectedRace).subscribe(() => {});
+    }
+
+    private updateGroupIfChanged(orgGroup: ObserverGroup, newGroup: ObserverGroup) {
+        const orgClone = JSON.parse(JSON.stringify(orgGroup));
+        const newClone = JSON.parse(JSON.stringify(newGroup));
+        orgClone.group = undefined;
+        newClone.group = undefined;
+        if (JSON.stringify(orgClone) !== JSON.stringify(newClone)) {
+            newClone.group = newGroup.group;
+            this.updateGroup(this.selectedRace.group, newClone);
+            console.log('Bew ', this.selectedRace);
+            newGroup = newClone;
+        }
+    }
+
+    private updateGroup(orgGroup: ObserverGroup, newGroup: ObserverGroup) {
+        if (orgGroup.name === newGroup.name) {
+            orgGroup = newGroup;
+        } else {
+            this.updateGroup(orgGroup.group, newGroup);
+        }
     }
 }

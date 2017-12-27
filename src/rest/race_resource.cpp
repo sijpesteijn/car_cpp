@@ -37,7 +37,7 @@ void* checkRaceStatus(void* params) {
                 shared_ptr<WebSocket> socket = iter->second;
                 json_t* json = r->selected_race->getJson(true);
                 string body = json_dumps(json, 0);
-//                cout << "Race status-" << body << endl;
+                cout << "Race status-" << body << endl;
                 json_decref(json);
 
                 auto response = make_shared<WebSocketMessage>(WebSocketMessage::TEXT_FRAME, body);

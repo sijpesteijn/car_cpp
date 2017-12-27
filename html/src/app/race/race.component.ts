@@ -36,11 +36,13 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
                 };
                 this.raceWebsocket.onmessage = (msg) => {
                     if (msg.data) {
+
                         const race = JSON.parse(msg.data);
                         const org = this.cloneAndStrip(race);
-                        if (JSON.stringify(org) !== JSON.stringify(race)) {
-                            console.log('Race');
-                            this.race.next(race);
+                        if (this.race && JSON.stringify(org) !== JSON.stringify(this.race)) {
+                            this.race = race;
+                        } else {
+                            this.race = race;
                         }
                     }
                 };
