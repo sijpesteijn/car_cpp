@@ -4,8 +4,8 @@
 
 #include "lifeline_handler.h"
 #include <iostream>
-#include <syslog.h>
 #include "../util/util.h"
+#include "../util/log.h"
 
 using namespace std;
 using namespace restbed;
@@ -20,7 +20,7 @@ static map< string, shared_ptr< WebSocket > > sockets = { };
 
 void lifeline_close_handler( const shared_ptr< WebSocket > socket )
 {
-    syslog(LOG_DEBUG, "Lifeline close handler");
+    log::debug(string("Lifeline close handler"));
     if ( socket->is_open( ) )
     {
         auto response = make_shared< WebSocketMessage >( WebSocketMessage::CONNECTION_CLOSE_FRAME, Bytes( { 10, 00 } ) );
@@ -29,19 +29,19 @@ void lifeline_close_handler( const shared_ptr< WebSocket > socket )
 
     const auto key = socket->get_key( );
     sockets.erase( key );
-    syslog(LOG_DEBUG, "%lu", sockets.size());
+    log::debug(string("Lifeline handler sockets size: ").append(to_string(sockets.size())));
     if (car->getEnabled() != 0 && sockets.size() == 0) {
-        syslog(LOG_ERR, "No connections car stopped");
-        car->setEnabled(0);
+        log::debug(string("No connections car stopped"));
+        car->setEnabled(false);
     }
 
-    syslog(LOG_DEBUG, "Closed connection to %s.\n", key.data( ));
+    log::debug(string("Closed connection to ").append(key.data()));
 }
 
 void lifeline_error_handler( const shared_ptr< WebSocket > socket, const error_code error )
 {
     const auto key = socket->get_key( );
-    syslog(LOG_ERR, "WebSocket Errored '%s' for %s.\n", error.message( ).data( ), key.data( ) );
+    log::debug(string("WebSocket Errored").append(error.message().data()).append(" for").append(key.data()));
 }
 
 void lifeline_message_handler( const shared_ptr< WebSocket > source, const shared_ptr< WebSocketMessage > message )
@@ -113,7 +113,7 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
                 if ( socket->is_open( ) )
                 {
                     if (pthread_mutex_lock(&checker_lock) != 0) {
-                        syslog(LOG_ERR, "Sockethandler: Could not get a lock on the queue");
+                        log::debug(string("Sockethandler: Could not get a lock on the queue"));
                     }
                     socket->set_close_handler( lifeline_close_handler );
                     socket->set_error_handler( lifeline_error_handler );
@@ -126,13 +126,13 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
                     {
                         const auto key = socket->get_key( );
                         sockets.insert( make_pair( key, socket ) );
-                        syslog(LOG_DEBUG, "%lu", sockets.size());
-                        car->setEnabled(1);
+                        log::debug(string("Lifeline handler sockets size: ").append(to_string(sockets.size())));
+                        car->setEnabled(true);
 
                         fprintf( stderr, "Sent welcome message to %s.\n", key.data( ) );
                     } );
                     if (pthread_mutex_unlock(&checker_lock) != 0) {
-                        syslog(LOG_ERR, "%s", "Sockethandler: Could not unlock the queue");
+                        log::debug(string("Sockethandler: Could not unlock the queue"));
                     }
                 }
                 else
@@ -174,7 +174,7 @@ lifeline_handler::lifeline_handler(Car *carP) {
     this->resource = make_shared< Resource >( );
     this->resource->set_path( LIFELINE );
     this->resource->set_method_handler( "GET", get_lifeline_method_handler );
-    syslog(LOG_DEBUG, "Restbed websocket: %s", LIFELINE );
+    log::debug(string("Restbed websocket: ").append(LIFELINE));
 //	pthread_t checker;
 //	pthread_create(&checker, NULL, connectionChecker, carP);
 }

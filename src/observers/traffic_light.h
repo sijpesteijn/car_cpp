@@ -11,14 +11,12 @@
 
 class traffic_light:public observer {
 public:
-    traffic_light(Camera* camera, observer* next_observer);
-    json_t* getJson(void);
+    traffic_light(Camera* camera);
+    json_t* getJson(bool full = false);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
-    cv::Rect verifyRoi();
+    void setActive(bool active);
 private:
-    Camera* camera;
-    int count = 0;
     int pixel_difference = 70;
     int current_pixel_difference = 0;
 };

@@ -1,0 +1,10 @@
+<div class="observer-status">
+    <div *ngIf="!achieved && active">
+        Active
+        <span class="circle blink active"></span>
+    </div>
+    <div *ngIf="achieved">
+        Achieved
+        <span class="circle achieved"></span>
+    </div>
+</div>

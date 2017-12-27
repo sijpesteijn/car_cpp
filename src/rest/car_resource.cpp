@@ -3,7 +3,8 @@
 //
 
 #include "car_resource.h"
-#include <syslog.h>
+#include "../util/log.h"
+
 using namespace std;
 using namespace restbed;
 
@@ -64,7 +65,7 @@ void post_car_mode_handler(const shared_ptr<Session> session) {
             car_mode mode = static_cast<car_mode>(atoi(mode_str.c_str()));
             int modeInt = (int)mode;
             if (modeInt >= 0 && modeInt <= (int)car_mode::num_values) {
-                syslog(LOG_DEBUG, "Car mode set to: %d", static_cast<std::underlying_type<car_mode>::type>(mode));
+                log::debug(string("Car mode set to: ").append(to_string(static_cast<std::underlying_type<car_mode>::type>(mode))));
                 car->setMode(mode);
                 const string body = "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + "}";
                 session->close(OK, body, {
@@ -87,19 +88,19 @@ car_resource::car_resource(Car *c) {
 
     this->carGetModeResource->set_path(CAR_MODE);
     this->carGetModeResource->set_method_handler("GET", get_car_mode_handler);
-    syslog(LOG_DEBUG, "Restbed: %s",  CAR_MODE);
+    log::debug(string("Restbed: ").append(CAR_MODE));
 
     this->carPostModeResource->set_path(CAR_MODE_POST);
     this->carPostModeResource->set_method_handler("POST", post_car_mode_handler);
-    syslog(LOG_DEBUG, "Restbed: %s",  CAR_MODE_POST);
+    log::debug(string("Restbed: ").append(CAR_MODE_POST));
 
     this->steerResource->set_path(CAR_ANGLE_POST);
     this->steerResource->set_method_handler("POST", post_angle_handler);
-    syslog(LOG_DEBUG, "Restbed: %s",  CAR_ANGLE_POST);
+    log::debug(string("Restbed: ").append(CAR_ANGLE_POST));
 
     this->engineResource->set_path(CAR_THROTTLE_POST);
     this->engineResource->set_method_handler("POST", post_throttle_handler);
-    syslog(LOG_DEBUG, "Restbed: %s",  CAR_THROTTLE_POST);
+    log::debug(string("Restbed: ").append(CAR_THROTTLE_POST));
     resource = this;
 }
 

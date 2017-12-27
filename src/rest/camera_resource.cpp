@@ -3,7 +3,7 @@
 //
 
 #include "camera_resource.h"
-#include <syslog.h>
+#include "../util/log.h"
 #include <jansson.h>
 using namespace cv;
 using namespace std;
@@ -96,16 +96,16 @@ camera_resource::camera_resource(Camera *cam) {
     camera = cam;
     this->cameraGetDimensionsResource->set_path( CAMERA_DIMENSIONS );
     this->cameraGetDimensionsResource->set_method_handler("GET", get_camera_dimensions_handler);
-    syslog(LOG_DEBUG, "Restbed: %s",  CAMERA_DIMENSIONS);
+    log::debug(string("Restbed: ").append(CAMERA_DIMENSIONS));
 
     this->cameraSettingsResource->set_path( CAMERA_SETTINGS );
     this->cameraSettingsResource->set_method_handler("GET", get_camera_settings_handler);
     this->cameraSettingsResource->set_method_handler("POST", post_camera_settings_handler);
-    syslog(LOG_DEBUG, "Restbed: %s",  CAMERA_SETTINGS);
+    log::debug(string("Restbed: ").append(CAMERA_SETTINGS));
 
     this->cameraSnapshotResource->set_path( CAMERA_SNAPSHOT );
     this->cameraSnapshotResource->set_method_handler( "GET", get_camera_snapshot_handler );
-    syslog(LOG_DEBUG, "Restbed: %s",  CAMERA_SNAPSHOT);
+    log::debug(string("Restbed: ").append(CAMERA_SNAPSHOT));
 }
 
 list<shared_ptr<Resource>> camera_resource::getResources() {

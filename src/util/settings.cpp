@@ -7,9 +7,10 @@
 
 using namespace std;
 
-settings::settings(const char *settings_file) {
+settings::settings(string settings_file) {
     this->settings_file = settings_file;
-    FILE *settingsFile = fopen(settings_file, "r+");
+//    this->file_stream.open(settings_file.c_str())
+    FILE *settingsFile = fopen(settings_file.c_str(), "r+");
     json_error_t error;
 
     root = json_loadf(settingsFile, 0, &error);
@@ -28,7 +29,7 @@ settings::~settings() {
 }
 
 void settings::save(json_t *settings) {
-    FILE *settingsFile = fopen(settings_file, "w+");
+    FILE *settingsFile = fopen(settings_file.c_str(), "w+");
     root = settings;
     json_dumpf(root, settingsFile, JSON_INDENT(5));
     fclose(settingsFile);

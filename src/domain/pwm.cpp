@@ -3,7 +3,6 @@
 //
 
 #include "pwm.h"
-#include <syslog.h>
 #include <map>
 
 map<string, string> pwmMap = {

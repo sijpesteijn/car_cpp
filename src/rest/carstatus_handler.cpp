@@ -4,7 +4,6 @@
 
 #include "carstatus_handler.h"
 #include <map>
-#include <syslog.h>
 #include <chrono>
 #include <string>
 #include <cstring>
@@ -19,6 +18,7 @@
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
 #include "../util/util.h"
+#include "../util/log.h"
 
 using namespace std;
 using namespace restbed;
@@ -122,7 +122,7 @@ void get_carstatus_method_handler( const shared_ptr< Session > session )
                     {
                         const auto key = socket->get_key( );
                         sockets.insert( make_pair( key, socket ) );
-                        car->setEnabled(1);
+                        car->setEnabled(true);
 
                         fprintf( stderr, "Sent welcome message to %s.\n", key.data( ) );
                     } );
@@ -144,14 +144,14 @@ void* carstatus_connectionChecker(void* params) {
     Car *car = (Car*) params;
     while(1) {
         if (pthread_mutex_lock(&checker_lock) != 0) {
-            syslog(LOG_ERR, "Sockethandler: Could not get a lock on the queue");
+            log::debug(string("Sockethandler: Could not get a lock on the queue"));
         }
         if (car->getEnabled() != 0 && sockets.size() == 0) {
-            syslog(LOG_ERR, "No connections car stopped");
-            car->setEnabled(0);
+            log::debug(string("No connections car stopped"));
+            car->setEnabled(false);
         }
         if (pthread_mutex_unlock(&checker_lock) != 0) {
-            syslog(LOG_ERR, "Sockethandler: Could not unlock the queue");
+            log::debug(string("Sockethandler: Could not unlock the queue"));
         }
     }
     return NULL;
@@ -162,7 +162,7 @@ carstatus_handler::carstatus_handler(Car *carP) {
     this->resource = make_shared< Resource >( );
     this->resource->set_path( CAR_STATUS );
     this->resource->set_method_handler( "GET", get_carstatus_method_handler );
-    syslog(LOG_DEBUG, "Restbed websocket: %s", CAR_STATUS );
+    log::debug(string("Restbed websocket: ").append(CAR_STATUS));
 //	pthread_t checker;
 //	pthread_create(&checker, NULL, carstatus_connectionChecker, carP);
 }

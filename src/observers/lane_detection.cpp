@@ -8,18 +8,20 @@
 using namespace cv;
 using namespace std;
 
-lane_detection::lane_detection(Camera* camera, observer* next_observer) {
-    this->camera = camera;
-    this->nextObserver = next_observer;
+lane_detection::lane_detection(Camera* camera):observer(camera) {
     this->type = "lane_detection";
-    this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
+    Size dimensions = camera->getDimensions();
+    this->roi = Rect(0, 0, dimensions.width, dimensions.height);
+    this->condition_achieved = true;
 }
 
-json_t* lane_detection::getJson(void) {
+json_t* lane_detection::getJson(bool full) {
     json_t *root = json_object();
-    json_object_set_new( root, "type", json_string( this->type ) );
-	json_object_set_new( root, "condition_achieved", json_real( this->condition_achieved ) );
-    json_object_set_new( root, "active", json_real( this->active ) );
+    json_object_set_new( root, "type", json_string( this->type.c_str() ) );
+    if (full) {
+        json_object_set_new(root, "condition_achieved", json_boolean(this->condition_achieved));
+        json_object_set_new(root, "active", json_boolean(this->active));
+    }
     json_object_set_new( root, "threshold1", json_real( this->threshold1 ) );
     json_object_set_new( root, "threshold2", json_real( this->threshold2 ) );
     json_object_set_new( root, "apertureSize", json_real( this->apertureSize ) );
@@ -33,8 +35,8 @@ json_t* lane_detection::getJson(void) {
 }
 
 int lane_detection::updateWithJson(json_t* root) {
-    this->condition_achieved = json_real_value(json_object_get(root, "condition_achieved"));
-    this->active = json_real_value(json_object_get(root, "active"));
+    this->condition_achieved = json_boolean_value(json_object_get(root, "condition_achieved"));
+    this->active = json_boolean_value(json_object_get(root, "active"));
     json_t* roi = json_object_get(root, "roi");
     this->roi.x = json_real_value(json_object_get(roi, "x"));
     this->roi.y = json_real_value(json_object_get(roi, "y"));
@@ -49,44 +51,45 @@ int lane_detection::updateWithJson(json_t* root) {
 }
 
 Rect lane_detection::verifyRoi() {
-    Size size = this->camera->getDimensions();
-    if (this->roi.x + this->roi.width > size.width) {
-        if (this->roi.x > size.width) {
+    Size dimensions = this->camera->getDimensions();
+    if (this->roi.x + this->roi.width > dimensions.width) {
+        if (this->roi.x > dimensions.width) {
             this->roi.x = 0;
-            this->roi.width = size.width;
+            this->roi.width = dimensions.width;
         } else {
-            this->roi.width = size.width - this->roi.x;
+            this->roi.width = dimensions.width - this->roi.x;
         }
     }
-    if (this->roi.y + this->roi.height > size.height) {
-        if (this->roi.y > size.height) {
+    if (this->roi.y + this->roi.height > dimensions.height) {
+        if (this->roi.y > dimensions.height) {
             this->roi.y = 0;
-            this->roi.height = size.height;
+            this->roi.height = dimensions.height;
         } else {
-            this->roi.height = size.height - this->roi.y;
+            this->roi.height = dimensions.height - this->roi.y;
         }
     }
     return this->roi;
 }
 
 observer* lane_detection::processSnapshot(Mat snapshot) {
+//    cout << "Lane detection" << endl;
+    string time = to_string(std::chrono::system_clock::now().time_since_epoch().count());
     this->roi = this->verifyRoi();
     Mat roiSnapshot = snapshot(this->roi);
     Mat blurred, gaussian, canny, cvt;
     blur(roiSnapshot, blurred, Size(3,3), Point(-1,-1));
-    imwrite("blurred.jpg", blurred);
+    writeImage(this->isActive() ? string(time).append("_blurred.jpg") : "blurred.jpg", blurred);
     GaussianBlur(blurred, gaussian, Size(3,3), 0, 0);
-    imwrite("gaussian.jpg", gaussian);
+    writeImage(this->isActive() ? string(time).append("_gaussian.jpg") : "gaussian.jpg", gaussian);
 
     Canny(gaussian, canny, this->threshold1, this->threshold2, this->apertureSize);
-    imwrite("canny.jpg", canny);
+    writeImage(this->isActive() ? string(time).append("_canny.jpg") : "canny.jpg", canny);
     cvtColor(canny, cvt, CV_GRAY2BGR);
 
     vector<Vec4i> lines;
     list<Line> vertical;
     list<Line> horizontal;
     HoughLinesP(canny, lines, 1, CV_PI/180, 50, 50, 10 );
-//    list<Line> lines;
     Point p1, p2;
     for( size_t i = 0; i < lines.size(); i++ )
     {
@@ -114,7 +117,7 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
 
 //    Line average = this->getAverageLine(vertical);
 //    line(cvt, average.p1, average.p2, Scalar(255, 255, 255), 3, CV_AA);
-    imwrite("cvt.jpg", cvt);
+    writeImage(this->isActive() ? string(time).append("_cvt.jpg") : "cvt.jpg", cvt);
     return this;
 }
 
@@ -129,4 +132,9 @@ Line lane_detection::getAverageLine(std::list<Line> lines) {
     }
 //    cout << "x y " << x1/length << " " << y1/length << endl;
     return Line(Point(x1/length, y1/length), Point(x2/length, y2/length));
+}
+
+void lane_detection::setActive(bool active) {
+    this->active = active;
+    this->condition_achieved = true;
 }

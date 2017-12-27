@@ -3,7 +3,7 @@
 //
 
 #import "pwm.h"
-#include <syslog.h>
+#include "../util/log.h"
 
 PWM::PWM(string pwmNr) {
     this->pwmNr = pwmNr;
@@ -17,19 +17,19 @@ PWM::PWM(string pwmNr, int period, int duty_cycle) {
 
 void PWM::setPeriod(int period) {
     this->period = period;
-    syslog(LOG_DEBUG, "Period set to %d", this->period);
+    log::debug(string("Period set to ").append(to_string(this->period)));
 }
 
 void PWM::setDutyCycle(int duty_cycle) {
     this->duty_cycle = duty_cycle;
-    syslog(LOG_DEBUG, "Duty cycle set to %d", this->duty_cycle);
+    log::debug(string("Duty cycle set to ").append(to_string(this->duty_cycle)));
 }
 
-void PWM::setEnable(int enable) {
+void PWM::setEnable(bool enable) {
     this->enable = enable;
-    syslog(LOG_DEBUG, "Enable set to %d", this->enable);
+    log::debug(string("Enable set to ").append(enable ? "true" : "false"));
 }
 
-int PWM::getEnabled() {
+bool PWM::getEnabled() {
     return this->enable;
 }

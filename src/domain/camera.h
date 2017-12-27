@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <pthread.h>
 #include <vector>
+#include <string>
 #include <jansson.h>
 #include "../util/settings.h"
 

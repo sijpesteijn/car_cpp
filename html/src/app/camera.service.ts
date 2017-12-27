@@ -46,7 +46,7 @@ export class CameraService {
     loadCameraSettings() {
         this.http.get(this.config.get('camera.settings'))
             .subscribe(response => {
-                this.cameraSetting.next(response);
+                this.cameraSetting.next(response as CameraSettings);
             });
     }
 

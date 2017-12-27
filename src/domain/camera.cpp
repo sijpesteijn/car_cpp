@@ -2,9 +2,8 @@
 // Created by Gijs Sijpesteijn on 06/10/2017.
 //
 #include "camera.h"
-#include <syslog.h>
+#include "../util/log.h"
 #include <thread>
-#include <string>
 
 using namespace cv;
 using namespace std;
@@ -15,7 +14,7 @@ void *frameGrabber(void *params) {
     Camera *camera = (Camera *) params;
     while (1) {
         if (pthread_mutex_lock(&frame_lock) != 0) {
-            syslog(LOG_ERR, "%s", "Sockethandler: Could not get a lock on the queue");
+            log::debug(string("Sockethandler: Could not get a lock on the queue"));
         }
         camera->cap >> camera->frame;
 //        float alpha = 1.0; // 1.0 - 3.0
@@ -32,7 +31,7 @@ void *frameGrabber(void *params) {
 //        camera->frame = new_image;
         pthread_cond_signal(&camera->frame_not_empty);
         if (pthread_mutex_unlock(&frame_lock) != 0) {
-            syslog(LOG_ERR, "%s", "Sockethandler: Could not unlock the queue");
+            log::debug(string("Sockethandler: Could not unlock the queue"));
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(camera->capture_delay));
     }
@@ -42,22 +41,23 @@ void *frameGrabber(void *params) {
 Camera::Camera() : cap(0) {
     this->sett = new settings("../src/camera.json");
     this->fromJson(sett->getSettings());
-//    if (this->cap.open(1) == false) {
-        this->cap.open(1);
-//    }
+    if (this->cap.open(1) == false) {
+        this->cap.open(0);
+    }
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
-    cout << "Width " << this->cap.get(CV_CAP_PROP_FRAME_WIDTH) << endl;
-    cout << "Height " << this->cap.get(CV_CAP_PROP_FRAME_HEIGHT) << endl;
-    cout << "Brightness " << this->cap.get(CV_CAP_PROP_BRIGHTNESS) << endl;
-    cout << "Contrast " << this->cap.get(CV_CAP_PROP_CONTRAST) << endl;
-    cout << "Hue " << this->cap.get(CV_CAP_PROP_HUE) << endl;
-    cout << "FPS " << this->cap.get(CV_CAP_PROP_FPS) << endl;
-    cout << "Saturation " << this->cap.get(CV_CAP_PROP_SATURATION) << endl;
-    cout << "Gain " << this->cap.get(CV_CAP_PROP_GAIN) << endl;
-    cout << "Convert rgb " << this->cap.get(CAP_PROP_CONVERT_RGB) << endl;
-    cout << "White balance blue " << this->cap.get(CAP_PROP_WHITE_BALANCE_BLUE_U) << endl;
-    cout << "White balance red " << this->cap.get(CAP_PROP_WHITE_BALANCE_RED_V) << endl;
+    log::debug(string("Width ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_WIDTH))));
+    log::debug(string("Height ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_HEIGHT))));
+    log::debug(string("Brightness ").append(to_string(this->cap.get(CV_CAP_PROP_BRIGHTNESS))));
+    log::debug(string("Contrast ").append(to_string(this->cap.get(CV_CAP_PROP_CONTRAST))));
+    log::debug(string("Hue ").append(to_string(this->cap.get(CV_CAP_PROP_HUE))));
+    log::debug(string("FPS ").append(to_string(this->cap.get(CV_CAP_PROP_FPS))));
+    log::debug(string("Saturation ").append(to_string(this->cap.get(CV_CAP_PROP_SATURATION))));
+    log::debug(string("Gain ").append(to_string(this->cap.get(CV_CAP_PROP_GAIN))));
+    log::debug(string("Convert rgb ").append(to_string(this->cap.get(CAP_PROP_CONVERT_RGB))));
+    log::debug(string("White balance blue ").append(to_string(this->cap.get(CAP_PROP_WHITE_BALANCE_BLUE_U))));
+    log::debug(string("White balance red ").append(to_string(this->cap.get(CAP_PROP_WHITE_BALANCE_RED_V))));
+
     pthread_t grabber;
     pthread_create(&grabber, NULL, frameGrabber, this);
 }
@@ -121,9 +121,10 @@ void Camera::fromJson(json_t *pJson) {
 json_t* Camera::getJson() {
     json_t *root = json_object();
     json_t* dimension = json_object();
-    json_object_set_new( dimension, "name", json_string( string(to_string(this->getDimensions().width) + "x" + to_string(this->getDimensions().height)).c_str() ) );
-    json_object_set_new( dimension, "width", json_integer( this->getDimensions().width ) );
-    json_object_set_new( dimension, "height", json_integer( this->getDimensions().height ) );
+    Size dimensions = this->getDimensions();
+    json_object_set_new( dimension, "name", json_string( string(to_string(dimensions.width) + "x" + to_string(dimensions.height)).c_str() ) );
+    json_object_set_new( dimension, "width", json_integer( dimensions.width ) );
+    json_object_set_new( dimension, "height", json_integer( dimensions.height ) );
     json_object_set_new( root, "dimension", dimension);
 
     json_object_set_new( root, "captureDelay", json_integer( this->capture_delay ) );

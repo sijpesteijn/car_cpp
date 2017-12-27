@@ -8,6 +8,7 @@
 
 #include "carmageddon_resource.h"
 #include "../races/race.h"
+#include "../domain/car.h"
 #include <list>
 #include <map>
 #include <restbed>
@@ -15,14 +16,17 @@
 
 class race_resource: public carmageddon_resource {
 public:
-    race_resource(Camera *camera);
+    race_resource(Camera *camera, Car *car);
     std::list<std::shared_ptr<restbed::Resource>> getResources();
     std::map<std::string, race*> races;
     race* getRace(std::string name);
     race *selected_race;
+    Car *car;
+    pthread_t race_status_runner;
 private:
     std::shared_ptr<restbed::Resource> allRaceResource = std::make_shared< restbed::Resource >( );
     std::shared_ptr<restbed::Resource> singleRaceResource = std::make_shared< restbed::Resource >( );
+    std::shared_ptr<restbed::Resource> selectRaceResource = std::make_shared< restbed::Resource >( );
     std::shared_ptr<restbed::Resource> statusRaceResource = std::make_shared< restbed::Resource >( );
     std::shared_ptr<restbed::Resource> observerPreviewResource = std::make_shared< restbed::Resource >( );
 };

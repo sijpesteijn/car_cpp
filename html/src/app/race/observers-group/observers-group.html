@@ -1,0 +1,6 @@
+<ng-container *ngFor="let observer of group?.observers">
+    <traffic-light *ngIf="observer.type === 'traffic_light'" [roiColor]="'#FFFA08'" [observer]="observer" (onChange)="updateObserver($event)"></traffic-light>
+    <lane-detection *ngIf="observer.type === 'lane_detection'" [roiColor]="'#2DFF07'" [observer]="observer" (onChange)="updateObserver($event)"></lane-detection>
+    <finish-detection *ngIf="observer.type === 'finish_detection'" [roiColor]="'#0D80FF'" [observer]="observer" (onChange)="updateObserver($event)"></finish-detection>
+    <observers-group [group]="group.group" (onChange)="updateObserver($event)"></observers-group>
+</ng-container>

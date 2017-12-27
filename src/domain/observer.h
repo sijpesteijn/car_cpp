@@ -6,35 +6,83 @@
 #define CARMAGEDDON_OBSERVER_H
 #include <string>
 #include <jansson.h>
+#include <sys/stat.h>
 #include "opencv2/core/utility.hpp"
 #include "camera.h"
 
 class observer {
 public:
+    observer(Camera *camera) {
+        this->camera = camera;
+    }
     virtual ~observer() {};
-    virtual json_t* getJson(void) =0;
+    virtual json_t* getJson(bool full = false) =0;
     virtual int updateWithJson(json_t* root) =0;
     virtual observer* processSnapshot(cv::Mat snapshot) =0;
-    observer* nextObserver; // TODO weg zit in observer_group
+    virtual void setActive(bool active) =0;
 
-    const char* getType(void) {
+    std::string getType(void) {
         return this->type;
     }
-    int isActive() {
+    bool isActive() {
         return this->active;
     }
-    void setActive(int active) {
-        this->active = active;
+    bool condition_achieved = false;
+    std::string outputDir;
+    cv::Rect verifyRoi(cv::Rect roi) {
+        cv::Size dimensions = this->camera->getDimensions();
+        if (roi.x + roi.width > dimensions.width) {
+            if (roi.x > dimensions.width) {
+                roi.x = 0;
+                roi.width = dimensions.width;
+            } else {
+                roi.width = dimensions.width - roi.x;
+            }
+        }
+        if (roi.y + roi.height > dimensions.height) {
+            if (roi.y > dimensions.height) {
+                roi.y = 0;
+                roi.height = dimensions.height;
+            } else {
+                roi.height = dimensions.height - this->roi.y;
+            }
+        }
+        return roi;
     }
-    void setConditionAchieved(int condition_achieved) {
-        this->condition_achieved = condition_achieved;
+
+    void _mkdir(const char *dir) {
+        char tmp[256];
+        char *p = NULL;
+        size_t len;
+
+        snprintf(tmp, sizeof(tmp),"%s",dir);
+        len = strlen(tmp);
+        if(tmp[len - 1] == '/')
+            tmp[len - 1] = 0;
+        for(p = tmp + 1; *p; p++)
+            if(*p == '/') {
+                *p = 0;
+                mkdir(tmp, S_IRWXU);
+                *p = '/';
+            }
+        mkdir(tmp, S_IRWXU);
     }
-    int condition_achieved = 0;
+
+    void writeImage(std::string imageName, cv::Mat image) {
+        _mkdir(this->outputDir.c_str());
+        cv::imwrite(std::string(this->outputDir).append(imageName), image);
+    }
+
+    void setOutputDir(std::string outputDir) {
+        this->outputDir = std::string(outputDir).append(this->type).append("/");
+    }
+
 protected:
-    int active = 0;
-    const char *type;
+    bool active = false;
+    std::string type;
     cv::Rect roi;
     cv::Mat last_snapshot;
+    Camera *camera;
 };
 
 #endif //CARMAGEDDON_OBSERVER_H

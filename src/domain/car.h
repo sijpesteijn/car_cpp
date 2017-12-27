@@ -18,15 +18,18 @@ public:
     int getAngle();
     int setThrottle(int throttle);
     int getThrottle();
-    int getEnabled();
-    void setEnabled(int enable);
+    bool getEnabled();
+    void setEnabled(bool enable);
     car_mode getMode();
     int setMode(car_mode);
+
+    bool isAutonomous();
+
 private:
     Steer steer;
     Engine engine;
     car_mode mode = car_mode::manual;
-    int enabled = 0;
+    bool enabled = false;
 };
 
 #endif //CARMAGEDDON_CAR_H

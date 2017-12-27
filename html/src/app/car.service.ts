@@ -10,7 +10,7 @@ export interface Car {
     throttle: number;
     angle: number;
     mode: number;
-    enabled: number;
+    enabled: boolean;
 }
 
 @Injectable()
@@ -18,7 +18,7 @@ export class CarService {
     private car: Subject<Car>;
 
     constructor(private http: HttpClient, private config: Config) {
-        this.car = new BehaviorSubject({throttle: 0, angle: 0, mode: 0, enabled: 0});
+        this.car = new BehaviorSubject({throttle: 0, angle: 0, mode: 0, enabled: false});
     }
 
     setEngine(throttle: number ) {

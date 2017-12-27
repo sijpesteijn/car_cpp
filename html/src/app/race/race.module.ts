@@ -11,6 +11,8 @@ import {ObserverPreviewComponent} from "./observer-preview/observer-preview.comp
 import {PreviewModule} from "../preview/preview.module";
 import {PreviewWithRoisComponent} from "./preview-with-rois/preview-with-rois.component";
 import {RaceComponent} from "./race.component";
+import {ObserversGroupComponent} from "./observers-group/observers-group.component";
+import {ObserverStatusComponent} from "./observer-status/observer-status.component";
 
 @NgModule({
     imports: [
@@ -25,7 +27,9 @@ import {RaceComponent} from "./race.component";
     declarations: [
         FinishDetectionComponent,
         LaneDetectionComponent,
+        ObserverStatusComponent,
         ObserverTabsComponent,
+        ObserversGroupComponent,
         PreviewWithRoisComponent,
         RaceComponent,
         TrafficLightObserverComponent,

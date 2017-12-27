@@ -3,7 +3,7 @@
 //
 
 #include "car.h"
-#include <syslog.h>
+#include "../util/log.h"
 
 
 Car::Car() {
@@ -11,40 +11,40 @@ Car::Car() {
     this->mode = car_mode::stopped;
 }
 
-int Car::setMode(car_mode status) {
+int Car::setMode(car_mode mode) {
     if (this->enabled == 1) {
-        this->mode = status;
-        syslog(LOG_DEBUG, "Mode set to: %d", this->mode);
+        this->mode = mode;
+        log::debug(string("Mode set to: ").append(to_string(static_cast<std::underlying_type<car_mode>::type>(mode))));
         return 0;
     }
-    syslog(LOG_ERR, "%s", "Car not enabled");
+    log::debug(string("Car not enabled"));
     return -1;
 }
 
 int Car::setAngle(int angle) {
     if (this->enabled == 1) {
         this->steer.setAngle(angle);
-        syslog(LOG_DEBUG, "Angle set to: %d", angle);
+        log::debug(string("Angle set to: ").append(to_string(angle)));
         return 0;
     }
-    syslog(LOG_ERR, "%s", "Car not enabled.");
+    log::debug(string("Car not enabled."));
     return -1;
 }
 
 int Car::setThrottle(int throttle) {
     if (this->enabled == 1) {
         this->engine.setThrottle(throttle);
-        syslog(LOG_DEBUG, "Throttle set to: %d", throttle);
+        log::debug(string("Throttle set to: ").append(to_string(throttle)));
         return 0;
     }
-    syslog(LOG_ERR, "%s", "Car not enabled.");
+    log::debug(string("Car not enabled."));
     return -1;
 }
 
-void Car::setEnabled(int enabled) {
-    syslog(LOG_DEBUG, "Car enabled set to: %d", enabled);
+void Car::setEnabled(bool enabled) {
+    log::debug(string("Car enabled set to: ").append(enabled ? "true" : "false"));
     this->enabled = enabled;
-    if (this->enabled == 0) {
+    if (this->enabled == false) {
         this->mode = car_mode::stopped;
     }
     this->steer.setEnable(this->enabled);
@@ -63,6 +63,10 @@ int Car::getThrottle() {
     return this->engine.getThrottle();
 }
 
-int Car::getEnabled() {
+bool Car::getEnabled() {
     return this->enabled;
+}
+
+bool Car::isAutonomous() {
+    return this->mode == car_mode::autonomous;
 }

@@ -3,7 +3,8 @@
 //
 
 #include "steer.h"
-#include <syslog.h>
+#include "../util/log.h"
+
 #define ONE_DEGREE 8250
 #define DUTY_MIDDLE 1480000
 
@@ -21,7 +22,7 @@ int Steer::setAngle(int angle) {
         }
         int duty_cycle = DUTY_MIDDLE + (this->angle * ONE_DEGREE);
         this->pwm.setDutyCycle(duty_cycle);
-        syslog(LOG_DEBUG, "Angle set to %d", this->angle);
+        log::debug(string("Angle set to ").append(to_string(this->angle)));
         return 0;
     }
     return 1;
@@ -31,6 +32,6 @@ int Steer::getAngle() {
     return this->angle;
 }
 
-void Steer::setEnable(int enable) {
+void Steer::setEnable(bool enable) {
     this->pwm.setEnable(enable);
 }

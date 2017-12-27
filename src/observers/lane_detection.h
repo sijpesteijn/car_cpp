@@ -12,13 +12,13 @@
 
 class lane_detection:public observer {
 public:
-    lane_detection(Camera* camera, observer* next_observer);
-    json_t* getJson(void);
+    lane_detection(Camera* camera);
+    json_t* getJson(bool full = false);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
     cv::Rect verifyRoi();
+    void setActive(bool active);
 private:
-    Camera* camera;
     double threshold1 = 50;
     double threshold2 = 200;
     int apertureSize = 3;

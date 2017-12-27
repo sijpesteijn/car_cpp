@@ -28,21 +28,31 @@ footer {
 }
 
 .race_step {
-  color: #cccccc;
 
-  .active {
-    color: #00BCD4 !important;
+  ul {
+    list-style-type: none;
   }
-
-  .achieved {
-    color: #4CAF50 !important;
-  }
-
 }
 
-.roi_color {
+.circle {
   width: 13px;
   height: 13px;
   border-radius: 20px;
   position: absolute;
+}
+
+.blink {
+  -webkit-animation: blinking 1s infinite;  /* Safari 4+ */
+  -moz-animation: blinking 1s infinite;  /* Fx 5+ */
+  -o-animation: blinking 1s infinite;  /* Opera 12+ */
+  animation: blinking 1s infinite;  /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes blinking {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0.5;
+  }
 }

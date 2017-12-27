@@ -26,22 +26,22 @@ export abstract class AbstractObserverComponent {
     }
 
     protected updateObserver() {
-        this.observer.active =  (Number(this.observer.active));
+        // this.observer.active =  (Number(this.observer.active));
         this.onChange.emit(this.observer);
     }
 
     activate() {
         if (this.observer) {
-            this.observer.active = 1;
-            this.observer.condition_achieved = 0;
+            this.observer.active = true;
+            this.observer.condition_achieved = false;
             this.updateObserver();
         }
     }
 
     public deactivate() {
         if (this.observer) {
-            this.observer.active = 0;
-            this.observer.condition_achieved = 0;
+            this.observer.active = false;
+            this.observer.condition_achieved = false;
             this.updateObserver();
         }
     }

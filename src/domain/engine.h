@@ -12,7 +12,7 @@ public:
     Engine();
     int setThrottle(int throttle);
     int getThrottle();
-    void setEnable(int enable);
+    void setEnable(bool enable);
 private:
     PWM pwm;
     int throttle = 0;

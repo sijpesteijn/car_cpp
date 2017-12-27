@@ -7,17 +7,18 @@
 using namespace cv;
 using namespace std;
 
-finish_detection::finish_detection(Camera *camera, observer* next_observer) {
-    this->camera = camera;
-    this->nextObserver = next_observer;
+finish_detection::finish_detection(Camera *camera):observer(camera) {
     this->type = "finish_detection";
-    this->roi = Rect(0, 0, camera->getDimensions().width, camera->getDimensions().height);
+    Size dimensions = this->camera->getDimensions();
+    this->roi = Rect(0, 0, dimensions.width, dimensions.height);
 }
 
-json_t* finish_detection::getJson(void) {
+json_t* finish_detection::getJson(bool full) {
     json_t *root = json_object();
-    json_object_set_new( root, "type", json_string( this->type ) );
-    json_object_set_new( root, "active", json_real( this->active ) );
+    json_object_set_new( root, "type", json_string( this->type.c_str() ) );
+    if (full) {
+        json_object_set_new(root, "active", json_boolean(this->active));
+    }
     json_t* roi = json_object();
     json_object_set_new( roi, "x", json_real( this->roi.x ) );
     json_object_set_new( roi, "y", json_real( this->roi.y ) );
@@ -29,8 +30,8 @@ json_t* finish_detection::getJson(void) {
 }
 
 int finish_detection::updateWithJson(json_t* root) {
-    this->condition_achieved = json_real_value(json_object_get(root, "condition_achieved"));
-    this->active = json_real_value(json_object_get(root, "active"));
+    this->condition_achieved = json_boolean_value(json_object_get(root, "condition_achieved"));
+    this->active = json_boolean_value(json_object_get(root, "active"));
     json_t* roi = json_object_get(root, "roi");
     this->roi.x = json_real_value(json_object_get(roi, "x"));
     this->roi.y = json_real_value(json_object_get(roi, "y"));
@@ -40,5 +41,11 @@ int finish_detection::updateWithJson(json_t* root) {
 }
 
 observer* finish_detection::processSnapshot(Mat snapshot) {
+//    cout << "Finish detection" << endl;
     return this;
+}
+
+void finish_detection::setActive(bool active) {
+    this->active = active;
+    this->condition_achieved = false;
 }

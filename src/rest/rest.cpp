@@ -18,6 +18,7 @@ Rest::Rest(list<carmageddon_resource*> resources) {
     for ( carmageddon_resource *carma_resource: resources) {
         for ( shared_ptr<Resource> resource : carma_resource->getResources()) {
             this->service.publish( resource );
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
     this->service.start( settings );

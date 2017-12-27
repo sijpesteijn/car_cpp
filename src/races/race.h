@@ -7,25 +7,39 @@
 
 #include "../domain/observer.h"
 #include "../util/observer_group.h"
+#include "../domain/car.h"
 #include <restbed>
 #include <jansson.h>
+#include <string>
 
 class race {
 public:
-    virtual ~race() {};
-    observer *obs;
-    observer_group *group;
-    virtual std::list<observer*> getObservers() = 0;
-    virtual json_t* getJson(void) =0;
-    virtual void updateWithJson(json_t *json, int start) =0;
-    const char *name;
-    int running = 0;
-    const char* getName(void) {
+    race();
+    race(std::string name, Car *car, Camera *camera, settings *settings, observer_group *group);
+
+    std::string name;
+    Camera *camera;
+    Car *car;
+    bool running = false;
+    observer_group *group = NULL;
+
+    json_t* getJson(bool full = false);
+    void updateWithJson(json_t *json, bool start = false);
+
+
+    bool getSelected() {
+        return this->selected;
+    }
+    std::string getName(void) {
         return this->name;
     }
-    Camera *camera;
+    void setSelected(bool selected);
+    void saveSettings();
 
-    virtual void saveSettings() = 0;
+protected:
+    bool selected = false;
+    settings *sett;
+    pthread_t observer_runner;
 };
 
 #endif //CARMAGEDDON_RACE_H

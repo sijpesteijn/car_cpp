@@ -33,8 +33,11 @@ export class LifeLineComponent {
                 this.lifeline = new WebSocket(this.config.get('lifeline.ws'));
                 clearInterval(this.retry);
                 this.lifeline.onopen    = (evt) => {
-                    this.cameraService.loadCameraDimensions();
-                    this.cameraService.loadCameraSettings();
+                    setTimeout(() =>
+                    {
+                        this.cameraService.loadCameraDimensions();
+                        this.cameraService.loadCameraSettings();
+                    }, 500);
                     this.eventService.emit(OBSERVER_ROIS_CLEAR);
                     this.router.navigate(['./off']);
                 };

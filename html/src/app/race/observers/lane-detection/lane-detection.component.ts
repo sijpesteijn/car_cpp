@@ -1,19 +1,27 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy, ViewChild} from '@angular/core';
 import {EventService} from "../../../event.service";
 import {AbstractObserverComponent} from "../abstract-observer.component";
 import {CameraService} from "../../../camera.service";
+import {PreviewComponent} from "../../../preview/preview.component";
 
 @Component({
     selector: 'lane-detection',
     template: require('./lane-detection.html'),
     styles: [require('./lane-detection.scss')]
 })
-export class LaneDetectionComponent extends AbstractObserverComponent {
+export class LaneDetectionComponent extends AbstractObserverComponent implements OnDestroy {
     private filter: string = 'cvt';
+    @ViewChild('prv') private previewComp: PreviewComponent;
 
     constructor(public cameraService: CameraService,
                 public eventService: EventService) {
         super(eventService, cameraService, 'lane_detection');
+    }
+
+    ngOnDestroy() {
+        setTimeout(() => {
+            this.previewComp.ngOnDestroy();
+        }, 200);
     }
 
     updateRoi() {

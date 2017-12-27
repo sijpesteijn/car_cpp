@@ -80,24 +80,26 @@ multimap< string, string > build_websocket_handshake_response_headers( const sha
 
 void* checkObservers(void* params) {
     race *r = (race*) params;
-    while(1) {
+    bool run = true;
+    while(run && r->car->isAutonomous()) {
         Mat snapshot = r->camera->getFrame();
-        observer *obs = r->obs;
-        while(obs) {
-            obs->processSnapshot(snapshot);
-            obs = obs->nextObserver;
+        observer_group *group = r->group;
+        while(group && r->running == false && r->car->isAutonomous()) {
+            group->processSnapshot(snapshot);
+            group = group->next;
         }
-        obs = r->obs;
-        while(obs && r->running == 1) {
-            obs->processSnapshot(snapshot);
-            if (obs->isActive() && obs->condition_achieved == 1) {
-                obs->setActive(0);
-                if (obs->nextObserver != NULL) {
-                    obs = obs->nextObserver;
-                    obs->setActive(1);
+        group = r->group;
+        while(group && r->running == true && r->car->isAutonomous() ) {
+            if (group->getActive() && group->finished()) {
+               group->setActive(false);
+                if (group->next != NULL) {
+                    group = group->next;
+                    group->setActive(true);
                 } else {
-                    r->running = 0;
+                    r->running = false;
                 }
+            } else if (group->getActive()) {
+                group->processSnapshot(snapshot);
             }
             this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
         }

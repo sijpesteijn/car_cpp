@@ -1,11 +1,11 @@
-import {Component, Input} from "@angular/core";
+import {Component, Input, OnDestroy} from "@angular/core";
 import {CameraService, CameraSettings} from "../camera.service";
 
 @Component({
     selector: 'preview',
     template: require('./preview.html')
 })
-export class PreviewComponent {
+export class PreviewComponent implements OnDestroy {
     private reloadInterval: any;
     private last_update: Date;
     private status: string = 'loading';
@@ -33,6 +33,13 @@ export class PreviewComponent {
 
     ngAfterViewInit() {
         this.getPreviewImage();
+    }
+
+    ngOnDestroy() {
+        console.log('preview destroy');
+        setTimeout(() => {
+            clearInterval(this.reloadInterval);
+        }, 200);
     }
 
     private reloadPreview() {

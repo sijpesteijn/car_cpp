@@ -15,11 +15,11 @@ public:
     PWM(string pwmNr, int period, int duty_cycle);
     void setPeriod(int period);
     void setDutyCycle(int duty_cycle);
-    void setEnable(int enable);
-    int getEnabled();
+    void setEnable(bool enable);
+    bool getEnabled();
 private:
     string pwmNr;
-    int enable = 0;
+    bool enable = false;
     int duty_cycle = 10000000;
     int period     = 20000000;
 };

@@ -10,12 +10,12 @@
 
 class finish_detection: public observer {
 public:
-    finish_detection(Camera *camera, observer* next_observer);
-    json_t* getJson(void);
+    finish_detection(Camera *camera);
+    json_t* getJson(bool full = false);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
+    void setActive(bool active);
 private:
-    Camera* camera;
 };
 
 
