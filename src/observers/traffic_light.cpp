@@ -14,8 +14,6 @@
 using namespace cv;
 using namespace std;
 
-pthread_mutex_t snapshot_lock = PTHREAD_MUTEX_INITIALIZER;
-
 traffic_light::traffic_light(Camera* camera):observer(camera) {
     this->type = "traffic_light";
     this->pixel_difference = 70;
@@ -29,7 +27,7 @@ json_t* traffic_light::getJson(bool full) {
     json_object_set_new( root, "type", json_string( this->type.c_str()) );
     if (full) {
         json_object_set_new(root, "condition_achieved", json_boolean(this->condition_achieved));
-        json_object_set_new(root, "active", json_boolean(this->active));
+        json_object_set_new(root, "selected", json_boolean(this->selected));
         json_object_set_new(root, "current_pixel_difference", json_real(this->current_pixel_difference));
     }
     json_t* roi = json_object();
@@ -55,44 +53,40 @@ int traffic_light::updateWithJson(json_t* root) {
 }
 
 observer* traffic_light::processSnapshot(Mat snapshot) {
-    if (!this->condition_achieved) {
-        this->current_pixel_difference = 0;
-    }
+//    if (!this->condition_achieved) {
+//        this->current_pixel_difference = 0;
+//    }
     this->roi = this->verifyRoi(this->roi);
     Mat roiSnapshot = snapshot(this->roi);
 
     if (!this->condition_achieved && !this->last_snapshot.empty()
         && this->last_snapshot.size() == roiSnapshot.size()) {
-        if (pthread_mutex_lock(&snapshot_lock) != 0) {
-            log::debug(string("Could not get a lock on the snapshot lock"));
-        }
-        Mat result;
+        Mat result, mask;
         absdiff(roiSnapshot, this->last_snapshot, result);
         cvtColor(result, result, CV_BGR2GRAY);
-        float threshold = 30;
-        Mat mask = result < threshold;
+        threshold(result, mask, 30, 255.0, CV_THRESH_BINARY);
         int nonZero = countNonZero(mask);
         int percentage = 0;
         if (nonZero > 0 ) {
-            percentage = 100 - (int) (nonZero*100/mask.total());
+            percentage = (int) (nonZero*100/mask.total());
         }
         this->current_pixel_difference = percentage;
-        if (this->isActive() && percentage >= this->pixel_difference) {
+        if (this->isRunning() && percentage >= this->pixel_difference) {
             this->condition_achieved = true;
         }
         if (percentage > 0) {
             cout << "Traffic_light - difference: " << to_string(percentage) << "%" << endl;
         }
-        if (pthread_mutex_unlock(&snapshot_lock) != 0) {
-            log::debug(string("Could not unlock on the snapshot lock"));
-        }
+        imwrite("first.jpg", this->last_snapshot);
+        this->last_snapshot = roiSnapshot.clone();
+        imwrite("sec.jpg", this->last_snapshot);
     } else {
         this->last_snapshot = roiSnapshot.clone();
     }
     return this;
 }
 
-void traffic_light::setActive(bool active) {
-    this->active = active;
+void traffic_light::setSelected(bool selected) {
+    this->selected = selected;
     this->current_pixel_difference = 0;
 }

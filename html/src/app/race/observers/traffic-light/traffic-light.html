@@ -1,6 +1,6 @@
 <div class="race_step">
 <fieldset *ngIf="observer">
-    <observer-status [active]="observer.active" [achieved]="observer.condition_achieved"></observer-status>
+    <observer-status [selected]="observer.selected" [achieved]="observer.condition_achieved"></observer-status>
     <legend>Trafficlight detection</legend>
     <ul class="traffic_lightobserver">
         <li>Roi color: <span class="circle" [style.background-color]="roiColor"></span></li>
@@ -8,7 +8,7 @@
         <li>Roi y: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="setRoi()"> {{ observer?.roi.y }}</li>
         <li>Roi width: <input type="range" [min]="0" [max]="max_width" [(ngModel)]="observer?.roi.width" (ngModelChange)="setRoi()"> {{ observer?.roi.width }}</li>
         <li>Roi height: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.height" (ngModelChange)="setRoi()"> {{ observer?.roi.height }}</li>
-        <li>Pixel difference: <input type="range" min="0" max="100" [(ngModel)]="observer.pixel_difference" (ngModelChange)="updateObserver()"> {{ observer.pixel_difference }}</li>
+        <li>Pixel difference: <input type="range" min="0" max="100" [(ngModel)]="observer.pixel_difference" (ngModelChange)="updateObserver($event)"> {{ observer.pixel_difference }}</li>
         <li>Current pixel difference: {{ observer.current_pixel_difference}}</li>
     </ul>
 </fieldset>

@@ -5,7 +5,7 @@
 #ifndef CARMAGEDDON_TRAFFIC_LIGHT_H
 #define CARMAGEDDON_TRAFFIC_LIGHT_H
 
-#include "../domain/observer.h"
+#include "observer.h"
 #include "../domain/camera.h"
 #include <jansson.h>
 
@@ -15,7 +15,7 @@ public:
     json_t* getJson(bool full = false);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
-    void setActive(bool active);
+    void setSelected(bool selected);
 private:
     int pixel_difference = 70;
     int current_pixel_difference = 0;

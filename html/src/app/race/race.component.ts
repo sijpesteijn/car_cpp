@@ -16,7 +16,7 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        this.startReconnect();
+        this.setupWebsocket();
     }
 
     ngOnDestroy() {
@@ -26,34 +26,38 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
         }
     }
 
+    private setupWebsocket() {
+        this.raceWebsocket = new WebSocket(this.config.get('race.status'));
+        this.raceWebsocket.onopen    = () => {
+            console.log('Opening race websocket');
+        };
+        this.raceWebsocket.onmessage = (msg) => {
+            if (msg.data) {
+                const race = JSON.parse(msg.data);
+                const org = this.cloneAndStrip(race);
+                // console.log('Org race ', this.race);
+                // console.log('New race ', race);
+                if (!this.race) {
+                    this.race = race;
+                } else if (this.race && JSON.stringify(org) !== JSON.stringify(this.race)) {
+                    this.race = race;
+                }
+            }
+        };
+        this.raceWebsocket.onerror   = (error) => {
+            console.log('Error race websocket');
+            // this.startReconnect();
+        };
+        this.raceWebsocket.onclose   = (event) => {
+            console.log('Closing race websocket');
+            // this.startReconnect();
+        };
+    }
+
     private startReconnect() {
         this.retry = setInterval(() => {
             try {
-                this.raceWebsocket = new WebSocket(this.config.get('race.status'));
-                clearInterval(this.retry);
-                this.raceWebsocket.onopen    = () => {
-                    console.log('Opening race websocket');
-                };
-                this.raceWebsocket.onmessage = (msg) => {
-                    if (msg.data) {
-
-                        const race = JSON.parse(msg.data);
-                        const org = this.cloneAndStrip(race);
-                        if (this.race && JSON.stringify(org) !== JSON.stringify(this.race)) {
-                            this.race = race;
-                        } else {
-                            this.race = race;
-                        }
-                    }
-                };
-                this.raceWebsocket.onerror   = (error) => {
-                    console.log('Error race websocket');
-                    // this.startReconnect();
-                };
-                this.raceWebsocket.onclose   = (event) => {
-                    console.log('Closing race websocket');
-                    // this.startReconnect();
-                };
+                this.setupWebsocket();
             } catch (error) {
                 console.error(error);
             }
@@ -63,17 +67,14 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
 
     private cloneAndStrip(race: Race) {
         const org: Race = JSON.parse(JSON.stringify(race));
-        this.stripObserversGroup(org.group);
+        this.stripObserversGroups(org.groups);
         return org;
     }
 
-    private stripObserversGroup(group: ObserverGroup) {
-        group.observers.forEach(observer => {
+    private stripObserversGroups(groups: ObserverGroup[]) {
+        groups.forEach(group => group.observers.forEach(observer => {
             delete observer.roi.type;
             delete observer.roi.color;
-        });
-        if (group.group) {
-            this.stripObserversGroup(group.group);
-        }
+        }));
     }
 }

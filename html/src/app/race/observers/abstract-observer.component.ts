@@ -19,30 +19,17 @@ export abstract class AbstractObserverComponent {
                 public cameraService: CameraService,
                 public type: string) {
         cameraService.getCameraInfo().subscribe(cameraInfo => {
-            this.max_width = cameraInfo.dimension.width;
-            this.max_height = cameraInfo.dimension.height;
-            this.updateRoi();
+            if (cameraInfo) {
+                this.max_width = cameraInfo.dimension.width;
+                this.max_height = cameraInfo.dimension.height;
+                this.updateRoi();
+            }
         });
     }
 
-    protected updateObserver() {
-        // this.observer.active =  (Number(this.observer.active));
-        this.onChange.emit(this.observer);
-    }
-
-    activate() {
-        if (this.observer) {
-            this.observer.active = true;
-            this.observer.condition_achieved = false;
-            this.updateObserver();
-        }
-    }
-
-    public deactivate() {
-        if (this.observer) {
-            this.observer.active = false;
-            this.observer.condition_achieved = false;
-            this.updateObserver();
+    protected updateObserver($event: any) {
+        if ($event) {
+            this.onChange.emit(this.observer);
         }
     }
 
@@ -67,7 +54,7 @@ export abstract class AbstractObserverComponent {
             this.observer.roi.color = this.roiColor;
             this.observer.roi.type = this.type;
             this.eventService.emit(OBSERVER_ROI_SET, this.observer);
-            this.updateObserver();
+            this.onChange.emit(this.observer);
         }
     }
 

@@ -41,8 +41,6 @@ import {NgxVirtualJoystickModule} from "ngx-virtual-joystick";
 import {CameraStatusComponent} from "./header/camera-status/camera-status.component";
 import {CameraService} from "./camera.service";
 import {EventService} from "./event.service";
-import {ObserversStateMessagesService} from "./observers_state_messages.service";
-import {ObserversStateMessagesComponent} from "./race/observers-state-messages/observers-state-messages.component";
 import {RaceService} from "./race/race.service";
 import {HttpClientModule} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
@@ -114,7 +112,6 @@ if ('local' === process.env.CONTEXT) {
         CameraService,
         EventService,
         RaceService,
-        ObserversStateMessagesService,
         Config
     ]
 })

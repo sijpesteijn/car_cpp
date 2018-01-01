@@ -6,6 +6,6 @@ import {Component, Input} from "@angular/core";
     styles: [require('./observer-status.scss')]
 })
 export class ObserverStatusComponent {
-    @Input() active: boolean;
+    @Input() selected: boolean;
     @Input() achieved: boolean;
 }

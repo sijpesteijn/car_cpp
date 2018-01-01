@@ -11,7 +11,7 @@ observer_group::observer_group(string name, list<observer*> observers) {
     this->observers = observers;
 }
 
-bool observer_group::finished() {
+bool observer_group::isFinished() {
     int finished = true;
     for (observer *obs: this->observers) {
         if (obs->condition_achieved == false) {
@@ -28,16 +28,33 @@ void observer_group::processSnapshot(cv::Mat mat) {
     }
 }
 
-void observer_group::setActive(bool active) {
-    if (this->active != active) {
-        this->active = active;
-        for(observer *obs: this->observers) {
-            obs->setActive(this->active);
-        }
-        if (this->next) {
-            this->next->setActive(active);
-        }
+void observer_group::setSelected(bool selected) {
+    this->selected = selected;
+    for(observer *obs: this->observers) {
+        obs->setSelected(this->selected);
     }
+}
+
+bool observer_group::isSelected() {
+    return this->selected;
+}
+
+void observer_group::setRunning(bool running) {
+    this->running = running;
+    for (observer *obs: this->observers) {
+        obs->setRunning(running);
+    }
+//    string time = to_string(chrono::system_clock::now().time_since_epoch().count());
+//    for( observer *obs: this->observers) {
+//        if (this->running) {
+//            obs->setOutputDir(string(this->baseImagePath)
+//                                      .append(this->name).append("/")
+//                                      .append(time).append("/"));
+//        } else {
+//            obs->setOutputDir(string(this->baseImagePath).append(this->name).append("/")
+//                                      .append(obs->getType()).append("/"));
+//        }
+//    }
 }
 
 observer *observer_group::getObserver(string type) {
@@ -53,16 +70,12 @@ void observer_group::reset() {
     for( observer *obs: this->observers) {
         obs->condition_achieved = false;
     }
-    if (this->next) {
-        this->next->reset();
-    }
 }
 
 void observer_group::setOutputDir(std::string outputDir) {
+    this->baseImagePath = outputDir;
     for( observer *obs: this->observers) {
-        obs->setOutputDir(std::string(outputDir).append(this->name).append("/"));
-    }
-    if (this->next) {
-        this->next->setOutputDir(outputDir);
+        obs->setOutputDir(string(this->baseImagePath).append(this->name).append("/")
+                                  .append(obs->getType()).append("/"));
     }
 }

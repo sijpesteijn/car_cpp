@@ -11,11 +11,27 @@ export class ObserverTabsComponent implements OnDestroy {
     private selectedRace: Race;
     @Input()
     set race(race: Race) {
+        // console.log('Racve ', race);
         if (race) {
             if (race.name !== this.selectedRace.name) {
                 this.selectedRace = race;
+                // console.log('Sel race ', this.selectedRace);
             } else {
-                this.updateGroupIfChanged(this.selectedRace.group, race.group);
+                for (let i = 0; i < this.selectedRace.groups.length; i++) {
+                    const orgGrp = JSON.parse(JSON.stringify(this.selectedRace.groups[i]));
+                    orgGrp.observers.forEach(observer => {
+                        delete observer.roi.type;
+                        delete observer.roi.color;
+                    });
+                    const newGrp = race.groups[i];
+                    if (!newGrp) {
+                        delete this.selectedRace.groups[i];
+                    } else if (JSON.stringify(orgGrp) !== JSON.stringify(newGrp)) {
+                        // console.log('Org ', JSON.stringify(orgGrp));
+                        // console.log('New ', JSON.stringify(newGrp));
+                        this.selectedRace.groups[i] = newGrp;
+                    }
+                }
             }
         }
     }
@@ -37,7 +53,7 @@ export class ObserverTabsComponent implements OnDestroy {
     }
 
     ngOnDestroy() {
-        if(this.selectedRace.running) {
+        if(this.selectedRace && this.selectedRace.running) {
             this.stopRace();
         }
     }
@@ -51,61 +67,43 @@ export class ObserverTabsComponent implements OnDestroy {
 
     startRace() {
         this.selectedRace.running = true;
-        this.raceService.saveRace(this.selectedRace).subscribe(() => {
+        this.raceService.saveRace().subscribe(() => {
             this.started = true;
         });
     }
 
-    stopObserversGroup(group: ObserverGroup) {
-        group.observers.forEach(observer => {
-            observer.active = false;
+    stopObserversGroups(groups: ObserverGroup[]) {
+        groups.forEach(group => group.observers.forEach(observer => {
+            observer.selected = false;
             observer.condition_achieved = false;
-        });
-        if (group.group) {
-            this.stopObserversGroup(group.group);
-        }
+        }));
     }
 
     stopRace() {
-        this.selectedRace.running = false;
-        this.stopObserversGroup(this.selectedRace.group);
-        this.raceService.saveRace(this.selectedRace).subscribe(() => {
-            this.started = false;
-        });
-    }
-
-    private replaceObserver(group: ObserverGroup, observer: CarObserver) {
-        const updateObs = group.observers.filter(obs => obs.type === observer.type);
-        if (updateObs.length > 0) {
-            updateObs[0] = observer;
-        } else if(group.group) {
-            this.replaceObserver(group.group, observer);
+        if (this.selectedRace) {
+            this.selectedRace.running = false;
+            this.stopObserversGroups(this.selectedRace.groups);
+            this.raceService.saveRace().subscribe(() => {
+                this.started = false;
+            });
         }
     }
 
-    updateObserver(observer: CarObserver) {
-        this.replaceObserver(this.selectedRace.group, observer);
-        this.raceService.saveRace(this.selectedRace).subscribe(() => {});
-    }
-
-    private updateGroupIfChanged(orgGroup: ObserverGroup, newGroup: ObserverGroup) {
-        const orgClone = JSON.parse(JSON.stringify(orgGroup));
-        const newClone = JSON.parse(JSON.stringify(newGroup));
-        orgClone.group = undefined;
-        newClone.group = undefined;
-        if (JSON.stringify(orgClone) !== JSON.stringify(newClone)) {
-            newClone.group = newGroup.group;
-            this.updateGroup(this.selectedRace.group, newClone);
-            console.log('Bew ', this.selectedRace);
-            newGroup = newClone;
-        }
-    }
-
-    private updateGroup(orgGroup: ObserverGroup, newGroup: ObserverGroup) {
-        if (orgGroup.name === newGroup.name) {
-            orgGroup = newGroup;
-        } else {
-            this.updateGroup(orgGroup.group, newGroup);
-        }
+    updateRace(newGroup: ObserverGroup) {
+        // console.log('Race ', this.selectedRace);
+         this.raceService.saveRace().subscribe(() => {});
+        // }
+        // const index = this.selectedRace.groups.findIndex(group => group.name === newGroup.name);
+        // const orgGroup = JSON.parse(JSON.stringify(this.selectedRace.groups[index]));
+        // orgGroup.observers.forEach(observer => {
+        //     delete observer.roi.type;
+        //     delete observer.roi.color;
+        // });
+        // console.log('Org ', JSON.stringify(orgGroup));
+        // console.log('New ', JSON.stringify(newGroup));
+        // if (JSON.stringify(orgGroup) !== JSON.stringify(newGroup)) {
+        //     this.selectedRace.groups[index] = newGroup;
+        //     this.raceService.saveRace(this.selectedRace).subscribe(() => {});
+        // }
     }
 }

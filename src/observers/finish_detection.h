@@ -6,7 +6,7 @@
 #define CARMAGEDDON_FINISH_DETECTION_H
 
 
-#include "../domain/observer.h"
+#include "observer.h"
 
 class finish_detection: public observer {
 public:
@@ -14,7 +14,7 @@ public:
     json_t* getJson(bool full = false);
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
-    void setActive(bool active);
+    void setSelected(bool selected);
 private:
 };
 

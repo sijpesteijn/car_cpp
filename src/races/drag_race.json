@@ -1,20 +1,22 @@
 {
      "name": "drag",
-     "group": {
-          "name": "group1",
-          "observers": [
-               {
-                    "type": "traffic_light",
-                    "roi": {
-                         "x": 194.0,
-                         "y": 229.0,
-                         "height": 35.0,
-                         "width": 57.0
-                    },
-                    "pixel_difference": 76.0
-               }
-          ],
-          "group": {
+     "groups": [
+          {
+               "name": "group1",
+               "observers": [
+                    {
+                         "type": "traffic_light",
+                         "roi": {
+                              "x": 250.0,
+                              "y": 229.0,
+                              "height": 35.0,
+                              "width": 57.0
+                         },
+                         "pixel_difference": 50.0
+                    }
+               ]
+          },
+          {
                "name": "group2",
                "observers": [
                     {
@@ -24,8 +26,8 @@
                          "apertureSize": 3.0,
                          "roi": {
                               "x": 0.0,
-                              "y": 32.0,
-                              "height": 448.0,
+                              "y": 149.0,
+                              "height": 331.0,
                               "width": 640.0
                          }
                     },
@@ -40,5 +42,5 @@
                     }
                ]
           }
-     }
+     ]
 }

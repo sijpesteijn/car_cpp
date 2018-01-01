@@ -1,20 +1,22 @@
 {
      "name": "track",
-     "group": {
-          "name": "group1",
-          "observers": [
-               {
-                    "type": "traffic_light",
-                    "roi": {
-                         "x": 85.0,
-                         "y": 229.0,
-                         "height": 35.0,
-                         "width": 57.0
-                    },
-                    "pixel_difference": 61.0
-               }
-          ],
-          "group": {
+     "groups": [
+          {
+               "name": "group2",
+               "observers": [
+                    {
+                         "type": "traffic_light",
+                         "roi": {
+                              "x": 85.0,
+                              "y": 229.0,
+                              "height": 35.0,
+                              "width": 57.0
+                         },
+                         "pixel_difference": 61.0
+                    }
+               ]
+          },
+          {
                "name": "group2",
                "observers": [
                     {
@@ -40,5 +42,5 @@
                     }
                ]
           }
-     }
+     ]
 }

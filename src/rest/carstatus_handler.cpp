@@ -69,7 +69,7 @@ void carstatus_message_handler( const shared_ptr< WebSocket > source, const shar
         //
         //On each occasion the underlying TCP socket sees any packet data transfer, whether
         //a PING, PONG, TEXT, or BINARY... frame. It will automatically reset the timeout counter
-        //leaving the connection active; see also Settings::set_connection_timeout.
+        //leaving the connection selected; see also Settings::set_connection_timeout.
         return;
     }
     else if ( opcode == WebSocketMessage::CONNECTION_CLOSE_FRAME )

@@ -36,7 +36,6 @@ export class PreviewComponent implements OnDestroy {
     }
 
     ngOnDestroy() {
-        console.log('preview destroy');
         setTimeout(() => {
             clearInterval(this.reloadInterval);
         }, 200);

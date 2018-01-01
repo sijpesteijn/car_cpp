@@ -13,7 +13,7 @@ using namespace restbed;
 #define RACE_ALL "/race"
 #define RACE_SINGLE "/race/{name: .*}"
 #define RACE_SELECT "/race/select/{name: .*}"
-#define RACE_OBSERVER_PREVIEW "/race/observer/{stage: .*}/{timestamp: .*}"
+#define RACE_OBSERVER_PREVIEW "/race/{name: .*}/{group: .*}/{observer: .*}/{stage: .*}/{timestamp: .*}"
 #define RACE_STATUS "/status"
 
 static map< string, shared_ptr< WebSocket > > sockets = { };
@@ -25,9 +25,10 @@ void* checkRaceStatus(void* params) {
     race_resource *r = (race_resource*) params;
     bool run = true;
     while(run) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (r->selected_race && r->car->getMode() != car_mode::autonomous) {
             r->selected_race->setSelected(false);
+            r->selected_race->setRunning(false);
             pthread_cancel(r->race_status_runner);
             r->selected_race = NULL;
         }
@@ -37,11 +38,11 @@ void* checkRaceStatus(void* params) {
                 shared_ptr<WebSocket> socket = iter->second;
                 json_t* json = r->selected_race->getJson(true);
                 string body = json_dumps(json, 0);
-                cout << "Race status-" << body << endl;
                 json_decref(json);
 
                 auto response = make_shared<WebSocketMessage>(WebSocketMessage::TEXT_FRAME, body);
                 socket->send(response);
+//                log::debug(body);
             }
         }
     }
@@ -119,7 +120,6 @@ void status_race_handler( const shared_ptr< Session > session )
                         const auto key = socket->get_key( );
                         sockets.insert( make_pair( key, socket ) );
                         log::debug(string("Race resource sockets size ").append(to_string(sockets.size())));
-                        fprintf( stderr, "Race resource: Sent welcome message to %s.\n", key.data( ) );
                     } );
                     if (pthread_mutex_unlock(&checker_lock) != 0) {
                         log::debug(string("Sockethandler: Could not unlock the queue"));
@@ -182,10 +182,11 @@ void select_race_handler(const shared_ptr<Session> session) {
         for(auto const& race : resource->races) {
             race.second->setSelected(false);
         }
+        race->setSelected(true);
         json_t* json = race->getJson(true);
         string body = json_dumps(json, 0);
+        cout << "Race " << body << endl;
         json_decref(json);
-        race->setSelected(true);
 
         session->close(OK, body, {
                 { "Content-Type", "application/json" },
@@ -196,10 +197,15 @@ void select_race_handler(const shared_ptr<Session> session) {
 
 void get_race_observer_preview(const shared_ptr<Session> session) {
     const auto& request = session->get_request( );
-    const string stage = request->get_path_parameter("stage");
-
-
-    ifstream stream(stage + ".jpg", ios::in | ios::binary);
+    const string name = request->get_path_parameter("name");
+    const string group = request->get_path_parameter("group");
+    const string observer = request->get_path_parameter("observer");
+    const string observer_stage = request->get_path_parameter("stage");
+    string previewImage = "";
+    if (resource->selected_race) {
+        previewImage = resource->selected_race->getPreviewImageLocation(group, observer, observer_stage);
+    }
+    ifstream stream(previewImage, ios::in | ios::binary);
     const string body = string( istreambuf_iterator< char >( stream ), istreambuf_iterator< char >( ) );
     const multimap< string, string > headers
             {

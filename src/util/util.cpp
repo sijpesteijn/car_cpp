@@ -83,25 +83,29 @@ void* checkObservers(void* params) {
     bool run = true;
     while(run && r->car->isAutonomous()) {
         Mat snapshot = r->camera->getFrame();
-        observer_group *group = r->group;
-        while(group && r->running == false && r->car->isAutonomous()) {
-            group->processSnapshot(snapshot);
-            group = group->next;
-        }
-        group = r->group;
-        while(group && r->running == true && r->car->isAutonomous() ) {
-            if (group->getActive() && group->finished()) {
-               group->setActive(false);
-                if (group->next != NULL) {
-                    group = group->next;
-                    group->setActive(true);
-                } else {
-                    r->running = false;
-                }
-            } else if (group->getActive()) {
+        if (!r->isRunning() && r->car->isAutonomous()) {
+            for (observer_group *group: r->groups) {
                 group->processSnapshot(snapshot);
             }
-            this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
+        }
+        if (r->isRunning() && r->car->isAutonomous()) {
+            for (std::list<observer_group*>::iterator it= r->groups.begin(); it != r->groups.end(); ++it) {
+                observer_group *group = *it;
+                if (group->isSelected() && group->isFinished()) {
+                    group->setSelected(false);
+                    it = ++it;
+                    if (it != r->groups.end()) {
+                        group = *it;
+                        group->setSelected(true);
+                        group->processSnapshot(snapshot);
+                    } else {
+                        r->setRunning(false);
+                    }
+                } else if (group->isSelected()) {
+                    group->processSnapshot(snapshot);
+                }
+//                this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
+            }
         }
         this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
     }

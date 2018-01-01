@@ -5,26 +5,27 @@
 #ifndef CARMAGEDDON_OBSERVER_GROUP_H
 #define CARMAGEDDON_OBSERVER_GROUP_H
 
-#include "../domain/observer.h"
+#include "../observers/observer.h"
 #include <list>
+#include <string>
 
 class observer_group {
 public:
     observer_group(std::string name, std::list<observer*> observers);
-    bool finished();
-    observer_group *next;
+    bool isFinished();
     void processSnapshot(cv::Mat mat);
     std::list<observer*> observers;
-    bool getActive() {
-        return this->active;
-    }
-    void setActive(bool active);
+    void setSelected(bool selected);
+    bool isSelected();
+    void setRunning(bool selected);
     observer *getObserver(std::string basic_string);
     void reset();
     void setOutputDir(std::string outputDir);
     std::string name;
 private:
-    bool active;
+    bool selected;
+    bool running;
+    std::string baseImagePath;
 };
 
 

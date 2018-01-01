@@ -8,7 +8,7 @@
 #include <jansson.h>
 #include <sys/stat.h>
 #include "opencv2/core/utility.hpp"
-#include "camera.h"
+#include "../domain/camera.h"
 
 class observer {
 public:
@@ -19,13 +19,29 @@ public:
     virtual json_t* getJson(bool full = false) =0;
     virtual int updateWithJson(json_t* root) =0;
     virtual observer* processSnapshot(cv::Mat snapshot) =0;
-    virtual void setActive(bool active) =0;
+    virtual void setSelected(bool selected) =0;
+
+    void setRunning(bool running) {
+        this->running = running;
+    }
+
+    bool isRunning() {
+        return this->running;
+    }
+
+    void setActive(bool active) {
+        this->active = active;
+    }
+
+    bool isActive() {
+        return this->active;
+    }
 
     std::string getType(void) {
         return this->type;
     }
-    bool isActive() {
-        return this->active;
+    bool isSelected() {
+        return this->selected;
     }
     bool condition_achieved = false;
     std::string outputDir;
@@ -69,16 +85,22 @@ public:
     }
 
     void writeImage(std::string imageName, cv::Mat image) {
-        _mkdir(this->outputDir.c_str());
+//        std::cout << this->outputDir << std::endl;
         cv::imwrite(std::string(this->outputDir).append(imageName), image);
     }
 
-    void setOutputDir(std::string outputDir) {
-        this->outputDir = std::string(outputDir).append(this->type).append("/");
+    virtual void setOutputDir(std::string outputDir) {
+        this->outputDir = outputDir;
+    }
+
+    virtual std::string getPreviewImageLocation(const std::string stage) {
+        return std::string();
     }
 
 protected:
+    bool selected = false;
     bool active = false;
+    bool running = false;
     std::string type;
     cv::Rect roi;
     cv::Mat last_snapshot;

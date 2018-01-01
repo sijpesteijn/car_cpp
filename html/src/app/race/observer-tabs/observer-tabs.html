@@ -1,6 +1,6 @@
 <div class="observer-tabs">
     <ul class="tabs">
-        <li class="tablink" *ngFor="let race of races" (click)="selectRace(race)" [class.active]="selectedRace?.name === race.name" [innerHTML]="race.name"></li>
+        <li class="tablink" *ngFor="let race of races" (click)="selectRace(race)" [class.selected]="selectedRace?.name === race.name" [innerHTML]="race.name"></li>
     </ul>
 
     <div class="tab" *ngIf="selectedRace">
@@ -8,6 +8,6 @@
             <button *ngIf="!selectedRace?.running" (click)="startRace()" class="start">Start</button>
             <button *ngIf="selectedRace?.running" (click)="stopRace()" class="stop">Stop</button>
         </div>
-        <observers-group [group]="selectedRace.group" (onChange)="updateObserver($event)"></observers-group>
+        <observers-group *ngFor="let group of selectedRace.groups" [group]="group" (onChange)="updateRace($event)"></observers-group>
     </div>
 </div>

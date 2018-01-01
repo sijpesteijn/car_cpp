@@ -63,7 +63,7 @@ void lifeline_message_handler( const shared_ptr< WebSocket > source, const share
         //
         //On each occasion the underlying TCP socket sees any packet data transfer, whether
         //a PING, PONG, TEXT, or BINARY... frame. It will automatically reset the timeout counter
-        //leaving the connection active; see also Settings::set_connection_timeout.
+        //leaving the connection selected; see also Settings::set_connection_timeout.
         return;
     }
     else if ( opcode == WebSocketMessage::CONNECTION_CLOSE_FRAME )
@@ -129,7 +129,7 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
                         log::debug(string("Lifeline handler sockets size: ").append(to_string(sockets.size())));
                         car->setEnabled(true);
 
-                        fprintf( stderr, "Sent welcome message to %s.\n", key.data( ) );
+                        log::debug(string("Lifeline resource sockets size ").append(to_string(sockets.size())));
                     } );
                     if (pthread_mutex_unlock(&checker_lock) != 0) {
                         log::debug(string("Sockethandler: Could not unlock the queue"));

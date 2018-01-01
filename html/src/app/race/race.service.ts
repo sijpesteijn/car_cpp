@@ -17,11 +17,12 @@ export interface Roi {
 export interface CarObserver {
     condition_achieved: boolean;
     type: string;
-    active: boolean;
+    selected: boolean;
     roi: Roi;
 }
 
 export interface ObserverGroup {
+    name: string;
     group: ObserverGroup;
     observers: CarObserver[];
 }
@@ -30,7 +31,7 @@ export interface Race {
     name: string;
     running: boolean;
     selected: boolean;
-    group: ObserverGroup;
+    groups: ObserverGroup[];
 }
 
 @Injectable()
@@ -66,25 +67,8 @@ export class RaceService {
         return this.race;
     }
 
-    saveRace(race: Race): Observable<Race> {
-        const org = this.cloneAndStrip(race);
-        return this.http.post(this.config.get('race.save').replace(':name', org.name), JSON.stringify(org))
+    saveRace(): Observable<Race> {
+        return this.http.post(this.config.get('race.save').replace(':name', (this.race as any).value.name), JSON.stringify((this.race as any).value))
             .map((response: Race) => response);
-    }
-
-    private cloneAndStrip(race: Race) {
-        const org: Race = JSON.parse(JSON.stringify(race));
-        this.stripObserversGroup(org.group);
-        return org;
-    }
-
-    private stripObserversGroup(group: ObserverGroup) {
-        group.observers.forEach(observer => {
-            delete observer.roi.type;
-            delete observer.roi.color;
-        });
-        if (group.group) {
-            this.stripObserversGroup(group.group);
-        }
     }
 }

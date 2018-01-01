@@ -3,7 +3,6 @@
 //
 
 #include "lane_detection.h"
-#include "Line.h"
 
 using namespace cv;
 using namespace std;
@@ -20,7 +19,7 @@ json_t* lane_detection::getJson(bool full) {
     json_object_set_new( root, "type", json_string( this->type.c_str() ) );
     if (full) {
         json_object_set_new(root, "condition_achieved", json_boolean(this->condition_achieved));
-        json_object_set_new(root, "active", json_boolean(this->active));
+        json_object_set_new(root, "selected", json_boolean(this->selected));
     }
     json_object_set_new( root, "threshold1", json_real( this->threshold1 ) );
     json_object_set_new( root, "threshold2", json_real( this->threshold2 ) );
@@ -36,17 +35,17 @@ json_t* lane_detection::getJson(bool full) {
 
 int lane_detection::updateWithJson(json_t* root) {
     this->condition_achieved = json_boolean_value(json_object_get(root, "condition_achieved"));
-    this->active = json_boolean_value(json_object_get(root, "active"));
+    this->selected = json_boolean_value(json_object_get(root, "selected"));
     json_t* roi = json_object_get(root, "roi");
-    this->roi.x = json_real_value(json_object_get(roi, "x"));
-    this->roi.y = json_real_value(json_object_get(roi, "y"));
-    this->roi.width = json_real_value(json_object_get(roi, "width"));
-    this->roi.height = json_real_value(json_object_get(roi, "height"));
+    this->roi.x = static_cast<int>(json_real_value(json_object_get(roi, "x")));
+    this->roi.y = static_cast<int>(json_real_value(json_object_get(roi, "y")));
+    this->roi.width = static_cast<int>(json_real_value(json_object_get(roi, "width")));
+    this->roi.height = static_cast<int>(json_real_value(json_object_get(roi, "height")));
 
     this->threshold1 = json_real_value(json_object_get(root, "threshold1"));
     this->threshold2 = json_real_value(json_object_get(root, "threshold2"));
-    this->apertureSize = json_real_value(json_object_get(root, "apertureSize"));
-    this->getJson();
+    this->apertureSize = static_cast<int>(json_real_value(json_object_get(root, "apertureSize")));
+//    this->getJson();
     return 0;
 }
 
@@ -78,12 +77,15 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
     Mat roiSnapshot = snapshot(this->roi);
     Mat blurred, gaussian, canny, cvt;
     blur(roiSnapshot, blurred, Size(3,3), Point(-1,-1));
-    writeImage(this->isActive() ? string(time).append("_blurred.jpg") : "blurred.jpg", blurred);
+//    writeImage(this->isSelected() ? string(time).append("_blurred.jpg") : "blurred.jpg", blurred);
+    writeImage("blurred.jpg", blurred);
     GaussianBlur(blurred, gaussian, Size(3,3), 0, 0);
-    writeImage(this->isActive() ? string(time).append("_gaussian.jpg") : "gaussian.jpg", gaussian);
+//    writeImage(this->isSelected() ? string(time).append("_gaussian.jpg") : "gaussian.jpg", gaussian);
+    writeImage("gaussian.jpg", gaussian);
 
     Canny(gaussian, canny, this->threshold1, this->threshold2, this->apertureSize);
-    writeImage(this->isActive() ? string(time).append("_canny.jpg") : "canny.jpg", canny);
+//    writeImage(this->isSelected() ? string(time).append("_canny.jpg") : "canny.jpg", canny);
+    writeImage("canny.jpg", canny);
     cvtColor(canny, cvt, CV_GRAY2BGR);
 
     vector<Vec4i> lines;
@@ -91,9 +93,7 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
     list<Line> horizontal;
     HoughLinesP(canny, lines, 1, CV_PI/180, 50, 50, 10 );
     Point p1, p2;
-    for( size_t i = 0; i < lines.size(); i++ )
-    {
-        Vec4i l = lines[i];
+    for (auto l : lines) {
         if (l[0] > l[2]) {
             p1 = Point(l[2], l[3]);
             p2 = Point(l[0], l[1]);
@@ -102,39 +102,53 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
             p2 = Point(l[2], l[3]);
         }
 
-        float angle = atan2(p1.y - p2.y, p1.x - p2.x);
-        float degree = abs(angle * 180 / M_PI);
+        auto angle = static_cast<float>(atan2(p1.y - p2.y, p1.x - p2.x));
+        auto degree = static_cast<float>(abs(angle * 180 / M_PI));
         if (degree > 25 && degree < 155) {
             line(cvt, p1, p2, Scalar(0, 255, 255), 3, CV_AA);
             circle(cvt, p1, 5, Scalar(255, 0, 0), 5);
             circle(cvt, p2, 5, Scalar(0, 0, 255), 5);
-            vertical.push_back(Line(p1, p2));
+            vertical.emplace_back(p1, p2);
         } else {
             line(cvt, p1, p2, Scalar(0, 255, 0), 3, CV_AA);
-            horizontal.push_back(Line(p1, p2));
+            horizontal.emplace_back(p1, p2);
         }
     }
 
 //    Line average = this->getAverageLine(vertical);
 //    line(cvt, average.p1, average.p2, Scalar(255, 255, 255), 3, CV_AA);
-    writeImage(this->isActive() ? string(time).append("_cvt.jpg") : "cvt.jpg", cvt);
+//    writeImage(this->isSelected() ? string(time).append("_cvt.jpg") : "cvt.jpg", cvt);
+    writeImage("cvt.jpg", cvt);
     return this;
 }
 
 Line lane_detection::getAverageLine(std::list<Line> lines) {
-    int length = lines.size();
+    unsigned long length = lines.size();
     int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-    for (std::list<Line>::iterator it=lines.begin(); it != lines.end(); ++it) {
-        x1 += it->p1.x;
-        x2 += it->p2.x;
-        y1 += it->p1.y;
-        y2 += it->p2.y;
+    for (auto &line : lines) {
+        x1 += line.p1.x;
+        x2 += line.p2.x;
+        y1 += line.p1.y;
+        y2 += line.p2.y;
     }
-//    cout << "x y " << x1/length << " " << y1/length << endl;
-    return Line(Point(x1/length, y1/length), Point(x2/length, y2/length));
+    return {Point(static_cast<int>(x1 / length), static_cast<int>(y1 / length)),
+            Point(static_cast<int>(x2 / length), static_cast<int>(y2 / length))};
 }
 
-void lane_detection::setActive(bool active) {
-    this->active = active;
+void lane_detection::setSelected(bool selected) {
+    this->selected = selected;
     this->condition_achieved = true;
+    struct stat info;
+    if (stat(this->outputDir.c_str(), &info) != 0) {
+        std::cout << "making " << this->outputDir << std::endl;
+        _mkdir(this->outputDir.c_str());
+    }
+}
+
+void lane_detection::setOutputDir(string outputDir) {
+    this->outputDir = outputDir;
+}
+
+string lane_detection::getPreviewImageLocation(string stage) {
+    return string(this->outputDir).append(stage).append(".jpg");
 }
