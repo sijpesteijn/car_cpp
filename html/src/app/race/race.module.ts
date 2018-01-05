@@ -13,6 +13,7 @@ import {PreviewWithRoisComponent} from "./preview-with-rois/preview-with-rois.co
 import {RaceComponent} from "./race.component";
 import {ObserversGroupComponent} from "./observers-group/observers-group.component";
 import {ObserverStatusComponent} from "./observer-status/observer-status.component";
+import { RaceStripService } from "./race-strip.service";
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import {ObserverStatusComponent} from "./observer-status/observer-status.compone
         TrafficLightObserverComponent,
     ],
     providers: [
+        RaceStripService
     ]
 })
 export class RaceModule {

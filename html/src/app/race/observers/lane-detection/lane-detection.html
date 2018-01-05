@@ -1,13 +1,20 @@
 <div class="race_step">
     <fieldset *ngIf="observer">
-        <observer-status [selected]="observer.selected" [achieved]="observer.condition_achieved"></observer-status>
+        <observer-status [selected]="observer.selected" [running]="running" [achieved]="observer.condition_achieved"></observer-status>
         <legend>Lane detection</legend>
         <ul class="lane_detectionobserver">
             <li>Roi color: <span class="circle" [style.background-color]="roiColor"></span></li>
             <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="updateRoi($event)"> {{ observer?.roi.y }}</li>
-            <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold1" (change)="updateRoi()"> {{ observer?.threshold1 }}</li>
-            <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold2" (change)="updateRoi()"> {{ observer?.threshold2 }}</li>
-            <li>Canny Aperture Size: <input type="range" min="3" max="7" step="2" [(ngModel)]="observer.apertureSize" (ngModelChange)="updateRoi()"> {{ observer?.apertureSize }}</li>
+            <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
+            <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
+            <li>Canny Aperture Size: <input type="range" min="3" max="7" step="2" [(ngModel)]="observer.apertureSize" (ngModelChange)="updateRoi($event)"> {{ observer?.apertureSize }}</li>
+            <li>Pid max: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.pMax" (change)="updateRoi($event)"> {{ observer?.pMax }}</li>
+            <li>Pid min: <input type="range" min="-300.0" max="0.0" step="0.1" [(ngModel)]="observer.pMin" (change)="updateRoi($event)"> {{ observer?.pMin }}</li>
+            <li>Proportional gain: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.kc" (change)="updateRoi($event)"> {{ observer?.kc }}</li>
+            <li>Integral time constant: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.ki" (change)="updateRoi($event)"> {{ observer?.ki }}</li>
+            <li>Derivative time constant: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.kd" (change)="updateRoi($event)"> {{ observer?.kd }}</li>
+            <li>Current error: {{ observer.error}}</li>
+            <li>Current angle: {{ observer.angle}}</li>
         </ul>
     </fieldset>
     <select [(ngModel)]="filter">

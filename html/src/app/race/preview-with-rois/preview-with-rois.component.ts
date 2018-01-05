@@ -10,7 +10,6 @@ import {CarObserver} from "../race.service";
 })
 export class PreviewWithRoisComponent {
     private cameraSettings: CameraSettings;
-
     private observers: CarObserver[] = [];
 
     constructor(private cameraService: CameraService,

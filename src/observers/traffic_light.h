@@ -12,10 +12,12 @@
 class traffic_light:public observer {
 public:
     traffic_light(Camera* camera);
-    json_t* getJson(bool full = false);
-    int updateWithJson(json_t* root);
-    observer* processSnapshot(cv::Mat snapshot);
-    void setSelected(bool selected);
+    json_t* getJson(bool full = false) override;
+    int updateWithJson(json_t* root) override;
+    observer* processSnapshot(cv::Mat snapshot) override;
+    void setSelected(bool selected) override;
+    void setRunning(bool running) override;
+    bool isFinished() override;
 private:
     int pixel_difference = 70;
     int current_pixel_difference = 0;

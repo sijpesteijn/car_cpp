@@ -31,8 +31,6 @@ json_t* finish_detection::getJson(bool full) {
 }
 
 int finish_detection::updateWithJson(json_t* root) {
-    this->condition_achieved = json_boolean_value(json_object_get(root, "condition_achieved"));
-    this->selected = json_boolean_value(json_object_get(root, "selected"));
     json_t* roi = json_object_get(root, "roi");
     this->roi.x = static_cast<int>(json_real_value(json_object_get(roi, "x")));
     this->roi.y = static_cast<int>(json_real_value(json_object_get(roi, "y")));
@@ -51,4 +49,15 @@ void finish_detection::setSelected(bool selected) {
     if (this->selected) {
         this->condition_achieved = false;
     }
+}
+
+void finish_detection::setRunning(bool running) {
+    this->running = running;
+    if (!this->running) {
+        this->condition_achieved = false;
+    }
+}
+
+bool finish_detection::isFinished() {
+    return this->condition_achieved;
 }

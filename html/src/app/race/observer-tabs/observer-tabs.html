@@ -8,6 +8,6 @@
             <button *ngIf="!selectedRace?.running" (click)="startRace()" class="start">Start</button>
             <button *ngIf="selectedRace?.running" (click)="stopRace()" class="stop">Stop</button>
         </div>
-        <observers-group *ngFor="let group of selectedRace.groups" [group]="group" (onChange)="updateRace($event)"></observers-group>
+        <observers-group *ngFor="let group of selectedRace.groups" [group]="group" [running]="selectedRace.running" (onChange)="updateRace($event)"></observers-group>
     </div>
 </div>

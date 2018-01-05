@@ -12,6 +12,7 @@ lane_detection::lane_detection(Camera* camera):observer(camera) {
     Size dimensions = camera->getDimensions();
     this->roi = Rect(0, 0, dimensions.width, dimensions.height);
     this->condition_achieved = true;
+    this->p = new pid(0.1, 100, -100, this->kc, this->ki, this->kd);
 }
 
 json_t* lane_detection::getJson(bool full) {
@@ -20,7 +21,14 @@ json_t* lane_detection::getJson(bool full) {
     if (full) {
         json_object_set_new(root, "condition_achieved", json_boolean(this->condition_achieved));
         json_object_set_new(root, "selected", json_boolean(this->selected));
+        json_object_set_new(root, "error", json_real(this->error));
+        json_object_set_new(root, "angle", json_real(this->angle));
     }
+    json_object_set_new( root, "pMax", json_real( this->pMax ) );
+    json_object_set_new( root, "pMin", json_real( this->pMin ) );
+    json_object_set_new( root, "kc", json_real( this->kc ) );
+    json_object_set_new( root, "ki", json_real( this->ki ) );
+    json_object_set_new( root, "kd", json_real( this->kd ) );
     json_object_set_new( root, "threshold1", json_real( this->threshold1 ) );
     json_object_set_new( root, "threshold2", json_real( this->threshold2 ) );
     json_object_set_new( root, "apertureSize", json_real( this->apertureSize ) );
@@ -34,18 +42,26 @@ json_t* lane_detection::getJson(bool full) {
 }
 
 int lane_detection::updateWithJson(json_t* root) {
-    this->condition_achieved = json_boolean_value(json_object_get(root, "condition_achieved"));
-    this->selected = json_boolean_value(json_object_get(root, "selected"));
     json_t* roi = json_object_get(root, "roi");
     this->roi.x = static_cast<int>(json_real_value(json_object_get(roi, "x")));
     this->roi.y = static_cast<int>(json_real_value(json_object_get(roi, "y")));
     this->roi.width = static_cast<int>(json_real_value(json_object_get(roi, "width")));
     this->roi.height = static_cast<int>(json_real_value(json_object_get(roi, "height")));
 
+    this->pMax = json_real_value(json_object_get(root, "pMax"));
+    this->pMin = json_real_value(json_object_get(root, "pMin"));
+    this->kc = json_real_value(json_object_get(root, "kc"));
+    this->ki = json_real_value(json_object_get(root, "ki"));
+    this->kd = json_real_value(json_object_get(root, "kd"));
     this->threshold1 = json_real_value(json_object_get(root, "threshold1"));
     this->threshold2 = json_real_value(json_object_get(root, "threshold2"));
     this->apertureSize = static_cast<int>(json_real_value(json_object_get(root, "apertureSize")));
-//    this->getJson();
+
+    this->p->setMax(this->pMax);
+    this->p->setMin(this->pMin);
+    this->p->setKc(this->kc);
+    this->p->setKi(this->ki);
+    this->p->setKd(this->kd);
     return 0;
 }
 
@@ -71,20 +87,16 @@ Rect lane_detection::verifyRoi() {
 }
 
 observer* lane_detection::processSnapshot(Mat snapshot) {
-//    cout << "Lane detection" << endl;
     string time = to_string(std::chrono::system_clock::now().time_since_epoch().count());
     this->roi = this->verifyRoi();
     Mat roiSnapshot = snapshot(this->roi);
     Mat blurred, gaussian, canny, cvt;
     blur(roiSnapshot, blurred, Size(3,3), Point(-1,-1));
-//    writeImage(this->isSelected() ? string(time).append("_blurred.jpg") : "blurred.jpg", blurred);
     writeImage("blurred.jpg", blurred);
     GaussianBlur(blurred, gaussian, Size(3,3), 0, 0);
-//    writeImage(this->isSelected() ? string(time).append("_gaussian.jpg") : "gaussian.jpg", gaussian);
     writeImage("gaussian.jpg", gaussian);
 
     Canny(gaussian, canny, this->threshold1, this->threshold2, this->apertureSize);
-//    writeImage(this->isSelected() ? string(time).append("_canny.jpg") : "canny.jpg", canny);
     writeImage("canny.jpg", canny);
     cvtColor(canny, cvt, CV_GRAY2BGR);
 
@@ -115,14 +127,21 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
         }
     }
 
-//    Line average = this->getAverageLine(vertical);
-//    line(cvt, average.p1, average.p2, Scalar(255, 255, 255), 3, CV_AA);
-//    writeImage(this->isSelected() ? string(time).append("_cvt.jpg") : "cvt.jpg", cvt);
+    Line *average = this->getAverageLine(vertical);
+    if (average != NULL) {
+        double middle = this->camera->getDimensions().width/2;
+        double current = (average->p1.x + average->p2.x)/2;
+        cout << "Middle " << middle << " Current " << current << endl;
+        this->error = this->p->calculate(middle, current);
+        line(cvt, average->p1, average->p2, Scalar(255, 255, 255), 3, CV_AA);
+    } else {
+        this->error = 0;
+    }
     writeImage("cvt.jpg", cvt);
     return this;
 }
 
-Line lane_detection::getAverageLine(std::list<Line> lines) {
+Line *lane_detection::getAverageLine(std::list<Line> lines) {
     unsigned long length = lines.size();
     int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
     for (auto &line : lines) {
@@ -131,8 +150,11 @@ Line lane_detection::getAverageLine(std::list<Line> lines) {
         y1 += line.p1.y;
         y2 += line.p2.y;
     }
-    return {Point(static_cast<int>(x1 / length), static_cast<int>(y1 / length)),
-            Point(static_cast<int>(x2 / length), static_cast<int>(y2 / length))};
+    if (x1 > 0 && x2 > 0 && y1 > 0 && y2 > 0) {
+        return new Line(Point(static_cast<int>(x1 / length), static_cast<int>(y1 / length)),
+                Point(static_cast<int>(x2 / length), static_cast<int>(y2 / length)));
+    }
+    return NULL;
 }
 
 void lane_detection::setSelected(bool selected) {
@@ -151,4 +173,12 @@ void lane_detection::setOutputDir(string outputDir) {
 
 string lane_detection::getPreviewImageLocation(string stage) {
     return string(this->outputDir).append(stage).append(".jpg");
+}
+
+void lane_detection::setRunning(bool running) {
+    this->running = running;
+}
+
+bool lane_detection::isFinished() {
+    return this->condition_achieved;
 }

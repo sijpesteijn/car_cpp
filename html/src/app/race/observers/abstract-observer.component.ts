@@ -2,12 +2,14 @@ import {EventEmitter, Input, Output} from "@angular/core";
 import {EventService, OBSERVER_ROI_SET} from "../../event.service";
 import {CameraService} from "../../camera.service";
 import {CarObserver} from "../race.service";
+import { RaceStripService } from "../race-strip.service";
 
 export abstract class AbstractObserverComponent {
     @Input() protected roiColor: string;
+    @Input() protected running: boolean;
     @Input("observer")
     set theObserver(observer: CarObserver) {
-        this.observer = observer;
+        this.observer = JSON.parse(JSON.stringify(observer));
         this.setRoi();
     }
     protected observer: CarObserver;
@@ -17,6 +19,7 @@ export abstract class AbstractObserverComponent {
 
     constructor(public eventService: EventService,
                 public cameraService: CameraService,
+                public raceStripService: RaceStripService,
                 public type: string) {
         cameraService.getCameraInfo().subscribe(cameraInfo => {
             if (cameraInfo) {

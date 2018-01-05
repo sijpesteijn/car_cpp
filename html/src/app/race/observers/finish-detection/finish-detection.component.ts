@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {EventService} from "../../../event.service";
 import {AbstractObserverComponent} from "../abstract-observer.component";
 import {CameraService} from "../../../camera.service";
+import { RaceStripService } from "../../race-strip.service";
 
 @Component({
     selector: 'finish-detection',
@@ -11,8 +12,9 @@ import {CameraService} from "../../../camera.service";
 export class FinishDetectionComponent extends AbstractObserverComponent {
 
     constructor(public cameraService: CameraService,
+                public raceStripService: RaceStripService,
                 public eventService: EventService) {
-        super(eventService, cameraService, 'finish_detection')
+        super(eventService, cameraService, raceStripService, 'finish_detection')
     }
 
     updateRoi() {

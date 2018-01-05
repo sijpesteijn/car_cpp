@@ -44,3 +44,23 @@ double pid::calculate(double setpoint, double pv) {
 
     return output;
 }
+
+void pid::setKc(double kc) {
+    this->_Kp = kc;
+}
+
+void pid::setKi(double ki) {
+    this->_Ki = ki;
+}
+
+void pid::setKd(double kd) {
+    this->_Kd = kd;
+}
+
+void pid::setMax(double max) {
+    this->_max = max;
+}
+
+void pid::setMin(double min) {
+    this->_min = min;
+}

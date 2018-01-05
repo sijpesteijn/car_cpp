@@ -8,4 +8,5 @@ import {Component, Input} from "@angular/core";
 export class ObserverStatusComponent {
     @Input() selected: boolean;
     @Input() achieved: boolean;
+    @Input() running: boolean;
 }

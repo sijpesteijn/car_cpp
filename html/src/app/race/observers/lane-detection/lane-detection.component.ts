@@ -3,6 +3,7 @@ import {EventService} from "../../../event.service";
 import {AbstractObserverComponent} from "../abstract-observer.component";
 import {CameraService} from "../../../camera.service";
 import {PreviewComponent} from "../../../preview/preview.component";
+import { RaceStripService } from "../../race-strip.service";
 
 @Component({
     selector: 'lane-detection',
@@ -14,8 +15,9 @@ export class LaneDetectionComponent extends AbstractObserverComponent implements
     @ViewChild('prv') private previewComp: PreviewComponent;
 
     constructor(public cameraService: CameraService,
+                public raceStripService: RaceStripService,
                 public eventService: EventService) {
-        super(eventService, cameraService, 'lane_detection');
+        super(eventService, cameraService, raceStripService, 'lane_detection');
     }
 
     ngOnDestroy() {
@@ -26,6 +28,7 @@ export class LaneDetectionComponent extends AbstractObserverComponent implements
 
     updateRoi() {
         if (this.observer) {
+            // console.log('Observer ', this.observer);
             this.observer.roi.x = 0;
             this.observer.roi.width = this.max_width;
             this.observer.roi.height = this.max_height - this.observer.roi.y;

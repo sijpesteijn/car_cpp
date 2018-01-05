@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, OnDestroy} from "@angular/core";
 import {Config} from "../app.config";
 import {ObserverGroup, Race} from "./race.service";
+import { RaceStripService } from "./race-strip.service";
 
 @Component({
     selector: 'race',
@@ -12,11 +13,13 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
     private retry: any;
     private race: Race;
 
-    constructor(private config: Config) {
+    constructor(private config: Config, private raceStripService: RaceStripService) {
     }
 
     ngAfterViewInit() {
-        this.setupWebsocket();
+        setTimeout( () => {
+            this.setupWebsocket();
+        }, 500)
     }
 
     ngOnDestroy() {
@@ -34,7 +37,7 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
         this.raceWebsocket.onmessage = (msg) => {
             if (msg.data) {
                 const race = JSON.parse(msg.data);
-                const org = this.cloneAndStrip(race);
+                const org = this.raceStripService.stripRace(race);
                 // console.log('Org race ', this.race);
                 // console.log('New race ', race);
                 if (!this.race) {
@@ -54,27 +57,31 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
         };
     }
 
-    private startReconnect() {
-        this.retry = setInterval(() => {
-            try {
-                this.setupWebsocket();
-            } catch (error) {
-                console.error(error);
-            }
+    // private startReconnect() {
+    //     this.retry = setInterval(() => {
+    //         try {
+    //             this.setupWebsocket();
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //
+    //     }, 1000);
+    // }
 
-        }, 1000);
-    }
-
-    private cloneAndStrip(race: Race) {
-        const org: Race = JSON.parse(JSON.stringify(race));
-        this.stripObserversGroups(org.groups);
-        return org;
-    }
-
-    private stripObserversGroups(groups: ObserverGroup[]) {
-        groups.forEach(group => group.observers.forEach(observer => {
-            delete observer.roi.type;
-            delete observer.roi.color;
-        }));
-    }
+    // private cloneAndStrip(race: Race) {
+    //     const org: Race = JSON.parse(JSON.stringify(race));
+    //     this.stripObserversGroups(org.groups);
+    //     return org;
+    // }
+    //
+    // private stripObserversGroups(groups: ObserverGroup[]) {
+    //     groups.forEach(group => {
+    //         return group.observers.forEach((observer: any) => {
+    //             delete observer.roi.type;
+    //             delete observer.roi.color;
+    //             delete observer.error;
+    //             delete observer.angle;
+    //         });
+    //     });
+    // }
 }

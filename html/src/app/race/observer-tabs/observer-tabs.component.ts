@@ -11,11 +11,9 @@ export class ObserverTabsComponent implements OnDestroy {
     private selectedRace: Race;
     @Input()
     set race(race: Race) {
-        // console.log('Racve ', race);
         if (race) {
             if (race.name !== this.selectedRace.name) {
                 this.selectedRace = race;
-                // console.log('Sel race ', this.selectedRace);
             } else {
                 for (let i = 0; i < this.selectedRace.groups.length; i++) {
                     const orgGrp = JSON.parse(JSON.stringify(this.selectedRace.groups[i]));
@@ -90,20 +88,6 @@ export class ObserverTabsComponent implements OnDestroy {
     }
 
     updateRace(newGroup: ObserverGroup) {
-        // console.log('Race ', this.selectedRace);
          this.raceService.saveRace().subscribe(() => {});
-        // }
-        // const index = this.selectedRace.groups.findIndex(group => group.name === newGroup.name);
-        // const orgGroup = JSON.parse(JSON.stringify(this.selectedRace.groups[index]));
-        // orgGroup.observers.forEach(observer => {
-        //     delete observer.roi.type;
-        //     delete observer.roi.color;
-        // });
-        // console.log('Org ', JSON.stringify(orgGroup));
-        // console.log('New ', JSON.stringify(newGroup));
-        // if (JSON.stringify(orgGroup) !== JSON.stringify(newGroup)) {
-        //     this.selectedRace.groups[index] = newGroup;
-        //     this.raceService.saveRace(this.selectedRace).subscribe(() => {});
-        // }
     }
 }

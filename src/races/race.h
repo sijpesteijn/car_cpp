@@ -38,6 +38,7 @@ public:
     void setRunning(bool running);
 
     bool isRunning();
+    bool isSelected();
 
     string getPreviewImageLocation(const string group, const string observer, const string observer_stage);
 
@@ -48,6 +49,7 @@ protected:
     pthread_t observer_runner;
 
     observer_group *getObserverGroup(string name);
+
 };
 
 #endif //CARMAGEDDON_RACE_H

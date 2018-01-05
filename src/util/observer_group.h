@@ -13,13 +13,13 @@ class observer_group {
 public:
     observer_group(std::string name, std::list<observer*> observers);
     bool isFinished();
+    bool isRunning();
     void processSnapshot(cv::Mat mat);
     std::list<observer*> observers;
     void setSelected(bool selected);
     bool isSelected();
     void setRunning(bool selected);
     observer *getObserver(std::string basic_string);
-    void reset();
     void setOutputDir(std::string outputDir);
     std::string name;
 private:

@@ -7,12 +7,12 @@
                     {
                          "type": "traffic_light",
                          "roi": {
-                              "x": 250.0,
-                              "y": 229.0,
-                              "height": 35.0,
+                              "x": 36.0,
+                              "y": 318.0,
+                              "height": 162.0,
                               "width": 57.0
                          },
-                         "pixel_difference": 50.0
+                         "pixel_difference": 63.0
                     }
                ]
           },
@@ -21,13 +21,18 @@
                "observers": [
                     {
                          "type": "lane_detection",
-                         "threshold1": 30.899999999999999,
-                         "threshold2": 191.40000000000001,
+                         "pMax": 71.400000000000006,
+                         "pMin": -77.400000000000006,
+                         "kc": 186.80000000000001,
+                         "ki": 126.2,
+                         "kd": 37.399999999999999,
+                         "threshold1": 191.40000000000001,
+                         "threshold2": 173.0,
                          "apertureSize": 3.0,
                          "roi": {
                               "x": 0.0,
-                              "y": 149.0,
-                              "height": 331.0,
+                              "y": 44.0,
+                              "height": 436.0,
                               "width": 640.0
                          }
                     },
@@ -35,8 +40,8 @@
                          "type": "finish_detection",
                          "roi": {
                               "x": 0.0,
-                              "y": 347.0,
-                              "height": 133.0,
+                              "y": 415.0,
+                              "height": 65.0,
                               "width": 640.0
                          }
                     }

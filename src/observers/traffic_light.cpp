@@ -89,4 +89,18 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
 void traffic_light::setSelected(bool selected) {
     this->selected = selected;
     this->current_pixel_difference = 0;
+    if (this->selected) {
+        this->condition_achieved = false;
+    }
+}
+
+void traffic_light::setRunning(bool running) {
+    this->running = running;
+    if (!this->running) {
+        this->condition_achieved = false;
+    }
+}
+
+bool traffic_light::isFinished() {
+    return this->condition_achieved;
 }

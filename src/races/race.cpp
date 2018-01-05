@@ -34,6 +34,10 @@ void race::setSelected(bool selected) {
     }
 }
 
+bool race::isSelected() {
+    return this->selected;
+}
+
 void updateGroup(json_t *json, observer_group *group) {
     group->name = json_string_value(json_object_get(json, "name"));
 
@@ -66,12 +70,9 @@ void race::updateWithJson(json_t *json, bool start) {
             cout << "Stop running" << endl;
             for(observer_group *group: this->groups) {
                 group->setRunning(false);
-                group->setSelected(false);
-                group->reset();
             }
         } else if (wasRunning == 0 && this->running == 1) {
             cout << "Start running" << endl;
-            this->groups.front()->setSelected(true);
             for(observer_group *group: this->groups) {
                 group->setRunning(true);
             }
@@ -80,7 +81,7 @@ void race::updateWithJson(json_t *json, bool start) {
     if (!start && this->running) {
         this->running = false;
         for(observer_group *group: this->groups) {
-            group->setSelected(false);
+            group->setRunning(false);
         }
     }
 }
@@ -113,7 +114,7 @@ json_t* race::getJson(bool full) {
 }
 
 void race::saveSettings() {
-    this->sett->save(this->getJson());
+    this->sett->save(this->getJson(false));
 }
 
 void race::setRunning(bool running) {

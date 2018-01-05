@@ -15,6 +15,8 @@ public:
     int updateWithJson(json_t* root);
     observer* processSnapshot(cv::Mat snapshot);
     void setSelected(bool selected);
+    void setRunning(bool running);
+    bool isFinished();
 private:
 };
 

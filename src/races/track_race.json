@@ -2,7 +2,7 @@
      "name": "track",
      "groups": [
           {
-               "name": "group2",
+               "name": "group1",
                "observers": [
                     {
                          "type": "traffic_light",
@@ -21,6 +21,11 @@
                "observers": [
                     {
                          "type": "lane_detection",
+                         "pMax": 0.0,
+                         "pMin": 0.0,
+                         "kc": 0.0,
+                         "ki": 0.0,
+                         "kd": 0.0,
                          "threshold1": 30.899999999999999,
                          "threshold2": 191.40000000000001,
                          "apertureSize": 3.0,

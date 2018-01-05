@@ -29,20 +29,18 @@ void* checkRaceStatus(void* params) {
         if (r->selected_race && r->car->getMode() != car_mode::autonomous) {
             r->selected_race->setSelected(false);
             r->selected_race->setRunning(false);
-            pthread_cancel(r->race_status_runner);
             r->selected_race = NULL;
         }
-        if (sockets.size() > 0 && r->selected_race) {
+        if (sockets.size() > 0 && r->selected_race && r->selected_race->isSelected()) {
+            json_t* json = r->selected_race->getJson(true);
+            string body = json_dumps(json, 0);
+            json_decref(json);
             for (map<string, shared_ptr<WebSocket>>::iterator iter = sockets.begin();
                  iter != sockets.end(); ++iter) {
                 shared_ptr<WebSocket> socket = iter->second;
-                json_t* json = r->selected_race->getJson(true);
-                string body = json_dumps(json, 0);
-                json_decref(json);
 
                 auto response = make_shared<WebSocketMessage>(WebSocketMessage::TEXT_FRAME, body);
                 socket->send(response);
-//                log::debug(body);
             }
         }
     }
@@ -175,9 +173,9 @@ void select_race_handler(const shared_ptr<Session> session) {
     if (race == NULL) {
         resource->sendError(session, "Could not find " + name + " race.");
     } else {
-        if (resource->race_status_runner == NULL) {
-            pthread_create(&resource->race_status_runner, NULL, checkRaceStatus, resource);
-        }
+//        if (resource->race_status_runner == NULL) {
+//            pthread_create(&resource->race_status_runner, NULL, checkRaceStatus, resource);
+//        }
         resource->selected_race = race;
         for(auto const& race : resource->races) {
             race.second->setSelected(false);
@@ -185,7 +183,6 @@ void select_race_handler(const shared_ptr<Session> session) {
         race->setSelected(true);
         json_t* json = race->getJson(true);
         string body = json_dumps(json, 0);
-        cout << "Race " << body << endl;
         json_decref(json);
 
         session->close(OK, body, {
@@ -225,7 +222,7 @@ void post_race_handler(const shared_ptr<Session> session) {
         const auto request = session->get_request( );
         const auto body = request->get_body( );
 
-        fprintf( stdout, "Race resource: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
+        fprintf( stdout, "Save race: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
         string data = string(body.begin(), body.end());
         json_t* root;
         json_error_t error;
@@ -289,6 +286,8 @@ race_resource::race_resource(Camera *camera, Car *car) {
     this->observerPreviewResource->set_path( RACE_OBSERVER_PREVIEW );
     this->observerPreviewResource->set_method_handler("GET", get_race_observer_preview);
     log::debug(string("Restbed: ").append(RACE_OBSERVER_PREVIEW));
+
+    pthread_create(&this->race_status_runner, NULL, checkRaceStatus, this);
 
     resource = this;
 }

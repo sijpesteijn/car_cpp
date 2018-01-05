@@ -19,6 +19,12 @@ public:
     // Returns the manipulated variable given a setpoint and current process value
     double calculate( double setpoint, double pv );
 
+    void setKc(double kc);
+    void setKi(double ki);
+    void setKd(double kd);
+    void setMax(double max);
+    void setMin(double min);
+
 private:
     double _dt;
     double _max;

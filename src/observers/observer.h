@@ -20,11 +20,8 @@ public:
     virtual int updateWithJson(json_t* root) =0;
     virtual observer* processSnapshot(cv::Mat snapshot) =0;
     virtual void setSelected(bool selected) =0;
-
-    void setRunning(bool running) {
-        this->running = running;
-    }
-
+    virtual void setRunning(bool running) =0;
+    virtual bool isFinished() =0;
     bool isRunning() {
         return this->running;
     }

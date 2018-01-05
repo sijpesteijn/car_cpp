@@ -1,10 +1,10 @@
 <div class="race_step">
     <fieldset *ngIf="observer">
         <legend>Finish detection</legend>
-        <observer-status [selected]="observer.selected" [achieved]="observer.condition_achieved"></observer-status>
+        <observer-status [selected]="observer.selected" [running]="running" [achieved]="observer.condition_achieved"></observer-status>
         <ul class="finish_detectionobserver">
             <li>Roi color: <span class="circle" [style.background-color]="roiColor"></span></li>
-            <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="updateRoi()"> {{ observer?.roi.y }}</li>
+            <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="observer?.roi.y" (change)="updateRoi($event)"> {{ observer?.roi.y }}</li>
         </ul>
     </fieldset>
 </div>

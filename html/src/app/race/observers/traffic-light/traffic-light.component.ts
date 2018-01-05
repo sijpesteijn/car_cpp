@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {EventService} from "../../../event.service";
 import {AbstractObserverComponent} from "../abstract-observer.component";
 import {CameraService} from "../../../camera.service";
+import { RaceStripService } from "../../race-strip.service";
 
 @Component({
     selector: 'traffic-light',
@@ -11,7 +12,8 @@ import {CameraService} from "../../../camera.service";
 export class TrafficLightObserverComponent extends AbstractObserverComponent {
 
     constructor(public cameraService: CameraService,
+                public raceStripService: RaceStripService,
                 public eventService: EventService) {
-        super(eventService, cameraService, 'traffic_light');
+        super(eventService, cameraService, raceStripService, 'traffic_light');
     }
 }

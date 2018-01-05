@@ -91,20 +91,19 @@ void* checkObservers(void* params) {
         if (r->isRunning() && r->car->isAutonomous()) {
             for (std::list<observer_group*>::iterator it= r->groups.begin(); it != r->groups.end(); ++it) {
                 observer_group *group = *it;
-                if (group->isSelected() && group->isFinished()) {
-                    group->setSelected(false);
+                if (group->isRunning() && group->isFinished()) {
+                    group->setRunning(false);
                     it = ++it;
                     if (it != r->groups.end()) {
                         group = *it;
-                        group->setSelected(true);
+                        group->setRunning(true);
                         group->processSnapshot(snapshot);
                     } else {
                         r->setRunning(false);
                     }
-                } else if (group->isSelected()) {
+                } else {
                     group->processSnapshot(snapshot);
                 }
-//                this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));
             }
         }
         this_thread::sleep_for(std::chrono::milliseconds(r->camera->observers_delay));

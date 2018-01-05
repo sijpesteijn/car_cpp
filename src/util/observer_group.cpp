@@ -14,12 +14,23 @@ observer_group::observer_group(string name, list<observer*> observers) {
 bool observer_group::isFinished() {
     int finished = true;
     for (observer *obs: this->observers) {
-        if (obs->condition_achieved == false) {
+        if (obs->isFinished() == false) {
             finished = false;
             continue;
         }
     }
     return finished;
+}
+
+bool observer_group::isRunning() {
+    int running = false;
+    for (observer *obs: this->observers) {
+        if (obs->isRunning()) {
+            running = false;
+            continue;
+        }
+    }
+    return running;
 }
 
 void observer_group::processSnapshot(cv::Mat mat) {
@@ -44,17 +55,6 @@ void observer_group::setRunning(bool running) {
     for (observer *obs: this->observers) {
         obs->setRunning(running);
     }
-//    string time = to_string(chrono::system_clock::now().time_since_epoch().count());
-//    for( observer *obs: this->observers) {
-//        if (this->running) {
-//            obs->setOutputDir(string(this->baseImagePath)
-//                                      .append(this->name).append("/")
-//                                      .append(time).append("/"));
-//        } else {
-//            obs->setOutputDir(string(this->baseImagePath).append(this->name).append("/")
-//                                      .append(obs->getType()).append("/"));
-//        }
-//    }
 }
 
 observer *observer_group::getObserver(string type) {
@@ -64,12 +64,6 @@ observer *observer_group::getObserver(string type) {
         }
     }
     return NULL;
-}
-
-void observer_group::reset() {
-    for( observer *obs: this->observers) {
-        obs->condition_achieved = false;
-    }
 }
 
 void observer_group::setOutputDir(std::string outputDir) {
