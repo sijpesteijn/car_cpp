@@ -2,7 +2,7 @@
 // Created by Gijs Sijpesteijn on 06/10/2017.
 //
 
-#import "pwm.h"
+#include "pwm.h"
 #include "../util/log.h"
 
 PWM::PWM(string pwmNr) {
