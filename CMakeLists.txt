@@ -16,8 +16,6 @@ else()
     set(SOURCE_FILES src/main.cpp src/domain/camera.h src/domain/camera.cpp src/domain/pwm.h src/domain/pwm.cpp src/domain/steer.h src/domain/steer.cpp src/domain/engine.h src/domain/engine.cpp src/domain/car.h src/domain/car.cpp src/rest/carmageddon_resource.h src/rest/camera_resource.h src/rest/camera_resource.cpp src/rest/car_resource.cpp src/rest/car_resource.h src/rest/rest.cpp src/rest/rest.h src/rest/carstatus_handler.cpp src/rest/carstatus_handler.h src/util/util.cpp src/util/util.h src/rest/lifeline_handler.cpp src/rest/lifeline_handler.h src/observers/observer.h src/observers/traffic_light.cpp src/observers/traffic_light.h src/observers/lane_detection.cpp src/observers/lane_detection.h src/observers/finish_detection.cpp src/observers/finish_detection.h src/races/race.h src/rest/race_resource.cpp src/rest/race_resource.h src/util/settings.cpp src/util/settings.h src/observers/opencv_line.cpp src/observers/opencv_line.h src/util/observer_group.cpp src/util/observer_group.h src/util/log.cpp src/util/log.h src/races/race.cpp src/util/race_builder.cpp src/util/race_builder.h src/util/pid_controller.cpp src/util/pid_controller.h)
 endif()
 
-
-
 set(LIBS ${OpenCV_LIBS} restbed jansson ssl pthread crypto )
 add_executable(carmageddon ${SOURCE_FILES})
 target_link_libraries( carmageddon ${LIBS})
