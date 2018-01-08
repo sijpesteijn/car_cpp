@@ -30,6 +30,7 @@ export class LifeLineComponent {
     private startReconnect() {
         this.retry = setInterval(() => {
             try {
+                this.router.navigate(['./error/no-lifeline']);
                 this.lifeline = new WebSocket(this.config.get('lifeline.ws'));
                 clearInterval(this.retry);
                 this.lifeline.onopen    = (evt) => {
