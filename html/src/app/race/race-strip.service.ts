@@ -21,6 +21,7 @@ export class RaceStripService {
         delete observer.roi.color;
         delete observer.error;
         delete observer.angle;
+        delete observer.current_pixel_difference;
         return observer;
     }
 

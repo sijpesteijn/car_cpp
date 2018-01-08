@@ -8,13 +8,14 @@
             <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
             <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
             <li>Canny Aperture Size: <input type="range" min="3" max="7" step="2" [(ngModel)]="observer.apertureSize" (ngModelChange)="updateRoi($event)"> {{ observer?.apertureSize }}</li>
+            <li>All lines: <input type="checkbox" [(ngModel)]="observer.allLines" (ngModelChange)="updateRoi($event)"> {{ observer?.allLines }}</li>
             <li>Pid max: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.pMax" (change)="updateRoi($event)"> {{ observer?.pMax }}</li>
             <li>Pid min: <input type="range" min="-300.0" max="0.0" step="0.1" [(ngModel)]="observer.pMin" (change)="updateRoi($event)"> {{ observer?.pMin }}</li>
-            <li>Proportional gain: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.kc" (change)="updateRoi($event)"> {{ observer?.kc }}</li>
-            <li>Integral time constant: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.ki" (change)="updateRoi($event)"> {{ observer?.ki }}</li>
-            <li>Derivative time constant: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.kd" (change)="updateRoi($event)"> {{ observer?.kd }}</li>
-            <li>Current error: {{ observer.error}}</li>
-            <li>Current angle: {{ observer.angle}}</li>
+            <li>Proportional gain: <input type="range" min="0.01" max="1.0" step="0.01" [(ngModel)]="observer.kp" (change)="updateRoi($event)"> {{ observer?.kp }}</li>
+            <li>Integral time constant: <input type="range" min="0.01" max="1.0" step="0.01" [(ngModel)]="observer.ki" (change)="updateRoi($event)"> {{ observer?.ki }}</li>
+            <li>Derivative time constant: <input type="range" min="0.01" max="1.0" step="0.01" [(ngModel)]="observer.kd" (change)="updateRoi($event)"> {{ observer?.kd }}</li>
+            <li>Current error: <span [innerHTML]="observer.error | number:'2.2'"></span></li>
+            <li>Current angle: <span [innerHTML]="observer.angle"></span></li>
         </ul>
     </fieldset>
     <select [(ngModel)]="filter">

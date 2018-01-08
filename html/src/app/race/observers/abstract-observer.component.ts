@@ -1,5 +1,5 @@
 import {EventEmitter, Input, Output} from "@angular/core";
-import {EventService, OBSERVER_ROI_SET} from "../../event.service";
+import { EventService, OBSERVER_METADATA_CHANGED, OBSERVER_ROI_SET } from "../../event.service";
 import {CameraService} from "../../camera.service";
 import {CarObserver} from "../race.service";
 import { RaceStripService } from "../race-strip.service";
@@ -19,7 +19,6 @@ export abstract class AbstractObserverComponent {
 
     constructor(public eventService: EventService,
                 public cameraService: CameraService,
-                public raceStripService: RaceStripService,
                 public type: string) {
         cameraService.getCameraInfo().subscribe(cameraInfo => {
             if (cameraInfo) {
@@ -28,7 +27,14 @@ export abstract class AbstractObserverComponent {
                 this.updateRoi();
             }
         });
+        eventService.subscribe(event => {
+            if (event.name === OBSERVER_METADATA_CHANGED) {
+                this.updateMetadata(event.data);
+            }
+        })
     }
+
+    abstract updateMetadata(metadata: any);
 
     protected updateObserver($event: any) {
         if ($event) {

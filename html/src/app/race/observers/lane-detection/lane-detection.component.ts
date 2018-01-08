@@ -15,9 +15,8 @@ export class LaneDetectionComponent extends AbstractObserverComponent implements
     @ViewChild('prv') private previewComp: PreviewComponent;
 
     constructor(public cameraService: CameraService,
-                public raceStripService: RaceStripService,
                 public eventService: EventService) {
-        super(eventService, cameraService, raceStripService, 'lane_detection');
+        super(eventService, cameraService, 'lane_detection');
     }
 
     ngOnDestroy() {
@@ -28,11 +27,18 @@ export class LaneDetectionComponent extends AbstractObserverComponent implements
 
     updateRoi() {
         if (this.observer) {
-            // console.log('Observer ', this.observer);
             this.observer.roi.x = 0;
             this.observer.roi.width = this.max_width;
             this.observer.roi.height = this.max_height - this.observer.roi.y;
             this.setRoi();
         }
     }
+
+    updateMetadata(observer: any) {
+        if (observer.type === this.type) {
+            (this.observer as any).error = observer.error;
+            (this.observer as any).angle = observer.angle;
+        }
+    }
+
 }

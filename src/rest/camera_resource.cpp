@@ -50,6 +50,8 @@ void get_camera_dimensions_handler(const shared_ptr<Session> session)
 {
     const string body = "[{\"name\": \"352x288\", \"width\": 352, \"height\": 288},"
             "{\"name\": \"640x480\", \"width\": 640, \"height\": 480},"
+            "{\"name\": \"256x144\", \"width\": 256, \"height\": 144},"
+            "{\"name\": \"384x216\", \"width\": 384, \"height\": 216},"
             "{\"name\": \"1280x720\", \"width\": 1280, \"height\": 720},"
             "{\"name\": \"1280x960\", \"width\": 1280, \"height\": 960}]";
     session->close( OK, body, { { "Content-Length", ::to_string( body.size( ) ) } } );

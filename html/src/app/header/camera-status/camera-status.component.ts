@@ -32,13 +32,13 @@ export class CameraStatusComponent {
     //     this.cameraService.updateCameraInfo(this.cameraSettings).subscribe( cameraSettings => this.cameraSettings = cameraSettings);
     // }
     //
-    // updateDimensions(event: any) {
-    //     const value = event.target.selectedOptions[0].value
-    //     const dimension = this.dimensions.filter(resolution => resolution.name === value)[0];
-    //     this.cameraSettings.dimension = dimension;
-    //     this.cameraService.updateCameraInfo(this.cameraSettings).subscribe( cameraSettings => this.cameraSettings = cameraSettings);
-    // }
-    //
+    updateDimensions(event: any) {
+        const value = event.target.selectedOptions[0].value
+        const dimension = this.dimensions.filter(resolution => resolution.name === value)[0];
+        this.cameraSettings.dimension = dimension;
+        this.cameraService.updateCameraInfo(this.cameraSettings).subscribe( cameraSettings => this.cameraSettings = cameraSettings);
+    }
+
     // updateWhiteBalanceAlpha(event: any) {
     //     this.cameraSettings.whiteBalance.alpha = parseFloat(event.target.value);
     //     this.cameraService.updateCameraInfo(this.cameraSettings).subscribe( cameraSettings => this.cameraSettings = cameraSettings);

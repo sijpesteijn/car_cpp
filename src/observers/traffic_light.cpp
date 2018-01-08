@@ -57,31 +57,33 @@ observer* traffic_light::processSnapshot(Mat snapshot) {
 //        this->current_pixel_difference = 0;
 //    }
     this->roi = this->verifyRoi(this->roi);
-    Mat roiSnapshot = snapshot(this->roi);
+    if (snapshot.total() > 0) {
+        Mat roiSnapshot = snapshot(this->roi);
 
-    if (!this->condition_achieved && !this->last_snapshot.empty()
-        && this->last_snapshot.size() == roiSnapshot.size()) {
-        Mat result, mask;
-        absdiff(roiSnapshot, this->last_snapshot, result);
-        cvtColor(result, result, CV_BGR2GRAY);
-        threshold(result, mask, 30, 255.0, CV_THRESH_BINARY);
-        int nonZero = countNonZero(mask);
-        int percentage = 0;
-        if (nonZero > 0 ) {
-            percentage = (int) (nonZero*100/mask.total());
+        if (!this->condition_achieved && !this->last_snapshot.empty()
+            && this->last_snapshot.size() == roiSnapshot.size()) {
+            Mat result, mask;
+            absdiff(roiSnapshot, this->last_snapshot, result);
+            cvtColor(result, result, CV_BGR2GRAY);
+            threshold(result, mask, 30, 255.0, CV_THRESH_BINARY);
+            int nonZero = countNonZero(mask);
+            int percentage = 0;
+            if (nonZero > 0) {
+                percentage = (int) (nonZero * 100 / mask.total());
+            }
+            this->current_pixel_difference = percentage;
+            if (this->isRunning() && percentage >= this->pixel_difference) {
+                this->condition_achieved = true;
+            }
+            if (percentage > 0) {
+                cout << "Traffic_light - difference: " << to_string(percentage) << "%" << endl;
+            }
+            imwrite("first.jpg", this->last_snapshot);
+            this->last_snapshot = roiSnapshot.clone();
+            imwrite("sec.jpg", this->last_snapshot);
+        } else {
+            this->last_snapshot = roiSnapshot.clone();
         }
-        this->current_pixel_difference = percentage;
-        if (this->isRunning() && percentage >= this->pixel_difference) {
-            this->condition_achieved = true;
-        }
-        if (percentage > 0) {
-            cout << "Traffic_light - difference: " << to_string(percentage) << "%" << endl;
-        }
-        imwrite("first.jpg", this->last_snapshot);
-        this->last_snapshot = roiSnapshot.clone();
-        imwrite("sec.jpg", this->last_snapshot);
-    } else {
-        this->last_snapshot = roiSnapshot.clone();
     }
     return this;
 }

@@ -11,13 +11,18 @@
 class finish_detection: public observer {
 public:
     finish_detection(Camera *camera);
-    json_t* getJson(bool full = false);
-    int updateWithJson(json_t* root);
-    observer* processSnapshot(cv::Mat snapshot);
-    void setSelected(bool selected);
-    void setRunning(bool running);
-    bool isFinished();
+    json_t* getJson(bool full = false) override;
+    int updateWithJson(json_t* root) override;
+    observer* processSnapshot(cv::Mat snapshot) override;
+    void setSelected(bool selected) override;
+    void setRunning(bool running) override;
+    bool isFinished() override;
+    std::string getPreviewImageLocation(std::string stage) override;
 private:
+    double threshold1 = 50;
+    double threshold2 = 200;
+    int apertureSize = 3;
+    void setOutputDir(std::string outputDir) override;
 };
 
 

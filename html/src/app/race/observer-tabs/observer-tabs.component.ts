@@ -1,5 +1,7 @@
 import {Component, Input, OnDestroy} from '@angular/core';
 import {Race, CarObserver, RaceService, ObserverGroup} from '../race.service';
+import { RaceStripService } from "../race-strip.service";
+import { EventService, OBSERVER_METADATA_CHANGED } from "../../event.service";
 @Component({
     selector: 'observer-tabs',
     template: require('./observer-tabs.html'),
@@ -16,25 +18,27 @@ export class ObserverTabsComponent implements OnDestroy {
                 this.selectedRace = race;
             } else {
                 for (let i = 0; i < this.selectedRace.groups.length; i++) {
-                    const orgGrp = JSON.parse(JSON.stringify(this.selectedRace.groups[i]));
-                    orgGrp.observers.forEach(observer => {
-                        delete observer.roi.type;
-                        delete observer.roi.color;
-                    });
                     const newGrp = race.groups[i];
                     if (!newGrp) {
                         delete this.selectedRace.groups[i];
-                    } else if (JSON.stringify(orgGrp) !== JSON.stringify(newGrp)) {
-                        // console.log('Org ', JSON.stringify(orgGrp));
-                        // console.log('New ', JSON.stringify(newGrp));
-                        this.selectedRace.groups[i] = newGrp;
+                    } else {
+                        const orgGrp = this.selectedRace.groups[i];
+                        for (let j = 0; j < orgGrp.observers.length; j++) {
+                            const currObs = JSON.stringify(this.raceStripService.stripObserver(this.raceStripService.clone(orgGrp.observers[j])));
+                            const newObs = JSON.stringify(this.raceStripService.stripObserver(this.raceStripService.clone(race.groups[i].observers[j])));
+                            if (currObs !== newObs) {
+                                orgGrp.observers[j] = race.groups[i].observers[j];
+                            } else {
+                                this.eventService.emit(OBSERVER_METADATA_CHANGED, race.groups[i].observers[j]);
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    constructor(private raceService: RaceService) {}
+    constructor(private raceService: RaceService, private raceStripService: RaceStripService, private eventService: EventService) {}
 
     ngOnInit() {
         this.raceService.getRaces().subscribe(races => {

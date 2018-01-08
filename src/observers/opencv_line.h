@@ -7,9 +7,9 @@
 
 #include "opencv2/core/utility.hpp"
 
-class Line {
+class opencv_line {
 public:
-    Line(cv::Point p1, cv::Point p2);
+    opencv_line(cv::Point p1, cv::Point p2);
     cv::Point p1;
     cv::Point p2;
 };

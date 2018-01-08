@@ -1,20 +1,28 @@
-import {Component} from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import {EventService} from "../../../event.service";
 import {AbstractObserverComponent} from "../abstract-observer.component";
 import {CameraService} from "../../../camera.service";
 import { RaceStripService } from "../../race-strip.service";
+import { PreviewComponent } from "../../../preview/preview.component";
 
 @Component({
     selector: 'finish-detection',
     template: require('./finish-detection.html'),
     styles: [require('./finish-detection.scss')]
 })
-export class FinishDetectionComponent extends AbstractObserverComponent {
+export class FinishDetectionComponent extends AbstractObserverComponent implements OnDestroy {
+    private filter: string = 'cvt';
+    @ViewChild('prv') private previewComp: PreviewComponent;
 
     constructor(public cameraService: CameraService,
-                public raceStripService: RaceStripService,
                 public eventService: EventService) {
-        super(eventService, cameraService, raceStripService, 'finish_detection')
+        super(eventService, cameraService, 'finish_detection')
+    }
+
+    ngOnDestroy() {
+        setTimeout(() => {
+            this.previewComp.ngOnDestroy();
+        }, 200);
     }
 
     updateRoi() {
@@ -25,4 +33,8 @@ export class FinishDetectionComponent extends AbstractObserverComponent {
             this.setRoi();
         }
     }
+
+    updateMetadata(observer: any) {
+    }
+
 }
