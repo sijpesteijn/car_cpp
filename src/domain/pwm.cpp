@@ -36,12 +36,12 @@ void PWM::setDutyCycle(int duty_cycle) {
 //    syslog(LOG_DEBUG, "Duty cycle set to %d ", this->duty_cycle);
 }
 
-void PWM::setEnable(int enable) {
+void PWM::setEnable(bool enable) {
     this->enable = enable;
     string cmd = "echo " + to_string(this->enable) + " > " + this->pwmNr + "enable";
     system(cmd.c_str());
 }
 
-int PWM::getEnabled() {
+bool PWM::getEnabled() {
     return this->enable;
 }
