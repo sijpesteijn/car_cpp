@@ -64,6 +64,7 @@ int lane_detection::updateWithJson(json_t* root) {
     this->p->setD(this->kd);
     this->p->setI(this->ki);
     this->p->setP(this->kp);
+    this->roi = this->verifyRoi(this->roi);
     return 0;
 }
 
@@ -124,7 +125,10 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
             int deltaY_left = abs(left_average->p2.y - left_average->p1.y);
 
             double angle_left = atan2(deltaY_left, deltaX_left) * 180 / M_PI;
-            double left_y = left_average->p1.x / tan((90 - angle_left) * M_PI / 180.0);
+            double left_y = 0;
+            if (90 - angle_left > 0) {
+                left_y = left_average->p1.x / tan((90 - angle_left) * M_PI / 180.0);
+            }
             left_average->p1.x = 0;
             left_average->p1.y += left_y;
 
@@ -138,7 +142,10 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
             int deltaY_right = abs(right_average->p1.y - right_average->p2.y);
 
             double angle_right = atan2(deltaY_right, deltaX_right) * 180 / M_PI;
-            double right_y = (this->camera->getDimensions().width - right_average->p2.x) / tan((90 - angle_right) * M_PI / 180.0);
+            double right_y = 0;
+            if (90 - angle_right > 0) {
+                right_y = (this->camera->getDimensions().width - right_average->p2.x) / tan((90 - angle_right) * M_PI / 180.0);
+            }
             right_average->p2.x = this->camera->getDimensions().width;
             right_average->p2.y += right_y;
 
@@ -173,6 +180,9 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
 }
 
 opencv_line *lane_detection::getAverageLine(std::list<opencv_line> lines) {
+    if (lines.size() == 1) {
+        return &lines.front();
+    }
     unsigned long length = lines.size();
     int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
     for (auto &line : lines) {

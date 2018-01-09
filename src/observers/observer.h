@@ -44,6 +44,18 @@ public:
     std::string outputDir;
     cv::Rect verifyRoi(cv::Rect roi) {
         cv::Size dimensions = this->camera->getDimensions();
+        if (roi.x < 0) {
+            roi.x = 0;
+        }
+        if (roi.y < 0) {
+            roi.y = 0;
+        }
+        if (roi.width < 0) {
+            roi.width = 0;
+        }
+        if (roi.height < 0) {
+            roi.height = 0;
+        }
         if (roi.x + roi.width > dimensions.width) {
             if (roi.x > dimensions.width) {
                 roi.x = 0;

@@ -9,7 +9,7 @@
                          "roi": {
                               "x": 227.0,
                               "y": 141.0,
-                              "height": 58.0,
+                              "height": 332.0,
                               "width": 57.0
                          },
                          "pixel_difference": 63.0
@@ -29,11 +29,11 @@
                          "threshold1": 23.0,
                          "threshold2": 104.59999999999999,
                          "apertureSize": 3.0,
-                         "allLines": true,
+                         "allLines": false,
                          "roi": {
                               "x": 0.0,
-                              "y": 225.0,
-                              "height": 255.0,
+                              "y": 107.0,
+                              "height": 373.0,
                               "width": 640.0
                          }
                     },
@@ -41,8 +41,8 @@
                          "type": "finish_detection",
                          "roi": {
                               "x": 0.0,
-                              "y": 221.0,
-                              "height": 259.0,
+                              "y": 90.0,
+                              "height": 231.0,
                               "width": 640.0
                          },
                          "threshold1": 33.600000000000001,

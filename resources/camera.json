@@ -1,8 +1,8 @@
 {
      "dimension": {
-          "name": "640x480",
-          "width": 640,
-          "height": 480
+          "name": "1280x720",
+          "width": 1280,
+          "height": 720
      },
      "captureDelay": 100,
      "observersDelay": 100,

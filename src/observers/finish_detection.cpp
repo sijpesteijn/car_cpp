@@ -42,7 +42,7 @@ int finish_detection::updateWithJson(json_t* root) {
     this->threshold1 = json_real_value(json_object_get(root, "threshold1"));
     this->threshold2 = json_real_value(json_object_get(root, "threshold2"));
     this->apertureSize = static_cast<int>(json_real_value(json_object_get(root, "apertureSize")));
-
+    this->roi = this->verifyRoi(this->roi);
     return 0;
 }
 

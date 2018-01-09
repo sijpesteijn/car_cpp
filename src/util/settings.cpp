@@ -9,7 +9,6 @@ using namespace std;
 
 settings::settings(string settings_file) {
     this->settings_file = settings_file;
-//    this->file_stream.open(settings_file.c_str())
     FILE *settingsFile = fopen(settings_file.c_str(), "r+");
     json_error_t error;
 

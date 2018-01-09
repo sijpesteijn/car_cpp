@@ -39,7 +39,7 @@ void *frameGrabber(void *params) {
 }
 
 Camera::Camera() : cap(0) {
-    this->sett = new settings("../src/camera.json");
+    this->sett = new settings("resources/camera.json");
     this->fromJson(sett->getSettings());
     if (this->cap.open(1) == false) {
         this->cap.open(0);

@@ -264,7 +264,7 @@ race_resource::race_resource(Camera *camera, Car *car) {
     this->car = car;
 
     race_builder *rb = new race_builder();
-    this->races = rb->getRaces("../src/races/", car, camera);
+    this->races = rb->getRaces("resources/races/", car, camera);
 
     this->allRaceResource->set_path( RACE_ALL );
     this->allRaceResource->set_method_handler("GET", all_race_handler);

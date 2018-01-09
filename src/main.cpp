@@ -1,5 +1,6 @@
 #include <iostream>
 #include <list>
+#include <syslog.h>
 #include "rest/rest.h"
 #include "rest/camera_resource.h"
 #include "rest/car_resource.h"
@@ -16,6 +17,9 @@ void closeResources(void) {
 
 int main( const int, const char** )
 {
+#ifdef __APPLE__
+    openlog ("Carmageddon", LOG_CONS,LOG_USER);
+#endif
     log::debug(string("Starting Carmageddon"));
     atexit (closeResources);
 

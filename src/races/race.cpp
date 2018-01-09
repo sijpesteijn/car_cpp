@@ -15,7 +15,7 @@ race::race(string name, Car *car, Camera *camera, settings *settings, list<obser
     this->sett = settings;
     this->groups = groups;
     for(observer_group *group: groups) {
-        group->setOutputDir(string("./").append(this->name).append("/"));
+        group->setOutputDir(string("results/").append(this->name).append("/"));
     }
 }
 
