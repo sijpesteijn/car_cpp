@@ -29,11 +29,12 @@
                          "threshold1": 23.0,
                          "threshold2": 104.59999999999999,
                          "apertureSize": 3.0,
-                         "allLines": false,
+                         "warp": 22.0,
+                         "allLines": true,
                          "roi": {
                               "x": 0.0,
-                              "y": 107.0,
-                              "height": 373.0,
+                              "y": 276.0,
+                              "height": 204.0,
                               "width": 640.0
                          }
                     },
@@ -42,7 +43,7 @@
                          "roi": {
                               "x": 0.0,
                               "y": 90.0,
-                              "height": 231.0,
+                              "height": 390.0,
                               "width": 640.0
                          },
                          "threshold1": 33.600000000000001,

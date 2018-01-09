@@ -3,6 +3,7 @@
 //
 
 #include "lane_detection.h"
+#include "../util/log.h"
 #include <math.h>
 
 using namespace cv;
@@ -33,6 +34,7 @@ json_t* lane_detection::getJson(bool full) {
     json_object_set_new( root, "threshold1", json_real( this->threshold1 ) );
     json_object_set_new( root, "threshold2", json_real( this->threshold2 ) );
     json_object_set_new( root, "apertureSize", json_real( this->apertureSize ) );
+    json_object_set_new( root, "warp", json_real( this->warp ) );
     json_object_set_new( root, "allLines", json_boolean(this->allLines));
     json_t* roi = json_object();
     json_object_set_new( roi, "x", json_real( this->roi.x ) );
@@ -58,6 +60,7 @@ int lane_detection::updateWithJson(json_t* root) {
     this->threshold1 = json_real_value(json_object_get(root, "threshold1"));
     this->threshold2 = json_real_value(json_object_get(root, "threshold2"));
     this->apertureSize = static_cast<int>(json_real_value(json_object_get(root, "apertureSize")));
+    this->warp = json_real_value(json_object_get(root, "warp"));
     this->allLines = json_boolean_value(json_object_get(root, "allLines"));
 
     this->p->setOutputLimits(this->pMax, this->pMin);
@@ -70,10 +73,32 @@ int lane_detection::updateWithJson(json_t* root) {
 
 observer* lane_detection::processSnapshot(Mat snapshot) {
     if (snapshot.total() > 0) {
+        Mat blurred, gaussian, canny, cvt, matrix, warped;
+        Point2f inputQuad[4];
+        Point2f outputQuad[4];
+        double middle = this->camera->getDimensions().width / 2;
+
         this->roi = this->verifyRoi(this->roi);
         Mat roiSnapshot = snapshot(this->roi);
-        Mat blurred, gaussian, canny, cvt;
-        blur(roiSnapshot, blurred, Size(3, 3), Point(-1, -1));
+        if (this->warp > 0) {
+            matrix = Mat::zeros(roiSnapshot.rows, roiSnapshot.cols, roiSnapshot.type());
+            inputQuad[0] = Point2f(0, 0);
+            inputQuad[1] = Point2f(matrix.cols, 0);
+            inputQuad[2] = Point2f(matrix.cols, matrix.rows);
+            inputQuad[3] = Point2f(0, matrix.rows);
+            outputQuad[0] = Point2f(0, 0);
+            outputQuad[1] = Point2f(roiSnapshot.cols, 0);
+            outputQuad[2] = Point2f(roiSnapshot.cols - this->warp, roiSnapshot.rows);
+            outputQuad[3] = Point2f(this->warp, roiSnapshot.rows);
+
+            matrix = getPerspectiveTransform(inputQuad, outputQuad);
+
+            warpPerspective(roiSnapshot, warped, matrix, roiSnapshot.size());
+            writeImage("warped.jpg", warped);
+        } else {
+            warped = roiSnapshot;
+        }
+        blur(warped, blurred, Size(3, 3), Point(-1, -1));
         writeImage("blurred.jpg", blurred);
         GaussianBlur(blurred, gaussian, Size(3, 3), 0, 0);
         writeImage("gaussian.jpg", gaussian);
@@ -117,7 +142,6 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
             }
         }
 
-        double middle = this->camera->getDimensions().width / 2;
         opencv_line *left_average = this->getAverageLine(vertical_left);
         opencv_line *right_average = this->getAverageLine(vertical_right);
         if (left_average != NULL) {
@@ -162,9 +186,12 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
             average_lines.push_back(*right_average);
             average_lines.push_back(*left_average);
             opencv_line *average = this->getAverageLine(average_lines);
-            this->error = this->p->getOutput(middle, average->p2.x);
-
-            line(cvt, average->p1, average->p2, Scalar(0, 0, 255), 3, CV_AA);
+            if (average) {
+                this->error = this->p->getOutput(middle, average->p2.x);
+                line(cvt, average->p1, average->p2, Scalar(0, 0, 255), 3, CV_AA);
+            } else {
+                log::debug("Could not find average");
+            }
         } else {
             if (left_average) {
                 this->error = this->p->getOutput(middle, this->camera->getDimensions().width);

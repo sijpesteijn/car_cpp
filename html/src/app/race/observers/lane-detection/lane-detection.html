@@ -8,6 +8,7 @@
             <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
             <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
             <li>Canny Aperture Size: <input type="range" min="3" max="7" step="2" [(ngModel)]="observer.apertureSize" (ngModelChange)="updateRoi($event)"> {{ observer?.apertureSize }}</li>
+            <li>Warp: <input type="range" min="0" max="200" step="1" [(ngModel)]="observer.warp" (ngModelChange)="updateRoi($event)"> {{ observer?.warp }}</li>
             <li>All lines: <input type="checkbox" [(ngModel)]="observer.allLines" (ngModelChange)="updateRoi($event)"> {{ observer?.allLines }}</li>
             <li>Pid max: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.pMax" (change)="updateRoi($event)"> {{ observer?.pMax }}</li>
             <li>Pid min: <input type="range" min="-300.0" max="0.0" step="0.1" [(ngModel)]="observer.pMin" (change)="updateRoi($event)"> {{ observer?.pMin }}</li>

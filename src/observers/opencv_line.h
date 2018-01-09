@@ -9,7 +9,7 @@
 
 class opencv_line {
 public:
-    opencv_line(cv::Point p1, cv::Point p2);
+    opencv_line(cv::Point2f p1, cv::Point2f p2);
     cv::Point p1;
     cv::Point p2;
 };

@@ -32,6 +32,7 @@ private:
     double pMin = -100.0;
     double error = 0.0;
     double angle = 0.0;
+    double warp = 0.0;
     bool allLines = false;
 
     opencv_line *getAverageLine(std::list<opencv_line> lines);
