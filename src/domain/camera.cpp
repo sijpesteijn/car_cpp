@@ -41,9 +41,9 @@ void *frameGrabber(void *params) {
 Camera::Camera() : cap(0) {
     this->sett = new settings("resources/camera.json");
     this->fromJson(sett->getSettings());
-    if (this->cap.open(1) == false) {
-        this->cap.open(0);
-    }
+//    if (this->cap.open(1) == false) {
+//        this->cap.open(0);
+//    }
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     log::debug(string("Width ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_WIDTH))));
