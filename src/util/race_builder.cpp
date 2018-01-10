@@ -7,6 +7,7 @@
 #include "../observers/lane_detection.h"
 #include "../observers/finish_detection.h"
 #include "../observers/traffic_light.h"
+#include "log.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ list<struct dirent*> listFiles(const string &path) {
             if (!strcmp(hFile->d_name, "..")) continue;
             if (hFile->d_name[0] == '.') continue;
             if (strstr(hFile->d_name, ".json")) {
+                log::debug(string("Found ").append(hFile->d_name));
                 files.push_back(hFile);
             }
         }
