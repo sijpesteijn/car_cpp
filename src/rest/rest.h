@@ -11,9 +11,9 @@
 #include <list>
 #include "carmageddon_resource.h"
 
-class Rest {
+class rest {
 public:
-    Rest(std::list<carmageddon_resource*> resources);
+    rest(std::list<carmageddon_resource*> resources);
 private:
     restbed::Service service;
 };

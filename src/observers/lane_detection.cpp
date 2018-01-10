@@ -35,6 +35,7 @@ json_t* lane_detection::getJson(bool full) {
     json_object_set_new( root, "threshold2", json_real( this->threshold2 ) );
     json_object_set_new( root, "apertureSize", json_real( this->apertureSize ) );
     json_object_set_new( root, "warp", json_real( this->warp ) );
+    json_object_set_new( root, "previewType", json_string(this->previewType));
     json_object_set_new( root, "allLines", json_boolean(this->allLines));
     json_t* roi = json_object();
     json_object_set_new( roi, "x", json_real( this->roi.x ) );
@@ -61,6 +62,7 @@ int lane_detection::updateWithJson(json_t* root) {
     this->threshold2 = json_real_value(json_object_get(root, "threshold2"));
     this->apertureSize = static_cast<int>(json_real_value(json_object_get(root, "apertureSize")));
     this->warp = json_real_value(json_object_get(root, "warp"));
+    this->previewType = json_string_value(json_object_get(root, "previewType"));
     this->allLines = json_boolean_value(json_object_get(root, "allLines"));
 
     this->p->setOutputLimits(this->pMax, this->pMin);
@@ -98,9 +100,7 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
         } else {
             warped = roiSnapshot;
         }
-        blur(warped, blurred, Size(3, 3), Point(-1, -1));
-        writeImage("blurred.jpg", blurred);
-        GaussianBlur(blurred, gaussian, Size(3, 3), 0, 0);
+        GaussianBlur(warped, gaussian, Size(11, 11), 0);
         writeImage("gaussian.jpg", gaussian);
 
         Canny(gaussian, canny, this->threshold1, this->threshold2, this->apertureSize);

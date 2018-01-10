@@ -29,7 +29,8 @@
                          "threshold1": 23.0,
                          "threshold2": 104.59999999999999,
                          "apertureSize": 3.0,
-                         "warp": 22.0,
+                         "warp": 0.0,
+                         "previewType": "warped",
                          "allLines": true,
                          "roi": {
                               "x": 0.0,

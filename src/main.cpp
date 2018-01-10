@@ -29,7 +29,7 @@ int main( const int, const char** )
     car_resource car_res(&car);
     lifeline_handler ll_handler(&car);
 
-    Rest rest({&camera_res, &car_res, &ll_handler, &r_resource});
+    rest r({&camera_res, &car_res, &ll_handler, &r_resource});
     log::debug(string("Carmageddon started"));
     return EXIT_SUCCESS;
 }

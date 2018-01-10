@@ -19,11 +19,11 @@
             <li>Current angle: <span [innerHTML]="observer.angle"></span></li>
         </ul>
     </fieldset>
-    <select [(ngModel)]="filter">
-        <option value="blurred">Blurred</option>
+    <select [(ngModel)]="observer.previewType" (change)="updateRoi($event)">
+        <option value="warped">Warped</option>
         <option value="gaussian">Gaussian</option>
         <option value="canny">Canny</option>
         <option value="cvt">CVT</option>
     </select>
-    <preview #prv [baseUrl]="'/race/drag/group2/lane_detection/' + filter +'/'"></preview>
+    <preview #prv [baseUrl]="'/race/drag/group2/lane_detection/' + observer.previewType +'/'"></preview>
 </div>

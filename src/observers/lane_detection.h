@@ -34,6 +34,7 @@ private:
     double angle = 0.0;
     double warp = 0.0;
     bool allLines = false;
+    const char* previewType = "cvt";
 
     opencv_line *getAverageLine(std::list<opencv_line> lines);
     void setOutputDir(std::string outputDir) override;
