@@ -12,7 +12,7 @@ using namespace restbed;
 
 rest::rest(list<carmageddon_resource*> resources) {
     auto settings = make_shared< Settings >( );
-    settings->set_port( 8080 );
+    settings->set_port( 1984 );
     settings->set_default_header( "Connection", "close" );
 
     for ( carmageddon_resource *carma_resource: resources) {

@@ -38,6 +38,7 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
             if (msg.data) {
                 const race = JSON.parse(msg.data);
                 const org = this.raceStripService.stripRace(race);
+                console.log('Race ', race.groups[0].observers[0]);
                 if (!this.race) {
                     this.race = race;
                 } else if (this.race && JSON.stringify(org) !== JSON.stringify(this.race)) {

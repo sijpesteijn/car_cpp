@@ -12,7 +12,8 @@ pthread_mutex_t frame_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void *frameGrabber(void *params) {
     Camera *camera = (Camera *) params;
-    while (1) {
+    bool run = true;
+    while (run) {
         if (pthread_mutex_lock(&frame_lock) != 0) {
             log::debug(string("Sockethandler: Could not get a lock on the queue"));
         }
@@ -39,7 +40,7 @@ void *frameGrabber(void *params) {
 }
 
 Camera::Camera() : cap(0) {
-    this->sett = new settings("resources/camera.json");
+    this->sett = new settings("./resources/camera.json");
     this->fromJson(sett->getSettings());
 //    if (this->cap.open(1) == false) {
 //        this->cap.open(0);

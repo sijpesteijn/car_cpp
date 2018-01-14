@@ -20,8 +20,8 @@ public:
     std::list<std::shared_ptr<restbed::Resource>> getResources();
     std::map<std::string, race*> races;
     race* getRace(std::string name);
-    race *selected_race;
-    Car *car;
+    race *selected_race = NULL;
+    Car *car = NULL;
     pthread_t race_status_runner;
 private:
     std::shared_ptr<restbed::Resource> allRaceResource = std::make_shared< restbed::Resource >( );
