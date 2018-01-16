@@ -6,14 +6,14 @@
 #include <map>
 
 map<string, string> pwmMap = {
-        { "P9.21", "/sys/class/pwm/pwmchip0/pwm1/"},
-        { "P9.22", "/sys/class/pwm/pwmchip0/pwm0/"}
+        { "P9.21", "/sys/class/pwm/pwmchip1/pwm1/"},
+        { "P9.22", "/sys/class/pwm/pwmchip1/pwm0/"}
 };
 
 PWM::PWM(string pwmNr) {
     this->pwmNr = pwmMap[pwmNr];
     this->setPeriod(20000000);
-    this->setDutyCycle(1000000);
+    this->setDutyCycle(1500000);
 }
 
 PWM::PWM(string pwmNr, int period, int duty_cycle) {
