@@ -33,6 +33,7 @@ void PWM::setDutyCycle(int duty_cycle) {
     this->duty_cycle = duty_cycle;
     string cmd = "echo " + to_string(this->duty_cycle) + " > " + this->pwmNr + "duty_cycle";
     system(cmd.c_str());
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 //    syslog(LOG_DEBUG, "Duty cycle set to %d ", this->duty_cycle);
 }
 

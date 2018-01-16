@@ -23,6 +23,7 @@ void PWM::setPeriod(int period) {
 void PWM::setDutyCycle(int duty_cycle) {
     this->duty_cycle = duty_cycle;
     log::debug(string("Duty cycle set to ").append(to_string(this->duty_cycle)));
+
 }
 
 void PWM::setEnable(bool enable) {
