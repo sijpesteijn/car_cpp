@@ -4,6 +4,7 @@
 
 #include "pwm.h"
 #include <map>
+#include <chrono>
 
 map<string, string> pwmMap = {
         { "P9.21", "/sys/class/pwm/pwmchip1/pwm1/"},
