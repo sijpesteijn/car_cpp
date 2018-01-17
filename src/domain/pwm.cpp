@@ -4,6 +4,7 @@
 
 #include "pwm.h"
 #include <map>
+#include "../util/log.h"
 #include <chrono>
 #include <thread>
 
