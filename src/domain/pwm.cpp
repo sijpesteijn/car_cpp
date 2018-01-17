@@ -28,7 +28,7 @@ void PWM::setPeriod(int period) {
     this->period = period;
     string cmd = "echo " + to_string(this->period) + " > " + this->pwmNr + "period";
     system(cmd.c_str());
-//    syslog(LOG_DEBUG, "Period set to %d", this->period);
+    log::debug(string("Period set to ").append(to_string(this->period)));
 }
 
 void PWM::setDutyCycle(int duty_cycle) {
@@ -36,7 +36,7 @@ void PWM::setDutyCycle(int duty_cycle) {
     string cmd = "echo " + to_string(this->duty_cycle) + " > " + this->pwmNr + "duty_cycle";
     system(cmd.c_str());
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//    syslog(LOG_DEBUG, "Duty cycle set to %d ", this->duty_cycle);
+    log::debug(string("Duty cycle set to ").append(to_string(this->duty_cycle)));
 }
 
 void PWM::setEnable(bool enable) {
