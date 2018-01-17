@@ -45,8 +45,8 @@ Camera::Camera() : cap(0) {
 //    if (this->cap.open(1) == false) {
 //        this->cap.open(0);
 //    }
-    this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+    this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 352);
+    this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 288);
     log::debug(string("Width ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_WIDTH))));
     log::debug(string("Height ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_HEIGHT))));
     log::debug(string("Brightness ").append(to_string(this->cap.get(CV_CAP_PROP_BRIGHTNESS))));
