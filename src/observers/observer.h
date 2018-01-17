@@ -9,11 +9,13 @@
 #include <sys/stat.h>
 #include "opencv2/core/utility.hpp"
 #include "../domain/camera.h"
+#include "../domain/car.h"
 
 class observer {
 public:
-    observer(Camera *camera) {
+    observer(Camera *camera, Car* car) {
         this->camera = camera;
+        this->car = car;
     }
     virtual ~observer() {};
     virtual json_t* getJson(bool full = false) =0;
@@ -114,6 +116,7 @@ protected:
     cv::Rect roi;
     cv::Mat last_snapshot;
     Camera *camera;
+    Car *car;
 };
 
 #endif //CARMAGEDDON_OBSERVER_H

@@ -33,7 +33,7 @@ list<struct dirent*> listFiles(const string &path) {
     return files;
 }
 
-list<observer*> race_builder::getObservers(json_t* root, Camera *camera) {
+list<observer*> race_builder::getObservers(json_t* root, Camera *camera, Car *car) {
     list<observer*> observers;
     json_t *observers_json = json_object_get(root, "observers");
     for (size_t i = 0; i < json_array_size(observers_json); i++) {
@@ -41,27 +41,27 @@ list<observer*> race_builder::getObservers(json_t* root, Camera *camera) {
         json_t *type_json = json_object_get(observer_json, "type");
         string type = json_string_value(type_json);
         if (type == "lane_detection") {
-            auto *ld = new lane_detection(camera);
+            auto *ld = new lane_detection(camera, car);
             ld->updateWithJson(observer_json);
             observers.push_back(ld);
         } else if(type == "finish_detection") {
-            auto *fl = new finish_detection(camera);
+            auto *fl = new finish_detection(camera, car);
             fl->updateWithJson(observer_json);
             observers.push_back(fl);
         } else if (type == "traffic_light") {
-            auto *tl = new traffic_light(camera);
+            auto *tl = new traffic_light(camera, car);
             tl->updateWithJson(observer_json);
             observers.push_back(tl);
         }
     }
     return observers;
 }
-list<observer_group *> race_builder::getObserverGroups(json_t* root, Camera *camera) {
+list<observer_group *> race_builder::getObserverGroups(json_t* root, Camera *camera, Car *car) {
     list<observer_group*> groups;
     for (size_t i = 0; i < json_array_size(root); i++) {
         json_t *groupJson = json_array_get(root, i);
         string name = json_string_value(json_object_get(groupJson, "name"));
-        observer_group *group = new observer_group(name, this->getObservers(groupJson, camera));
+        observer_group *group = new observer_group(name, this->getObservers(groupJson, camera, car));
         groups.push_back(group);
     }
     return groups;
@@ -76,7 +76,7 @@ map<string, race*> race_builder::getRaces(string path, Car *car, Camera* camera)
 
         string name = json_string_value(json_object_get(json, "name"));
         json_t *groups_json = json_object_get(json, "groups");
-        list<observer_group *> groups = this->getObserverGroups(groups_json, camera);
+        list<observer_group *> groups = this->getObserverGroups(groups_json, camera, car);
 
         race *r = new race(name, car, camera, sett, groups);
         races.insert(pair<string, race*>(r->getName(), r));

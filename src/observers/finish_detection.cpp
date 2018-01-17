@@ -8,7 +8,7 @@
 using namespace cv;
 using namespace std;
 
-finish_detection::finish_detection(Camera *camera):observer(camera) {
+finish_detection::finish_detection(Camera *camera, Car *car):observer(camera, car) {
     this->type = "finish_detection";
     Size dimensions = this->camera->getDimensions();
     this->roi = Rect(0, 0, dimensions.width, dimensions.height);

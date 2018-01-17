@@ -9,7 +9,7 @@
 using namespace cv;
 using namespace std;
 
-lane_detection::lane_detection(Camera* camera):observer(camera) {
+lane_detection::lane_detection(Camera* camera, Car* car):observer(camera, car) {
     this->type = "lane_detection";
     Size dimensions = camera->getDimensions();
     this->roi = Rect(0, 0, dimensions.width, dimensions.height);
@@ -188,6 +188,7 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
             opencv_line *average = this->getAverageLine(average_lines);
             if (average) {
                 this->error = this->p->getOutput(middle, average->p2.x);
+                this->car->setAngle(40);
                 line(cvt, average->p1, average->p2, Scalar(0, 0, 255), 3, CV_AA);
             } else {
                 log::debug("Could not find average");

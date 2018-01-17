@@ -14,7 +14,7 @@
 using namespace cv;
 using namespace std;
 
-traffic_light::traffic_light(Camera* camera):observer(camera) {
+traffic_light::traffic_light(Camera* camera, Car* car):observer(camera, car) {
     this->type = "traffic_light";
     this->pixel_difference = 70;
     Size dimensions = camera->getDimensions();

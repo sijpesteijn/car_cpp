@@ -10,7 +10,7 @@
 
 class finish_detection: public observer {
 public:
-    finish_detection(Camera *camera);
+    finish_detection(Camera *camera, Car *car);
     json_t* getJson(bool full = false) override;
     int updateWithJson(json_t* root) override;
     observer* processSnapshot(cv::Mat snapshot) override;

@@ -11,7 +11,7 @@
 
 class traffic_light:public observer {
 public:
-    traffic_light(Camera* camera);
+    traffic_light(Camera* camera, Car* car);
     json_t* getJson(bool full = false) override;
     int updateWithJson(json_t* root) override;
     observer* processSnapshot(cv::Mat snapshot) override;

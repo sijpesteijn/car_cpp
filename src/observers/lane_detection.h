@@ -9,11 +9,12 @@
 #include "../domain/camera.h"
 #include "opencv_line.h"
 #include "../util/pid_controller.h"
+#include "../domain/car.h"
 #include <jansson.h>
 
 class lane_detection:public observer {
 public:
-    explicit lane_detection(Camera* camera);
+    explicit lane_detection(Camera* camera, Car* car);
     json_t* getJson(bool full = false) override;
     int updateWithJson(json_t* root) override;
     observer* processSnapshot(cv::Mat snapshot) override;
