@@ -115,8 +115,8 @@ protected:
     std::string type;
     cv::Rect roi;
     cv::Mat last_snapshot;
-    Camera *camera = nullptr;
-    Car *car = nullptr;
+    Camera *camera = NULL;
+    Car *car = NULL;
 };
 
 #endif //CARMAGEDDON_OBSERVER_H
