@@ -39,11 +39,11 @@ void *frameGrabber(void *params) {
     return NULL;
 }
 
-Camera::Camera() : cap(0) {
+Camera::Camera() : cap("http://192.168.88.16:8090/?action=stream") {
     this->sett = new settings("./resources/camera.json");
     this->fromJson(sett->getSettings());
 //    if (this->cap.open(1) == false) {
-//        this->cap.open(0);
+//        this->cap.open("http://192.168.88.16:8090/?action=stream?dummy=param.mjpg");
 //    }
     this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);

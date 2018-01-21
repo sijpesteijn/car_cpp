@@ -1,12 +1,12 @@
 {
      "dimension": {
-          "name": "1280x720",
-          "width": 1280,
-          "height": 720
+          "name": "640x360",
+          "width": 640,
+          "height": 360
      },
-     "captureDelay": 100,
-     "observersDelay": 100,
-     "previewDelay": 1000,
+     "captureDelay": 1,
+     "observersDelay": 1,
+     "previewDelay": 1,
      "whiteBalance": {
           "alpha": 1.1000000000000001,
           "beta": 2
@@ -16,5 +16,5 @@
      "saturation": 0,
      "hue": 0,
      "gain": 0,
-     "fps": 30
+     "fps": 25
 }

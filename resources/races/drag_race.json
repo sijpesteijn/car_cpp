@@ -7,10 +7,10 @@
                     {
                          "type": "traffic_light",
                          "roi": {
-                              "x": 27.0,
-                              "y": 41.0,
-                              "height": 50.0,
-                              "width": 23.0
+                              "x": 0.0,
+                              "y": 0.0,
+                              "height": 0.0,
+                              "width": 0.0
                          },
                          "pixel_difference": 63.0
                     }
@@ -34,18 +34,18 @@
                          "allLines": true,
                          "roi": {
                               "x": 0.0,
-                              "y": 76.0,
-                              "height": 24.0,
-                              "width": 64.0
+                              "y": 0.0,
+                              "height": 360.0,
+                              "width": 640.0
                          }
                     },
                     {
                          "type": "finish_detection",
                          "roi": {
                               "x": 0.0,
-                              "y": 9.0,
-                              "height": 39.0,
-                              "width": 64.0
+                              "y": 0.0,
+                              "height": 0.0,
+                              "width": 0.0
                          },
                          "threshold1": 33.600000000000001,
                          "threshold2": 117.8,
