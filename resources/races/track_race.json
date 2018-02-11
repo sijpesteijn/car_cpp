@@ -7,12 +7,12 @@
                     {
                          "type": "traffic_light",
                          "roi": {
-                              "x": 85.0,
-                              "y": 229.0,
-                              "height": 35.0,
+                              "x": 536.0,
+                              "y": 246.0,
+                              "height": 36.0,
                               "width": 57.0
                          },
-                         "pixel_difference": 61.0
+                         "pixel_difference": 63.0
                     }
                ]
           },
@@ -21,18 +21,21 @@
                "observers": [
                     {
                          "type": "lane_detection",
-                         "pMax": 0.0,
-                         "pMin": 0.0,
-                         "kc": 0.0,
-                         "ki": 0.0,
-                         "kd": 0.0,
-                         "threshold1": 30.899999999999999,
-                         "threshold2": 191.40000000000001,
+                         "pMax": 55.600000000000001,
+                         "pMin": -40.5,
+                         "kp": 0.59999999999999998,
+                         "ki": 0.01,
+                         "kd": 0.01,
+                         "threshold1": 23.0,
+                         "threshold2": 104.59999999999999,
                          "apertureSize": 3.0,
+                         "warp": 0.0,
+                         "previewType": "cvt",
+                         "allLines": true,
                          "roi": {
                               "x": 0.0,
-                              "y": 86.0,
-                              "height": 394.0,
+                              "y": 90.0,
+                              "height": 390.0,
                               "width": 640.0
                          }
                     },
@@ -40,10 +43,13 @@
                          "type": "finish_detection",
                          "roi": {
                               "x": 0.0,
-                              "y": 200.0,
-                              "height": 280.0,
+                              "y": 0.0,
+                              "height": 480.0,
                               "width": 640.0
-                         }
+                         },
+                         "threshold1": 33.600000000000001,
+                         "threshold2": 117.8,
+                         "apertureSize": 3.0
                     }
                ]
           }

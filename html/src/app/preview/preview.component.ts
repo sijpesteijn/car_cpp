@@ -1,64 +1,40 @@
-import {Component, Input, OnDestroy} from "@angular/core";
-import {CameraService, CameraSettings} from "../camera.service";
+import { Component, Inject, InjectionToken, Input, OnDestroy, ViewChild } from "@angular/core";
+import { Config } from "../app.config";
 
+
+export const LOCAL_STREAM = new InjectionToken<boolean>('localStream');
 @Component({
     selector: 'preview',
-    template: require('./preview.html')
+    template: require('./preview.html'),
+    styles: [require('./preview.scss')]
 })
-export class PreviewComponent implements OnDestroy {
-    private reloadInterval: any;
-    private last_update: Date;
-    private status: string = 'loading';
-    private cameraSettings: CameraSettings;
-    private interval: number = 5 * 1000;
-    private streamDefault = '/assets/img/testbeeld.png';
-    private streamUrl = this.streamDefault;
-    @Input()
-    private baseUrl = '/camera/snapshot/';
+export class PreviewComponent {
+    private streamUrl = '/assets/img/testbeeld.png';
+    @ViewChild('video') private video: any;
 
-    constructor(private cameraService: CameraService) {
-        this.cameraService.getCameraInfo().subscribe(cameraSettings => {
-            if (cameraSettings) {
-                this.cameraSettings = cameraSettings;
-                this.interval = cameraSettings.previewDelay;
-                if (this.reloadInterval) {
-                    clearInterval(this.reloadInterval);
-                }
-                setTimeout(() => {
-                    this.reloadPreview();
-                }, 300);
-            }
-        });
+    constructor(private config: Config, @Inject(LOCAL_STREAM) private localStream: boolean) {
     }
 
-    ngAfterViewInit() {
-        this.getPreviewImage();
+    ngOnInit() {
+        if (this.localStream) {
+            this.initWebcam();
+        } else {
+            this.streamUrl = this.config.get('stream');
+        }
     }
 
-    ngOnDestroy() {
-        setTimeout(() => {
-            clearInterval(this.reloadInterval);
-        }, 200);
-    }
-
-    private reloadPreview() {
-        this.reloadInterval = setInterval(() => {
-            this.getPreviewImage();
-        }, (this.interval));
-    }
-
-    private getPreviewImage() {
-        this.last_update = new Date();
-        const url = this.baseUrl + this.last_update;
-        const img = new Image();
-        img.onload = () => {
-            this.status = 'loaded';
-            this.streamUrl = url;
-        };
-        img.onerror = () => {
-            this.status = 'error';
-            this.streamUrl = this.streamDefault;
-        };
-        img.src = url;
+    private initWebcam() {
+        let _video = this.video.nativeElement;
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // TODO allow video options as Input()
+            navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}})
+                .then(stream => {
+                    _video.srcObject = stream;
+                    _video.play();
+                })
+                .catch((err: MediaStreamError) => {
+                    console.warn("Error initializing webcam", err);
+                });
+        }
     }
 }

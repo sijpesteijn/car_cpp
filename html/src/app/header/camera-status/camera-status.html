@@ -1,24 +1,24 @@
 <div class="camera-status">
     <table *ngIf="cameraSettings">
-        <tr>
-            <td>Dimensions</td>
-            <td><select [(ngModel)]="cameraSettings?.dimension.name" (change)="updateDimensions($event)">
-                <option *ngFor="let dimension of dimensions"
-                        [value]="dimension.name"
-                        [innerHTML]="dimension.name"></option>
-            </select></td>
-        </tr>
-        <tr>
-            <td>Capture delay</td>
-            <td><input type="number" min="10" step="10" [(ngModel)]="cameraSettings.captureDelay" (change)="updateCameraInfo($event)"> ms.</td>
-        </tr>
+        <!--<tr>-->
+            <!--<td>Dimensions</td>-->
+            <!--<td><select [(ngModel)]="cameraSettings?.dimension.name" (change)="updateDimensions($event)">-->
+                <!--<option *ngFor="let dimension of dimensions"-->
+                        <!--[value]="dimension.name"-->
+                        <!--[innerHTML]="dimension.name"></option>-->
+            <!--</select></td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+            <!--<td>Capture delay</td>-->
+            <!--<td><input type="number" min="10" step="10" [(ngModel)]="cameraSettings.captureDelay" (change)="updateCameraInfo($event)"> ms.</td>-->
+        <!--</tr>-->
         <tr>
             <td>Observers delay</td>
             <td><input type="number" min="10" step="10" [(ngModel)]="cameraSettings.observersDelay" (change)="updateCameraInfo($event)"> ms.</td>
         </tr>
         <tr>
             <td>Preview delay</td>
-            <td><input type="number" min="1" step="100" [(ngModel)]="cameraSettings.previewDelay" (change)="updateCameraInfo($event)"> sec.</td>
+            <td><input type="number" min="1" step="100" [ngModel]="cameraSettings.previewDelay/1000" (change)="updatePreviewDelay($event)"> sec.</td>
         </tr>
         <tr>
             <td>White balance alpha</td>
@@ -27,30 +27,6 @@
         <tr>
             <td>White balance beta</td>
             <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.whiteBalance.beta" (change)="updateCameraInfo($event)"> {{ cameraSettings?.whiteBalance.beta }} (0-100)</td>
-        </tr>
-        <tr *ngIf="cameraSettings.brightness > 0">
-            <td>Brightness</td>
-            <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.brightness" (change)="updateCameraInfo($event)"> {{ cameraSettings?.brightness }} (0-100)</td>
-        </tr>
-        <tr *ngIf="cameraSettings.contrast > 0">
-            <td>Contrast</td>
-            <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.contrast" (change)="updateCameraInfo($event)"> {{ cameraSettings?.contrast }} (0-100)</td>
-        </tr>
-        <tr *ngIf="cameraSettings.saturation > 0">
-            <td>Saturation</td>
-            <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.saturation" (change)="updateCameraInfo($event)"> {{ cameraSettings?.saturation }} (0-100)</td>
-        </tr>
-        <tr *ngIf="cameraSettings.hue > 0">
-            <td>Hue</td>
-            <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.hue" (change)="updateCameraInfo($event)"> {{ cameraSettings?.hue }} (0-100)</td>
-        </tr>
-        <tr *ngIf="cameraSettings.gain > 0">
-            <td>Gain</td>
-            <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.gain" (change)="updateCameraInfo($event)"> {{ cameraSettings?.gain }} (0-100)</td>
-        </tr>
-        <tr *ngIf="cameraSettings.fps > 0">
-            <td>Framerate</td>
-            <td><input type="range" min="1" max="100" step="1" [(ngModel)]="cameraSettings.fps" (change)="updateCameraInfo($event)"> {{ cameraSettings?.fps }} (0-100)</td>
         </tr>
     </table>
 </div>

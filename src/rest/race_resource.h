@@ -6,7 +6,7 @@
 #define CARMAGEDDON_RACE_RESOURCE_H
 
 
-#include "carmageddon_resource.h"
+#include "abstract_rest_resource.h"
 #include "../races/race.h"
 #include "../domain/car.h"
 #include <list>
@@ -14,7 +14,7 @@
 #include <restbed>
 #include <string>
 
-class race_resource: public carmageddon_resource {
+class race_resource: public abstract_rest_resource {
 public:
     race_resource(Camera *camera, Car *car);
     std::list<std::shared_ptr<restbed::Resource>> getResources();

@@ -25,15 +25,16 @@ void* checkRaceStatus(void* params) {
     race_resource *r = (race_resource*) params;
     bool run = true;
     while(run) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        if (r->selected_race && r->car->getMode() != car_mode::autonomous) {
-            r->selected_race->setSelected(false);
-            r->selected_race->setRunning(false);
-            r->selected_race = NULL;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        if (resource->selected_race && resource->car->getMode() != car_mode::autonomous) {
+            resource->selected_race->setSelected(false);
+            resource->selected_race->setRunning(false);
+            resource->selected_race = NULL;
         }
-        if (sockets.size() > 0 && r->selected_race && r->selected_race->isSelected()) {
-            json_t* json = r->selected_race->getJson(true);
+        if (sockets.size() > 0 && resource->selected_race && resource->selected_race->isSelected()) {
+            json_t* json = resource->selected_race->getJson(true);
             string body = json_dumps(json, 0);
+//            cout << "Race: " << body << endl;
             json_decref(json);
             for (map<string, shared_ptr<WebSocket>>::iterator iter = sockets.begin();
                  iter != sockets.end(); ++iter) {
@@ -176,13 +177,15 @@ void select_race_handler(const shared_ptr<Session> session) {
 //        if (resource->race_status_runner == NULL) {
 //            pthread_create(&resource->race_status_runner, NULL, checkRaceStatus, resource);
 //        }
+        resource->car->setMode(car_mode::autonomous);
         resource->selected_race = race;
         for(auto const& race : resource->races) {
             race.second->setSelected(false);
         }
-        race->setSelected(true);
-        json_t* json = race->getJson(true);
+        resource->selected_race->setSelected(true);
+        json_t* json = resource->selected_race->getJson(true);
         string body = json_dumps(json, 0);
+        cout << "Select: " << body << endl;
         json_decref(json);
 
         session->close(OK, body, {
@@ -295,7 +298,7 @@ race_resource::race_resource(Camera *camera, Car *car) {
 race* race_resource::getRace(string name) {
     map<string,race*>::iterator it = this->races.find(name);
     if (it == this->races.end()) {
-        log::debug(string("CPU: Could not get race ").append(name.c_str()));
+        log::debug(string("Race resource: Could not get race ").append(name.c_str()));
         return NULL;
     } else {
         return it->second;

@@ -1,5 +1,16 @@
 .car-status {
   float: right;
-  margin-right: 100px;
+  margin-right: 10px;
   margin-top: 12px;
+  position: relative;
+}
+
+.angle {
+  width: 100px;
+  float: right;
+}
+
+.throttle {
+  width: 100px;
+  float: right;
 }

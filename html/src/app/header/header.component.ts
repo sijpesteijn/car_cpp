@@ -28,7 +28,8 @@ export class HeaderComponent {
     }
 
     setCarMode(mode: number) {
-        this.carService.setCarMode(mode).subscribe();
+        this.car.mode = mode;
+        this.carService.saveCar(this.car).subscribe();
     }
 
 }

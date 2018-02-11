@@ -36,7 +36,6 @@ export class LifeLineComponent {
                 this.lifeline.onopen    = (evt) => {
                     setTimeout(() =>
                     {
-                        this.cameraService.loadCameraDimensions();
                         this.cameraService.loadCameraSettings();
                     }, 500);
                     this.eventService.emit(OBSERVER_ROIS_CLEAR);

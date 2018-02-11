@@ -5,11 +5,13 @@
         <ul class="lane_detectionobserver">
             <li>Roi color: <span class="circle" [style.background-color]="roiColor"></span></li>
             <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="observer?.roi.y" (ngModelChange)="updateRoi($event)"> {{ observer?.roi.y }}</li>
-            <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
-            <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
+            <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
+            <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
             <li>Canny Aperture Size: <input type="range" min="3" max="7" step="2" [(ngModel)]="observer.apertureSize" (ngModelChange)="updateRoi($event)"> {{ observer?.apertureSize }}</li>
-            <li>Warp: <input type="range" min="0" max="200" step="1" [(ngModel)]="observer.warp" (ngModelChange)="updateRoi($event)"> {{ observer?.warp }}</li>
-            <li>All lines: <input type="checkbox" [(ngModel)]="observer.allLines" (ngModelChange)="updateRoi($event)"> {{ observer?.allLines }}</li>
+            <li>Warp: <input type="checkbox" [(ngModel)]="observer.warp" (ngModelChange)="updateRoi($event)"> {{ observer?.warp }}</li>
+            <li>Show found lines: <input type="checkbox" [(ngModel)]="observer.showFoundLines" (ngModelChange)="updateRoi($event)"> {{ observer?.showFoundLines }}</li>
+            <li>Show average left&right: <input type="checkbox" [(ngModel)]="observer.showAverageLRLines" (ngModelChange)="updateRoi($event)"> {{ observer?.showAverageLRLines }}</li>
+            <li>Show average: <input type="checkbox" [(ngModel)]="observer.showAverageLine" (ngModelChange)="updateRoi($event)"> {{ observer?.showAverageLine }}</li>
             <li>Pid max: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.pMax" (change)="updateRoi($event)"> {{ observer?.pMax }}</li>
             <li>Pid min: <input type="range" min="-300.0" max="0.0" step="0.1" [(ngModel)]="observer.pMin" (change)="updateRoi($event)"> {{ observer?.pMin }}</li>
             <li>Proportional gain: <input type="range" min="0.01" max="1.0" step="0.01" [(ngModel)]="observer.kp" (change)="updateRoi($event)"> {{ observer?.kp }}</li>
@@ -20,10 +22,10 @@
         </ul>
     </fieldset>
     <select [(ngModel)]="observer.previewType" (change)="updateRoi($event)">
-        <option value="warped">Warped</option>
+        <option *ngIf="observer.warp" value="warped">Warped</option>
         <option value="gaussian">Gaussian</option>
         <option value="canny">Canny</option>
         <option value="cvt">CVT</option>
     </select>
-    <preview #prv [baseUrl]="'/race/drag/group2/lane_detection/' + observer.previewType +'/'"></preview>
+    <observer-preview #prv [baseUrl]="'/race/drag/group2/lane_detection/' + observer.previewType +'/'"  [height]="observer?.roi.height"></observer-preview>
 </div>

@@ -7,14 +7,14 @@
 
 
 Car::Car() {
-    this->enabled = 0;
+    this->enabled = true;
     this->mode = car_mode::stopped;
 }
 
 int Car::setMode(car_mode mode) {
     if (this->enabled == 1) {
         this->mode = mode;
-        log::debug(string("Mode set to: ").append(to_string(static_cast<std::underlying_type<car_mode>::type>(mode))));
+//        log::debug(string("Mode set to: ").append(to_string(static_cast<std::underlying_type<car_mode>::type>(mode))));
         return 0;
     }
     log::debug(string("Car not enabled"));

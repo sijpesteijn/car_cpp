@@ -34,13 +34,10 @@ export interface CameraSettings {
 @Injectable()
 export class CameraService {
     private cameraSetting: Subject<CameraSettings>;
-    private cameraDimensions: Subject<Dimension[]>;
 
     constructor(private http: HttpClient, private config: Config) {
         this.cameraSetting = new BehaviorSubject(null);
-        this.cameraDimensions = new BehaviorSubject(null);
         this.loadCameraSettings();
-        this.loadCameraDimensions();
     }
 
     loadCameraSettings() {
@@ -50,11 +47,6 @@ export class CameraService {
             });
     }
 
-    loadCameraDimensions() {
-        this.http.get(this.config.get('camera.dimensions')).subscribe(response => {
-            this.cameraDimensions.next((response as Dimension[]));
-        });
-    }
 
     getCameraInfo(): Observable<CameraSettings> {
         return this.cameraSetting;
@@ -67,9 +59,5 @@ export class CameraService {
             this.cameraSetting.next(cameraSettings);
             return cameraSettings;
         });
-    }
-
-    getDimensions(): Observable<Dimension[]> {
-        return this.cameraDimensions;
     }
 }

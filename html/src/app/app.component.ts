@@ -9,7 +9,7 @@ import {
 import {AppState} from './app.service';
 import {Config} from './app.config';
 import {Car, CarService} from "./car.service";
-import {Router} from "@angular/router";
+import { NavigationStart, Router } from "@angular/router";
 
 /**
  * App Component
@@ -22,6 +22,27 @@ import {Router} from "@angular/router";
     template: require('./app.html')
 })
 export class AppComponent {
+    private car: Car;
+
+    constructor(private carService: CarService,
+                private router: Router) {
+    }
+
+    ngOnInit() {
+        this.carService.getCar().subscribe((car) => this.car = car);
+        this.router.events.subscribe(evt => {
+            if (this.car && evt instanceof NavigationStart) {
+                if (evt.url.endsWith('off')) {
+                    this.car.mode = 0;
+                } else if (evt.url.endsWith('manual')) {
+                    this.car.mode = 1;
+                } else if (evt.url.endsWith('race')) {
+                    this.car.mode = 2;
+                }
+                this.carService.saveCar(this.car).subscribe();
+            }
+        })
+    }
 }
 
 /**

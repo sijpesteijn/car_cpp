@@ -2,7 +2,7 @@
 // Created by Gijs Sijpesteijn on 06/10/2017.
 //
 
-#include "lifeline_handler.h"
+#include "lifeline_resource.h"
 #include <iostream>
 #include "../util/util.h"
 #include "../util/log.h"
@@ -78,22 +78,11 @@ void lifeline_message_handler( const shared_ptr< WebSocket > source, const share
     }
     else if ( opcode == WebSocketMessage::TEXT_FRAME )
     {
-        const string body = "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + ","
-                            + "\"angle\": " + to_string(car->getAngle()) + ","
-                            + "\"enabled\": " + to_string(car->getEnabled()) + ","
-                            + "\"throttle\": " + to_string(car->getThrottle()) + "}";
+        json_t* json = car->getJson();
+        string body = json_dumps(json, 0);
+        json_decref(json);
         auto response = make_shared< WebSocketMessage >(WebSocketMessage::TEXT_FRAME, body );
         source->send(response);
-//        response->set_mask( 0 );
-//        for ( auto socket : sockets )
-//        {
-//            auto destination = socket.second;
-//            destination->send( response );
-//        }
-//
-//        const auto key = source->get_key( );
-//        const auto data = String::format( "Received message '%.*s' from %s\n", message->get_data( ).size( ), message->get_data( ).data( ), key.data( ) );
-//        fprintf( stderr, "%s", data.data( ) );
     }
 }
 
@@ -119,9 +108,9 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
                     socket->set_error_handler( lifeline_error_handler );
                     socket->set_message_handler( lifeline_message_handler );
 
-                    const string body = "{\"mode\": " + to_string(static_cast<std::underlying_type<car_mode>::type>(car->getMode())) + ","
-                                        + "\"angle\": " + to_string(car->getAngle()) + ","
-                                        + "\"throttle\": " + to_string(car->getThrottle()) + "}";
+                    json_t* json = car->getJson();
+                    string body = json_dumps(json, 0);
+                    json_decref(json);
                     socket->send( body, [ ]( const shared_ptr< WebSocket > socket )
                     {
                         const auto key = socket->get_key( );
@@ -169,7 +158,7 @@ void get_lifeline_method_handler( const shared_ptr< Session > session )
 //	return NULL;
 //}
 
-lifeline_handler::lifeline_handler(Car *carP) {
+lifeline_resource::lifeline_resource(Car *carP) {
     car = carP;
     this->resource = make_shared< Resource >( );
     this->resource->set_path( LIFELINE );
@@ -179,6 +168,6 @@ lifeline_handler::lifeline_handler(Car *carP) {
 //	pthread_create(&checker, NULL, connectionChecker, carP);
 }
 
-list<shared_ptr<Resource>> lifeline_handler::getResources() {
+list<shared_ptr<Resource>> lifeline_resource::getResources() {
     return { this->resource };
 }

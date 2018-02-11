@@ -46,6 +46,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
 import {RaceModule} from "./race/race.module";
 import {PreviewModule} from "./preview/preview.module";
+import { LOCAL_STREAM } from "./preview/preview.component";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -64,11 +65,13 @@ let PROVIDERS = [
 
 if ('local' === process.env.CONTEXT) {
     PROVIDERS = [
+        { provide: LOCAL_STREAM, useValue: true },
         { provide: 'settings.path', useValue: './assets/config/application.local.json' },
         { provide: APP_INITIALIZER, useFactory: (config: Config) => () => config.load('/assets/config/application.local.json'), deps: [Config], multi: true }
         ]
 } else {
     PROVIDERS = [
+        { provide: LOCAL_STREAM, useValue: false },
         { provide: 'settings.path', useValue: './assets/config/application.bb.json' },
         { provide: APP_INITIALIZER, useFactory: (config: Config) => () => config.load('/assets/config/application.bb.json'), deps: [Config], multi: true }
     ]

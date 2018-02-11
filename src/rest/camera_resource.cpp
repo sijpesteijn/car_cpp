@@ -105,9 +105,9 @@ camera_resource::camera_resource(Camera *cam) {
     this->cameraSettingsResource->set_method_handler("POST", post_camera_settings_handler);
     log::debug(string("Restbed: ").append(CAMERA_SETTINGS));
 
-    this->cameraSnapshotResource->set_path( CAMERA_SNAPSHOT );
-    this->cameraSnapshotResource->set_method_handler( "GET", get_camera_snapshot_handler );
-    log::debug(string("Restbed: ").append(CAMERA_SNAPSHOT));
+//    this->cameraSnapshotResource->set_path( CAMERA_SNAPSHOT );
+//    this->cameraSnapshotResource->set_method_handler( "GET", get_camera_snapshot_handler );
+//    log::debug(string("Restbed: ").append(CAMERA_SNAPSHOT));
 }
 
 list<shared_ptr<Resource>> camera_resource::getResources() {

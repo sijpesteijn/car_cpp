@@ -7,7 +7,7 @@
 
 #include "observer.h"
 #include "../domain/camera.h"
-#include "opencv_line.h"
+#include "../util/opencv_line.h"
 #include "../util/pid_controller.h"
 #include "../domain/car.h"
 #include <jansson.h>
@@ -33,15 +33,25 @@ private:
     double pMin = -100.0;
     double error = 0.0;
     double angle = 0.0;
-    double warp = 0.0;
-    bool allLines = false;
+    bool warp = false;
+    bool showFoundLines = false;
+    bool showAverageLRLines = false;
+    bool showAverageLine = false;
     const char* previewType = "cvt";
 
     opencv_line *getAverageLine(std::list<opencv_line> lines);
     void setOutputDir(std::string outputDir) override;
 
 protected:
-    PIDController *p;
+    PIDController *pid;
+
+    void getVerticalLines(vector<cv::Vec4i> lines, list<opencv_line> vertical_left, list <opencv_line> vertical_right, cv::Mat cvt);
+
+    void drawLeftAverage(opencv_line *average_left, cv::Mat cvt);
+
+    void drawRightAverage(opencv_line *average_right, cv::Mat cvt);
+
+    void drawAverage(opencv_line *average_left, opencv_line *average_right, cv::Mat cvt);
 };
 
 #endif //CARMAGEDDON_LANE_DETECTION_H

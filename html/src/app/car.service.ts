@@ -21,33 +21,18 @@ export class CarService {
         this.car = new BehaviorSubject({throttle: 0, angle: 0, mode: 0, enabled: false});
     }
 
-    setEngine(throttle: number ) {
-        return (this.http.post(this.config.get('car.engine').replace(':throttle', String(throttle)), {})
-            .map(response => {
-                console.log('Engine: ', response);
-                // return response.json();
-            }));
-
-    }
-
-    setSteer(angle: number ) {
-        return (this.http.post(this.config.get('car.steer').replace(':angle', String(angle)), {})
-            .map(response => {
-                // console.log('Steer: ', response);
-                // return response.json();
-            }));
-
-    }
-
-    setCarMode(mode: number) {
-        return (this.http.post(this.config.get('car.mode').replace(':mode', String(mode)), {}));
-    }
-
     getCar(): Observable<Car> {
         return this.car;
     }
 
     updateCar(car: Car) {
         this.car.next(car);
+    }
+
+    saveCar(car: Car)  {
+        return (this.http.post(this.config.get('car.save'), JSON.stringify(car)))
+            .map((car: Car) => {
+                this.car.next(car);
+            });
     }
 }

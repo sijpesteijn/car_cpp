@@ -7,10 +7,10 @@
                     {
                          "type": "traffic_light",
                          "roi": {
-                              "x": 0.0,
-                              "y": 0.0,
-                              "height": 0.0,
-                              "width": 0.0
+                              "x": 196.0,
+                              "y": 77.0,
+                              "height": 47.0,
+                              "width": 29.0
                          },
                          "pixel_difference": 63.0
                     }
@@ -26,16 +26,18 @@
                          "kp": 0.59999999999999998,
                          "ki": 0.01,
                          "kd": 0.01,
-                         "threshold1": 23.0,
-                         "threshold2": 104.59999999999999,
+                         "threshold1": 36.0,
+                         "threshold2": 104.0,
                          "apertureSize": 3.0,
-                         "warp": 0.0,
+                         "warp": true,
                          "previewType": "cvt",
-                         "allLines": true,
+                         "showFoundLines": true,
+                         "showAverageLRLines": true,
+                         "showAverageLine": true,
                          "roi": {
                               "x": 0.0,
-                              "y": 0.0,
-                              "height": 360.0,
+                              "y": 99.0,
+                              "height": 261.0,
                               "width": 640.0
                          }
                     },
@@ -44,11 +46,11 @@
                          "roi": {
                               "x": 0.0,
                               "y": 0.0,
-                              "height": 0.0,
-                              "width": 0.0
+                              "height": 360.0,
+                              "width": 640.0
                          },
-                         "threshold1": 33.600000000000001,
-                         "threshold2": 117.8,
+                         "threshold1": 86.0,
+                         "threshold2": 117.0,
                          "apertureSize": 3.0
                     }
                ]

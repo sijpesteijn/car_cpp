@@ -3,7 +3,7 @@
 //
 
 #include "finish_detection.h"
-#include "opencv_line.h"
+#include "../util/opencv_line.h"
 
 using namespace cv;
 using namespace std;

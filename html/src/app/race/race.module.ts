@@ -14,11 +14,13 @@ import {RaceComponent} from "./race.component";
 import {ObserversGroupComponent} from "./observers-group/observers-group.component";
 import {ObserverStatusComponent} from "./observer-status/observer-status.component";
 import { RaceStripService } from "./race-strip.service";
+import { ObserverPreviewModule } from "../observer-preview/observer-preview.module";
 
 @NgModule({
     imports: [
         CommonModule,
         FormsModule,
+        ObserverPreviewModule,
         PreviewModule,
         RouterModule.forChild(race_routes)
     ],

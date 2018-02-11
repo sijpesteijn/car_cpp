@@ -10,13 +10,13 @@ using namespace cv;
 using namespace std;
 using namespace restbed;
 
-rest::rest(list<carmageddon_resource*> resources) {
+rest::rest(list<abstract_rest_resource*> resources) {
     auto settings = make_shared< Settings >( );
     settings->set_port( 1984 );
     settings->set_default_header( "Connection", "close" );
 
-    for ( carmageddon_resource *carma_resource: resources) {
-        for ( shared_ptr<Resource> resource : carma_resource->getResources()) {
+    for ( abstract_rest_resource *rest_resource: resources) {
+        for ( shared_ptr<Resource> resource : rest_resource->getResources()) {
             this->service.publish( resource );
         }
     }

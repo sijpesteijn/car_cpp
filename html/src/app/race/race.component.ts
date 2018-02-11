@@ -2,24 +2,37 @@ import {AfterViewInit, Component, OnDestroy} from "@angular/core";
 import {Config} from "../app.config";
 import {ObserverGroup, Race} from "./race.service";
 import { RaceStripService } from "./race-strip.service";
+import { Router } from "@angular/router";
+import { Car, CarService } from "../car.service";
 
 @Component({
     selector: 'race',
     template: require('./race.html'),
     styles: [require('./race.scss')]
 })
-export class RaceComponent implements AfterViewInit, OnDestroy {
+export class RaceComponent {
     private raceWebsocket: WebSocket;
     private retry: any;
     private race: Race;
+    private car: Car;
+    private interval: any;
 
-    constructor(private config: Config, private raceStripService: RaceStripService) {
+    constructor(private config: Config,
+                private router: Router,
+                private carService: CarService,
+                private raceStripService: RaceStripService) {
     }
 
-    ngAfterViewInit() {
-        setTimeout( () => {
-            this.setupWebsocket();
-        }, 500)
+    ngOnInit() {
+        // this.carService.getCar().subscribe(car => {
+        //     this.car = car;
+        //
+        //     if (this.car.mode !== 2) {
+        //         this.car.mode = 2;
+        //         this.carService.saveCar(this.car).subscribe(() => this.setupWebsocket());
+        //     }
+        // });
+        this.setupWebsocket();
     }
 
     ngOnDestroy() {
@@ -33,6 +46,7 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
         this.raceWebsocket = new WebSocket(this.config.get('race.status'));
         this.raceWebsocket.onopen    = () => {
             console.log('Opening race websocket');
+            this.interval = setInterval(()=> {this.raceWebsocket.send('ping')}, 1000);
         };
         this.raceWebsocket.onmessage = (msg) => {
             if (msg.data) {
@@ -48,9 +62,13 @@ export class RaceComponent implements AfterViewInit, OnDestroy {
         };
         this.raceWebsocket.onerror   = (error) => {
             console.log('Error race websocket');
+            clearInterval(this.interval);
+            this.router.navigate(['./off']);
         };
         this.raceWebsocket.onclose   = (event) => {
             console.log('Closing race websocket');
+            clearInterval(this.interval);
+            this.router.navigate(['./off']);
         };
     }
 }

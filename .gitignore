@@ -1,14 +1,6 @@
-/html/.awcache/
-/html/node_modules/
-/cmake-build-debug/
-.idea
-**/.DS_Store
 /Makefile
+/cpu.cbp
+/cpu
 /cmake_install.cmake
 /CMakeCache.txt
-/results/
-/snapshot.jpg
-/sec.jpg
-/carmageddon.cbp
-/first.jpg
-/carmageddon
+/CMakeFiles/

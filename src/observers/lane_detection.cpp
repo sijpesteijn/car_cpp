@@ -14,7 +14,7 @@ lane_detection::lane_detection(Camera* camera, Car* car):observer(camera, car) {
     Size dimensions = camera->getDimensions();
     this->roi = Rect(0, 0, dimensions.width, dimensions.height);
     this->condition_achieved = true;
-    this->p = new PIDController(this->kp, this->ki, this->kd);
+    this->pid = new PIDController(this->kp, this->ki, this->kd);
 }
 
 json_t* lane_detection::getJson(bool full) {
@@ -34,9 +34,11 @@ json_t* lane_detection::getJson(bool full) {
     json_object_set_new( root, "threshold1", json_real( this->threshold1 ) );
     json_object_set_new( root, "threshold2", json_real( this->threshold2 ) );
     json_object_set_new( root, "apertureSize", json_real( this->apertureSize ) );
-    json_object_set_new( root, "warp", json_real( this->warp ) );
+    json_object_set_new( root, "warp", json_boolean( this->warp ) );
     json_object_set_new( root, "previewType", json_string(this->previewType));
-    json_object_set_new( root, "allLines", json_boolean(this->allLines));
+    json_object_set_new( root, "showFoundLines", json_boolean(this->showFoundLines));
+    json_object_set_new( root, "showAverageLRLines", json_boolean(this->showAverageLRLines));
+    json_object_set_new( root, "showAverageLine", json_boolean(this->showAverageLine));
     json_t* roi = json_object();
     json_object_set_new( roi, "x", json_real( this->roi.x ) );
     json_object_set_new( roi, "y", json_real( this->roi.y ) );
@@ -61,28 +63,30 @@ int lane_detection::updateWithJson(json_t* root) {
     this->threshold1 = json_real_value(json_object_get(root, "threshold1"));
     this->threshold2 = json_real_value(json_object_get(root, "threshold2"));
     this->apertureSize = static_cast<int>(json_real_value(json_object_get(root, "apertureSize")));
-    this->warp = json_real_value(json_object_get(root, "warp"));
+    this->warp = json_boolean_value(json_object_get(root, "warp"));
     this->previewType = json_string_value(json_object_get(root, "previewType"));
-    this->allLines = json_boolean_value(json_object_get(root, "allLines"));
+    this->showFoundLines = json_boolean_value(json_object_get(root, "showFoundLines"));
+    this->showAverageLRLines = json_boolean_value(json_object_get(root, "showAverageLRLines"));
+    this->showAverageLine = json_boolean_value(json_object_get(root, "showAverageLine"));
 
-    this->p->setOutputLimits(this->pMax, this->pMin);
-    this->p->setD(this->kd);
-    this->p->setI(this->ki);
-    this->p->setP(this->kp);
+    this->pid->setOutputLimits(this->pMax, this->pMin);
+    this->pid->setD(this->kd);
+    this->pid->setI(this->ki);
+    this->pid->setP(this->kp);
     this->roi = this->verifyRoi(this->roi);
     return 0;
 }
 
 observer* lane_detection::processSnapshot(Mat snapshot) {
-    if (snapshot.total() > 0) {
+    if (snapshot.total() > 0 && this->last_snapshot.total() > 0)
+    {
         Mat blurred, gaussian, canny, cvt, matrix, warped;
         Point2f inputQuad[4];
         Point2f outputQuad[4];
-        double middle = this->camera->getDimensions().width / 2;
 
         this->roi = this->verifyRoi(this->roi);
         Mat roiSnapshot = snapshot(this->roi);
-        if (this->warp > 0) {
+        if (this->warp) {
             matrix = Mat::zeros(roiSnapshot.rows, roiSnapshot.cols, roiSnapshot.type());
             inputQuad[0] = Point2f(0, 0);
             inputQuad[1] = Point2f(matrix.cols, 0);
@@ -104,112 +108,35 @@ observer* lane_detection::processSnapshot(Mat snapshot) {
         writeImage("gaussian.jpg", gaussian);
 
         Canny(gaussian, canny, this->threshold1, this->threshold2, this->apertureSize);
-        writeImage("canny.jpg", canny);
+        writeImage("canny.jpg", canny.clone());
         cvtColor(canny, cvt, CV_GRAY2BGR);
 
         vector<Vec4i> lines;
-        list<opencv_line> vertical_left;
-        list<opencv_line> vertical_right;
         HoughLinesP(canny, lines, 1, CV_PI / 180, 50, 50, 10);
-        Point p1, p2;
-        for (auto l : lines) {
-            if (l[0] > l[2]) {
-                p1 = Point(l[2], l[3]);
-                p2 = Point(l[0], l[1]);
-            } else {
-                p1 = Point(l[0], l[1]);
-                p2 = Point(l[2], l[3]);
-            }
+        if (lines.size() > 0) {
+            list<opencv_line> vertical_left;
+            list<opencv_line> vertical_right;
+            this->getVerticalLines(lines, vertical_left, vertical_right, cvt);
 
-            auto angle = static_cast<float>(atan2(p1.y - p2.y, p1.x - p2.x));
-            auto degree = static_cast<float>(abs(angle * 180 / M_PI));
-            if (degree > 25 && degree < 155) {
-                if (p1.y > p2.y) {
-                    if (this->allLines) {
-                        line(cvt, p1, p2, Scalar(255, 0, 255), 3, CV_AA);
-                        circle(cvt, p1, 5, Scalar(255, 0, 0), 5);
-                        circle(cvt, p2, 5, Scalar(0, 0, 255), 5);
-                    }
-                    vertical_left.emplace_back(p1, p2);
-                } else {
-                    if (this->allLines) {
-                        line(cvt, p1, p2, Scalar(0, 255, 255), 3, CV_AA);
-                        circle(cvt, p1, 5, Scalar(255, 0, 0), 5);
-                        circle(cvt, p2, 5, Scalar(0, 0, 255), 5);
-                    }
-                    vertical_right.emplace_back(p1, p2);
-                }
-            }
-        }
-
-        opencv_line *left_average = this->getAverageLine(vertical_left);
-        opencv_line *right_average = this->getAverageLine(vertical_right);
-        if (left_average != NULL) {
-            int deltaX_left = abs(left_average->p2.x - left_average->p1.x);
-            int deltaY_left = abs(left_average->p2.y - left_average->p1.y);
-
-            double angle_left = atan2(deltaY_left, deltaX_left) * 180 / M_PI;
-            double left_y = 0;
-            if (90 - angle_left > 0) {
-                left_y = left_average->p1.x / tan((90 - angle_left) * M_PI / 180.0);
-            }
-            left_average->p1.x = 0;
-            left_average->p1.y += left_y;
-
-            double left_x = left_average->p2.y * tan((90 - angle_left) * M_PI / 180.0);
-            left_average->p2.x += left_x;
-            left_average->p2.y = 0;
-            line(cvt, left_average->p1, left_average->p2, Scalar(255, 0, 0), 3, CV_AA);
-        }
-        if (right_average != NULL) {
-            int deltaX_right = abs(right_average->p1.x - right_average->p2.x);
-            int deltaY_right = abs(right_average->p1.y - right_average->p2.y);
-
-            double angle_right = atan2(deltaY_right, deltaX_right) * 180 / M_PI;
-            double right_y = 0;
-            if (90 - angle_right > 0) {
-                right_y = (this->camera->getDimensions().width - right_average->p2.x) / tan((90 - angle_right) * M_PI / 180.0);
-            }
-            right_average->p2.x = this->camera->getDimensions().width;
-            right_average->p2.y += right_y;
-
-            double right_x = right_average->p1.y * tan((90 - angle_right) * M_PI / 180.0);
-            right_average->p1.x -=right_x;
-            right_average->p1.y = 1;
-            line(cvt, right_average->p1, right_average->p2, Scalar(0, 255, 0), 3, CV_AA);
-        }
-        if (left_average != NULL && right_average != NULL) {
-            list<opencv_line> average_lines;
-            Point p1 = right_average->p1;
-            right_average->p1 = right_average->p2;
-            right_average->p2 = p1;
-            average_lines.push_back(*right_average);
-            average_lines.push_back(*left_average);
-            opencv_line *average = this->getAverageLine(average_lines);
-            if (average) {
-                this->error = this->p->getOutput(middle, average->p2.x);
-                if (this->running) {
-                    this->car->setAngle(40);
-                }
-                line(cvt, average->p1, average->p2, Scalar(0, 0, 255), 3, CV_AA);
-            } else {
-                log::debug("Could not find average");
-            }
+            opencv_line *average_left = this->getAverageLine(vertical_left);
+            this->drawLeftAverage(average_left, cvt);
+            opencv_line *average_right = this->getAverageLine(vertical_right);
+            this->drawRightAverage(average_right, cvt);
+            this->drawAverage(average_left, average_right, cvt);
         } else {
-            if (left_average) {
-                this->error = this->p->getOutput(middle, this->camera->getDimensions().width);
-            } else if (right_average) {
-                this->error = this->p->getOutput(middle, 0);
-            } else {
-                cout << "******* NO LINES DETECTED **********" << endl;
-            }
+            log::debug("******* NO LINES DETECTED **********");
         }
-        writeImage("cvt.jpg", cvt);
+        writeImage("cvt.jpg", cvt.clone());
+    } else {
+        this->last_snapshot = snapshot;
     }
     return this;
 }
 
 opencv_line *lane_detection::getAverageLine(std::list<opencv_line> lines) {
+    if (lines.size() == 0) {
+        return NULL;
+    }
     if (lines.size() == 1) {
         return &lines.front();
     }
@@ -252,4 +179,107 @@ void lane_detection::setRunning(bool running) {
 
 bool lane_detection::isFinished() {
     return this->condition_achieved;
+}
+
+void lane_detection::getVerticalLines(vector<cv::Vec4i> lines, list<opencv_line> vertical_left, list <opencv_line> vertical_right, Mat cvt) {
+    Point p1, p2;
+    for (auto l : lines) {
+        if (l[0] > l[2]) {
+            p1 = Point(l[2], l[3]);
+            p2 = Point(l[0], l[1]);
+        } else {
+            p1 = Point(l[0], l[1]);
+            p2 = Point(l[2], l[3]);
+        }
+
+        auto angle = static_cast<float>(atan2(p1.y - p2.y, p1.x - p2.x));
+        auto degree = static_cast<float>(abs(angle * 180 / M_PI));
+        if (degree > 25 && degree < 155) {
+            if (p1.y > p2.y) {
+                if (this->showFoundLines) {
+                    line(cvt, p1, p2, Scalar(255, 0, 255), 3, CV_AA);
+                    circle(cvt, p1, 5, Scalar(255, 0, 0), 5);
+                    circle(cvt, p2, 5, Scalar(0, 0, 255), 5);
+                }
+                vertical_left.emplace_back(p1, p2);
+            } else {
+                if (this->showFoundLines) {
+                    line(cvt, p1, p2, Scalar(0, 255, 255), 3, CV_AA);
+                    circle(cvt, p1, 5, Scalar(255, 0, 0), 5);
+                    circle(cvt, p2, 5, Scalar(0, 0, 255), 5);
+                }
+                vertical_right.emplace_back(p1, p2);
+            }
+        }
+    }
+}
+
+void lane_detection::drawLeftAverage(opencv_line *average_left, cv::Mat cvt) {
+    if (this->showAverageLRLines == true && average_left != NULL) {
+        int deltaX_left = abs(average_left->p2.x - average_left->p1.x);
+        int deltaY_left = abs(average_left->p2.y - average_left->p1.y);
+
+        double angle_left = atan2(deltaY_left, deltaX_left) * 180 / M_PI;
+        double left_y = 0;
+        if (90 - angle_left > 0) {
+            left_y = average_left->p1.x / tan((90 - angle_left) * M_PI / 180.0);
+        }
+        average_left->p1.x = 0;
+        average_left->p1.y += left_y;
+
+        double left_x = average_left->p2.y * tan((90 - angle_left) * M_PI / 180.0);
+        average_left->p2.x += left_x;
+        average_left->p2.y = 0;
+        line(cvt, average_left->p1, average_left->p2, Scalar(255, 0, 0), 3, CV_AA);
+    }
+}
+
+void lane_detection::drawRightAverage(opencv_line *average_right, cv::Mat cvt) {
+    if (this->showAverageLRLines == true && average_right != NULL) {
+        int deltaX_right = abs(average_right->p1.x - average_right->p2.x);
+        int deltaY_right = abs(average_right->p1.y - average_right->p2.y);
+
+        double angle_right = atan2(deltaY_right, deltaX_right) * 180 / M_PI;
+        double right_y = 0;
+        if (90 - angle_right > 0) {
+            right_y = (this->camera->getDimensions().width - average_right->p2.x) / tan((90 - angle_right) * M_PI / 180.0);
+        }
+        average_right->p2.x = this->camera->getDimensions().width;
+        average_right->p2.y += right_y;
+
+        double right_x = average_right->p1.y * tan((90 - angle_right) * M_PI / 180.0);
+        average_right->p1.x -=right_x;
+        average_right->p1.y = 1;
+        line(cvt, average_right->p1, average_right->p2, Scalar(0, 255, 0), 3, CV_AA);
+    }
+}
+
+void lane_detection::drawAverage(opencv_line *average_left, opencv_line *average_right, cv::Mat cvt) {
+    double middle = this->camera->getDimensions().width / 2;
+    if (this->showAverageLine == true && average_left != NULL && average_right != NULL) {
+        list<opencv_line> average_lines;
+        Point p1 = average_right->p1;
+        average_right->p1 = average_right->p2;
+        average_right->p2 = p1;
+        average_lines.push_back(*average_right);
+        average_lines.push_back(*average_left);
+        opencv_line *average = this->getAverageLine(average_lines);
+        if (average) {
+            this->error = this->pid->getOutput(middle, average->p2.x);
+            if (this->running) {
+                this->car->setAngle(40);
+            }
+            line(cvt, average->p1, average->p2, Scalar(0, 0, 255), 3, CV_AA);
+        } else {
+            log::debug("Could not find average");
+        }
+    } else {
+        if (average_left != NULL) {
+            this->error = this->pid->getOutput(middle, this->camera->getDimensions().width);
+        } else if (average_right != NULL) {
+            this->error = this->pid->getOutput(middle, 0);
+        } else {
+            log::debug("******* NO AVERAGE LINES DETECTED **********");
+        }
+    }
 }

@@ -4,113 +4,60 @@
 #include "camera.h"
 #include "../util/log.h"
 #include <thread>
+#include <curl/curl.h>
 
 using namespace cv;
 using namespace std;
 
-pthread_mutex_t frame_lock = PTHREAD_MUTEX_INITIALIZER;
-
-void *frameGrabber(void *params) {
-    Camera *camera = (Camera *) params;
-    bool run = true;
-    while (run) {
-        if (pthread_mutex_lock(&frame_lock) != 0) {
-            log::debug(string("Sockethandler: Could not get a lock on the queue"));
-        }
-        camera->cap >> camera->frame;
-//        float alpha = 1.0; // 1.0 - 3.0
-//        int beta = 0; // 0 - 100;
-//        Mat new_image = Mat::zeros(camera->frame.size(), camera->frame.type());
-//        for (int y = 0; y < camera->frame.rows; y++) {
-//            for (int x = 0; x < camera->frame.cols; x++) {
-//                for (int c = 0; c < 3; c++) {
-//                    new_image.at<Vec3b>(y, x)[c] =
-//                            saturate_cast<uchar>(alpha * (camera->frame.at<Vec3b>(y, x)[c]) + beta);
-//                }
-//            }
-//        }
-//        camera->frame = new_image;
-        pthread_cond_signal(&camera->frame_not_empty);
-        if (pthread_mutex_unlock(&frame_lock) != 0) {
-            log::debug(string("Sockethandler: Could not unlock the queue"));
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(camera->capture_delay));
-    }
-    return NULL;
-}
-
-Camera::Camera() : cap("http://192.168.88.16:8090/?action=stream") {
-    this->sett = new settings("./resources/camera.json");
-    this->fromJson(sett->getSettings());
-//    if (this->cap.open(1) == false) {
-//        this->cap.open("http://192.168.88.16:8090/?action=stream?dummy=param.mjpg");
-//    }
-    this->cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
-    log::debug(string("Width ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_WIDTH))));
-    log::debug(string("Height ").append(to_string(this->cap.get(CV_CAP_PROP_FRAME_HEIGHT))));
-    log::debug(string("Brightness ").append(to_string(this->cap.get(CV_CAP_PROP_BRIGHTNESS))));
-    log::debug(string("Contrast ").append(to_string(this->cap.get(CV_CAP_PROP_CONTRAST))));
-    log::debug(string("Hue ").append(to_string(this->cap.get(CV_CAP_PROP_HUE))));
-    log::debug(string("FPS ").append(to_string(this->cap.get(CV_CAP_PROP_FPS))));
-    log::debug(string("Saturation ").append(to_string(this->cap.get(CV_CAP_PROP_SATURATION))));
-    log::debug(string("Gain ").append(to_string(this->cap.get(CV_CAP_PROP_GAIN))));
-    log::debug(string("Convert rgb ").append(to_string(this->cap.get(CAP_PROP_CONVERT_RGB))));
-    log::debug(string("White balance blue ").append(to_string(this->cap.get(CAP_PROP_WHITE_BALANCE_BLUE_U))));
-    log::debug(string("White balance red ").append(to_string(this->cap.get(CAP_PROP_WHITE_BALANCE_RED_V))));
-
-    pthread_t grabber;
-    pthread_create(&grabber, NULL, frameGrabber, this);
+size_t write_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
+    std::ostringstream *stream = (std::ostringstream*)userdata;
+    size_t count = size * nmemb;
+    stream->write(ptr, count);
+    return count;
 }
 
 Mat Camera::getFrame() {
-    return this->frame;
+    if (local) {
+        Mat frame;
+        this->cap >> frame;
+        return frame;
+    } else {
+        CURL *curl;
+        CURLcode res;
+        std::ostringstream stream;
+        curl = curl_easy_init();
+        curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.88.10:8090/?action=snapshot"); //the img url
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); // pass the writefunction
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream); // pass the stream ptr when the writefunction is called
+        res = curl_easy_perform(curl); // start curl
+        std::string output = stream.str(); // convert the stream into a string
+        curl_easy_cleanup(curl); // cleanup
+        std::vector<char> data = std::vector<char>(output.begin(), output.end()); //convert string into a vector
+        cv::Mat data_mat = cv::Mat(data); // create the cv::Mat datatype from the vector
+        cv::Mat image = cv::imdecode(data_mat, 1); //read an image from memory buffer
+        return image;
+    }
+}
+
+Camera::Camera(bool local) {
+    this->local = local;
+    if (this->local) {
+        this->cap = VideoCapture(0);
+    }
+    this->sett = new settings("./resources/camera.json");
+    this->fromJson(sett->getSettings());
 }
 
 Size Camera::getDimensions() {
-    return Size(this->cap.get(CV_CAP_PROP_FRAME_WIDTH), this->cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-}
-
-void Camera::setDimension(int width, int height) {
-    this->cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
-    this->cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
+    return Size(640,360);
 }
 
 void Camera::close() {
-    this->cap.release();
     this->sett->save(this->getJson());
 }
 
 void Camera::fromJson(json_t *pJson) {
-    json_t *resolutionJson = json_object_get(pJson,"dimension");
-    int width = json_number_value(json_object_get(resolutionJson, "width"));
-    int height = json_number_value(json_object_get(resolutionJson, "height"));
-    this->setDimension(width, height);
-    int brightness = json_number_value(json_object_get(pJson, "brightness"));
-    if (brightness > 0) {
-        this->cap.set(CV_CAP_PROP_BRIGHTNESS, brightness);
-    }
-    int contrast = json_number_value(json_object_get(pJson, "contrast"));
-    if (contrast > 0) {
-        this->cap.set(CV_CAP_PROP_CONTRAST, contrast);
-    }
-    int saturation = json_number_value(json_object_get(pJson, "saturation"));
-    if (saturation > 0) {
-        this->cap.set(CV_CAP_PROP_SATURATION, saturation);
-    }
-    int hue = json_number_value(json_object_get(pJson, "hue"));
-    if (hue > 0) {
-        this->cap.set(CV_CAP_PROP_HUE, hue);
-    }
-    int gain = json_number_value(json_object_get(pJson, "gain"));
-    if (gain > 0) {
-        this->cap.set(CV_CAP_PROP_GAIN, gain);
-    }
-    int fps = json_number_value(json_object_get(pJson, "fps"));
-    if (fps > 0) {
-        this->cap.set(CV_CAP_PROP_FPS, fps);
-    }
-    this->capture_delay = json_number_value(json_object_get(pJson, "captureDelay"));
+//    this->capture_delay = json_number_value(json_object_get(pJson, "captureDelay"));
     this->observers_delay = json_number_value(json_object_get(pJson, "observersDelay"));
     this->preview_delay = json_number_value(json_object_get(pJson, "previewDelay"));
     json_t *whiteBalance = json_object_get(pJson, "whiteBalance");
@@ -128,19 +75,13 @@ json_t* Camera::getJson() {
     json_object_set_new( dimension, "height", json_integer( dimensions.height ) );
     json_object_set_new( root, "dimension", dimension);
 
-    json_object_set_new( root, "captureDelay", json_integer( this->capture_delay ) );
+//    json_object_set_new( root, "captureDelay", json_integer( this->capture_delay ) );
     json_object_set_new( root, "observersDelay", json_integer( this->observers_delay ) );
     json_object_set_new( root, "previewDelay", json_integer( this->preview_delay ) );
     json_t *whiteBalance = json_object();
     json_object_set_new( whiteBalance, "alpha", json_real(this->whitebalance_alpha ) );
     json_object_set_new( whiteBalance, "beta", json_integer( this->whitebalance_beta) );
     json_object_set_new( root, "whiteBalance", whiteBalance );
-    json_object_set_new( root, "brightness", json_integer(this->cap.get(CV_CAP_PROP_BRIGHTNESS)));
-    json_object_set_new( root, "contrast", json_integer(this->cap.get(CV_CAP_PROP_CONTRAST)));
-    json_object_set_new( root, "saturation", json_integer(this->cap.get(CV_CAP_PROP_SATURATION)));
-    json_object_set_new( root, "hue", json_integer(this->cap.get(CV_CAP_PROP_HUE)));
-    json_object_set_new( root, "gain", json_integer(this->cap.get(CV_CAP_PROP_GAIN)));
-    json_object_set_new( root, "fps", json_integer(this->cap.get(CV_CAP_PROP_FPS)));
 
     return root;
 }

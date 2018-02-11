@@ -15,15 +15,10 @@
 
 class Camera {
 public:
-    Camera();
-    cv::Mat getFrame();
+    Camera(bool local);
     cv::Size getDimensions();
-    void setDimension(int width, int height);
-    cv::VideoCapture cap;
-    cv::Mat frame;
-    pthread_cond_t frame_not_empty = PTHREAD_COND_INITIALIZER;
 
-    int capture_delay = 400;
+//    int capture_delay = 400;
     int observers_delay = 2000;
     int preview_delay = 6 * 1000;
     double whitebalance_alpha = 1.1;
@@ -33,10 +28,11 @@ public:
 
     void fromJson(json_t *pJson);
     json_t* getJson();
-
+    cv::Mat getFrame();
 private:
     settings *sett;
-
+    bool local;
+    cv::VideoCapture cap;
 };
 
 

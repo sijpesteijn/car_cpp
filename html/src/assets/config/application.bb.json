@@ -1,21 +1,20 @@
 {
   "car": {
-    "mode": "http://carmageddon.test/car/mode/:mode",
-    "engine": "http://carmageddon.test/car/engine/:throttle",
-    "steer": "http://carmageddon.test/car/steer/:angle"
+    "save": "https://carmageddon.test/car",
+    "get": "https://carmageddon.test/car"
   },
   "lifeline": {
-    "ws": "ws://carmageddon.test/lifeline"
+    "ws": "wss://carmageddon.test/lifeline"
   },
   "camera": {
-    "settings": "http://carmageddon.test/camera/settings",
-    "dimensions": "http://carmageddon.test/camera/dimensions"
+    "settings": "https://carmageddon.test/camera/settings"
   },
   "race": {
-    "all": "http://carmageddon.test/race",
-    "get": "http://carmageddon.test/race/:name",
-    "select": "http://carmageddon.test/race/select/:name",
-    "save": "http://carmageddon.test/race/:name",
-    "status": "ws://carmageddon.test/status"
-  }
+    "all": "https://carmageddon.test/race",
+    "get": "https://carmageddon.test/race/:name",
+    "select": "https://carmageddon.test/race/select/:name",
+    "save": "https://carmageddon.test/race/:name",
+    "status": "wss://carmageddon.test/status"
+  },
+  "stream" : "https://carmageddon.test/stream"
 }

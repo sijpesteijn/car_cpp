@@ -2,10 +2,9 @@
 
 .manual {
   position: relative;
-  top: $gutter*0.5;
 }
 
-virtual-joystick {
+.joystick {
   float: left;
   position: relative;
   width: 400px;
@@ -15,5 +14,4 @@ virtual-joystick {
 
 preview {
   float: right;
-  margin-right: $gutter;
 }

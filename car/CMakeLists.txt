@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.5)
+project(car)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./)
+
+set(CMAKE_CXX_STANDARD 11)
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories( /usr/local/include/restbed )
+include_directories( /usr/local/include/openssl )
+include_directories( /usr/local/include/jansson )
+
+if( APPLE )
+    link_directories(/usr/local/lib)
+    link_directories(/usr/local/opt/openssl/lib)
+    set(SOURCE_FILES src/main.cpp src/util/log.h src/util/log.cpp src/util/util.h src/util/util.cpp src/domain/pwm.h src/domain/pwmmock.cpp src/domain/steer.h src/domain/steer.cpp src/domain/engine.h src/domain/engine.cpp src/domain/car.h src/domain/car.cpp src/rest/rest.h src/rest/rest.cpp src/rest/car_resource.h src/rest/car_resource.cpp src/rest/lifeline_resource.h src/rest/lifeline_resource.cpp)
+else()
+    set(SOURCE_FILES src/main.cpp src/util/log.h src/util/log.cpp src/util/util.h src/util/util.cpp src/domain/pwm.h src/domain/pwm.cpp src/domain/steer.h src/domain/steer.cpp src/domain/engine.h src/domain/engine.cpp src/domain/car.h src/domain/car.cpp src/rest/rest.h src/rest/rest.cpp src/rest/car_resource.h src/rest/car_resource.cpp src/rest/lifeline_resource.h src/rest/lifeline_resource.cpp)
+endif()
+
+set(LIBS ${OpenCV_LIBS} restbed jansson ssl pthread crypto )
+add_executable(car ${SOURCE_FILES})
+target_link_libraries( car ${LIBS})

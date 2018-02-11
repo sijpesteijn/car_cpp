@@ -6,8 +6,8 @@
             <li>Roi color: <span class="circle" [style.background-color]="roiColor"></span></li>
             <li>Roi y: <input type="range" [min]=0 [max]="max_height" [(ngModel)]="observer?.roi.y" (change)="updateRoi($event)"> {{ observer?.roi.y }}</li>
             <li>Roi height: <input type="range" [min]="0" [max]="max_height" [(ngModel)]="observer?.roi.height" (ngModelChange)="setRoi($event)"> {{ observer?.roi.height }}</li>
-            <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
-            <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="0.1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
+            <li>Canny Threshold 1: <input type="range" min="0.0" max="300.0" step="1" [(ngModel)]="observer.threshold1" (change)="updateRoi($event)"> {{ observer?.threshold1 }}</li>
+            <li>Canny Threshold 2: <input type="range" min="0.0" max="300.0" step="1" [(ngModel)]="observer.threshold2" (change)="updateRoi($event)"> {{ observer?.threshold2 }}</li>
             <li>Canny Aperture Size: <input type="range" min="3" max="7" step="2" [(ngModel)]="observer.apertureSize" (ngModelChange)="updateRoi($event)"> {{ observer?.apertureSize }}</li>
         </ul>
     </fieldset>
@@ -17,5 +17,5 @@
         <option value="canny">Canny</option>
         <option value="cvt">CVT</option>
     </select>
-    <preview #prv [baseUrl]="'/race/drag/group2/finish_detection/' + filter +'/'"></preview>
+    <observer-preview #prv [baseUrl]="'/race/drag/group2/finish_detection/' + filter +'/'" [height]="observer?.roi.height"></observer-preview>
 </div>

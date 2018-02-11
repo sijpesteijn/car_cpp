@@ -7,11 +7,11 @@
 
 
 #include "../domain/camera.h"
-#include "carmageddon_resource.h"
+#include "abstract_rest_resource.h"
 #include <restbed>
 #include <list>
 
-class camera_resource: public carmageddon_resource {
+class camera_resource: public abstract_rest_resource {
 public:
     camera_resource(Camera *camera);
     std::list<std::shared_ptr<restbed::Resource>> getResources();
